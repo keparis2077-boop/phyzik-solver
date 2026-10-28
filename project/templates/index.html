@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Выбор задачи{% endblock %}
+{% block content %}
+<h1>Выберите задачу</h1>
+<p class="subtitle">Всего задач: <b>{{ total }}</b></p>
+
+{% for category, items in groups.items() %}
+<section class="category">
+    <h2>{{ category }}</h2>
+    <div class="cards">
+        {% for tid, t in items %}
+        <a class="card" href="{{ url_for('task', task_id=tid) }}">
+            <div class="card-img">
+                <img src="{{ t.image }}" alt="{{ t.name }}">
+            </div>
+            <h3>{{ t.icon }} {{ t.name }}</h3>
+            <p><b>Найти:</b> {{ t.find|join(', ') }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+{% endblock %}

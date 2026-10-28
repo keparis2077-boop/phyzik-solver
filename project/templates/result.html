@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Решение: {{ task.name }}{% endblock %}
+{% block content %}
+<h1>Решение: {{ task.icon }} {{ task.name }}</h1>
+
+{% if error %}
+    <div class="flash flash-error">{{ error }}</div>
+    <a class="back" href="{{ url_for('task', task_id=task_id) }}">← Назад к задаче</a>
+{% else %}
+
+<div class="task-layout">
+    <div class="panel">
+        <h2>Рисунок</h2>
+        <div class="img-box">
+            <img src="{{ url_for('static', filename='img/' ~ task.image) }}"
+                 alt="{{ task.name }}">
+        </div>
+
+        <h2>Дано</h2>
+        <ul>
+            {% for key, label, unit in task.inputs %}
+                <li>{{ label }} = {{ form[key] }} {{ unit }}</li>
+            {% endfor %}
+        </ul>
+
+                <h2>Найти</h2>
+        <ul>
+            {% for r in results.keys() %}
+                <li>
+                    {% if task.outputs is defined %}
+                        {{ task.outputs[r] }}
+                    {% elif task.quantities is defined %}
+                        {{ task.quantities[r][0] }}
+                    {% else %}
+                        {{ r }}
+                    {% endif %}
+        </li>
+    {% endfor %}
+        </ul>
+    </div>
+
+    <div class="panel">
+        <h2>Ход решения</h2>
+        <ol class="steps">
+            {% for s in steps %}<li>{{ s }}</li>{% endfor %}
+        </ol>
+
+        <h2>Ответ</h2>
+        <table class="results">
+            {% for k, v in results.items() %}
+            <tr><td>{{ k }}</td><td><b>{{ v }}</b></td></tr>
+            {% endfor %}
+        </table>
+
+        <h2>Пояснение</h2>
+        <p class="explain">{{ explanation }}</p>
+
+        <div class="actions">
+            <a class="btn" href="{{ url_for('task', task_id=task_id) }}">← Решить ещё раз</a>
+            <button class="btn" onclick="window.print()">🖨 Печать</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+<svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- Земля -->
+  <line x1="40" y1="180" x2="480" y2="180" stroke="#94a3b8" stroke-width="2"/>
+
+  <!-- Траектория (парабола) -->
+  <path d="M 80 180 Q 260 -20 440 180" fill="none" stroke="#4a90e2" stroke-width="3" stroke-dasharray="6,4"/>
+
+  <!-- Вектор начальной скорости -->
+  <line x1="80" y1="180" x2="140" y2="120" stroke="#e94e77" stroke-width="3"/>
+  <polygon points="140,120 130,125 135,135" fill="#e94e77"/>
+  <text x="115" y="135" font-size="14" fill="#e94e77">v₀</text>
+
+  <!-- Угол -->
+  <path d="M 110 180 A 30 30 0 0 0 105 155" fill="none" stroke="#2ecc71" stroke-width="2"/>
+  <text x="115" y="170" font-size="14" fill="#2ecc71">α</text>
+
+  <!-- Высота -->
+  <line x1="260" y1="80" x2="260" y2="180" stroke="#64748b" stroke-dasharray="4,4"/>
+  <text x="270" y="135" font-size="14" fill="#64748b">H</text>
+
+  <!-- Дальность -->
+  <line x1="80" y1="195" x2="440" y2="195" stroke="#333" stroke-width="2"/>
+  <polygon points="440,195 430,190 430,200" fill="#333"/>
+  <polygon points="80,195 90,190 90,200" fill="#333"/>
+  <text x="245" y="215" font-size="14" fill="#333">L</text>
+</svg>

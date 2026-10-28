@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}История решений{% endblock %}
+{% block content %}
+<h1>История решений</h1>
+
+{% if records %}
+<form method="post" action="{{ url_for('history_clear') }}"
+      onsubmit="return confirm('Удалить всю историю?');">
+    <button class="btn btn-danger">🗑 Очистить историю</button>
+</form>
+
+<table class="history-table">
+    <thead>
+        <tr>
+            <th>#</th><th>Дата</th><th>Задача</th><th>Дано</th><th>Ответ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.created_at }}</td>
+            <td>{{ r.task_name }}</td>
+            <td>{{ r.inputs }}</td>
+            <td>{{ r.results }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="subtitle">История пуста. Решите первую задачу!</p>
+{% endif %}
+{% endblock %}

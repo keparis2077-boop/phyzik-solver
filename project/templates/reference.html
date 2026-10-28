@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Справочник формул и констант{% endblock %}
+{% block content %}
+
+<h1>📖 Справочник</h1>
+<p class="subtitle">Основные формулы и физические постоянные</p>
+
+<div class="task-layout">
+    <!-- ЛЕВАЯ КОЛОНКА: Константы -->
+    <div class="panel">
+        <h2>Физические постоянные</h2>
+        <table class="history-table" style="margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Величина</th>
+                    <th>Обозн.</th>
+                    <th>Значение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in constants %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td><b>{{ c.symbol }}</b></td>
+                    <td style="white-space: nowrap;">{{ c.value }} {{ c.unit }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА: Формулы -->
+    <div class="panel">
+        <h2>Основные формулы</h2>
+        {% for category, items in formulas.items() %}
+            <h3 style="margin-top: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px;">
+                {{ category }}
+            </h3>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for f in items %}
+                <li style="margin-bottom: 12px; line-height: 1.4;">
+                    <span style="color: var(--muted); font-size: 13px; display: block;">{{ f.name }}</span>
+                    <b style="font-size: 16px; color: var(--text);">{{ f.formula }}</b>
+                </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

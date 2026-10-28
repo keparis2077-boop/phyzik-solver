@@ -1,0 +1,10 @@
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="80" y="90" width="80" height="30" fill="#4a90e2" stroke="#333"/>
+  <text x="115" y="110" fill="white" font-size="13">R₁</text>
+  <rect x="260" y="90" width="80" height="30" fill="#4a90e2" stroke="#333"/>
+  <text x="295" y="110" fill="white" font-size="13">R₂</text>
+  <line x1="40" y1="105" x2="80" y2="105" stroke="#333" stroke-width="2"/>
+  <line x1="160" y1="105" x2="260" y2="105" stroke="#333" stroke-width="2"/>
+  <line x1="340" y1="105" x2="480" y2="105" stroke="#333" stroke-width="2"/>
+  <text x="230" y="160" font-size="14" fill="#475569">R = R₁ + R₂</text>
+</svg>

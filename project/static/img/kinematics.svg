@@ -1,0 +1,15 @@
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="150" x2="490" y2="150" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="490,150 478,144 478,156" fill="#94a3b8"/>
+  <text x="495" y="155" font-size="14" fill="#94a3b8">x</text>
+  <circle cx="90" cy="110" r="20" fill="#4a90e2"/>
+  <text x="82" y="116" fill="white" font-size="13">m</text>
+  <line x1="115" y1="110" x2="180" y2="110" stroke="#e94e77" stroke-width="3"/>
+  <polygon points="180,110 168,104 168,116" fill="#e94e77"/>
+  <text x="130" y="100" font-size="14" fill="#e94e77">v₀</text>
+  <line x1="200" y1="110" x2="280" y2="110" stroke="#2ecc71" stroke-width="3"/>
+  <polygon points="280,110 268,104 268,116" fill="#2ecc71"/>
+  <text x="220" y="100" font-size="14" fill="#2ecc71">a</text>
+  <line x1="90" y1="140" x2="380" y2="140" stroke="#64748b" stroke-dasharray="5,4"/>
+  <text x="220" y="165" font-size="13" fill="#475569">s = ?</text>
+</svg>

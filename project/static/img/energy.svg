@@ -1,0 +1,8 @@
+<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="180" cy="90" r="30" fill="#4a90e2"/>
+  <text x="170" y="96" fill="white" font-size="14">m</text>
+  <line x1="215" y1="90" x2="360" y2="90" stroke="#e94e77" stroke-width="4"/>
+  <polygon points="360,90 346,82 346,98" fill="#e94e77"/>
+  <text x="275" y="80" font-size="14" fill="#e94e77">v</text>
+  <text x="180" y="155" font-size="14" fill="#475569">E = m·v² / 2</text>
+</svg>

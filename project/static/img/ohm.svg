@@ -1,0 +1,11 @@
+<svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+  <rect x="90" y="50" width="340" height="120" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="230" y="40" width="60" height="20" fill="#4a90e2" rx="2"/>
+  <text x="248" y="34" font-size="14">R</text>
+  <line x1="70" y1="90" x2="90" y2="90" stroke="#333" stroke-width="2"/>
+  <line x1="70" y1="130" x2="90" y2="130" stroke="#333" stroke-width="2"/>
+  <line x1="70" y1="90" x2="70" y2="130" stroke="#333" stroke-width="2"/>
+  <text x="30" y="115" font-size="14">U</text>
+  <polygon points="170,50 158,42 158,58" fill="#e94e77"/>
+  <text x="160" y="72" font-size="14" fill="#e94e77">I</text>
+</svg>

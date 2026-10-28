@@ -1,0 +1,10 @@
+<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+  <rect x="170" y="70" width="90" height="55" fill="#f5a623" stroke="#333" rx="4"/>
+  <text x="205" y="105" font-size="15">m</text>
+  <line x1="260" y1="97" x2="410" y2="97" stroke="#e94e77" stroke-width="4"/>
+  <polygon points="410,97 396,89 396,105" fill="#e94e77"/>
+  <text x="325" y="87" font-size="14" fill="#e94e77">F</text>
+  <line x1="170" y1="140" x2="410" y2="140" stroke="#333" stroke-width="2"/>
+  <polygon points="410,140 398,134 398,146" fill="#333"/>
+  <text x="285" y="160" font-size="14">s</text>
+</svg>

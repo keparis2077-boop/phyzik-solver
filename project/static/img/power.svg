@@ -1,0 +1,6 @@
+<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+  <rect x="180" y="60" width="140" height="60" fill="#4a90e2" rx="8"/>
+  <text x="225" y="98" fill="white" font-size="22">⚙</text>
+  <text x="270" y="98" fill="white" font-size="14">N</text>
+  <text x="200" y="160" font-size="14" fill="#475569">N = A / t</text>
+</svg>
