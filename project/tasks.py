@@ -863,3 +863,191 @@ TASKS['reflection'] = {
     "targets": {"beta": "Угол отражения β", "alpha": "Угол падения α"},
     "solve": solve_reflection,
 }
+
+
+# ============================================================
+# 17. Оптика: Формула тонкой линзы (1/F = 1/d + 1/f)
+# ============================================================
+def solve_lens(known, target):
+    d, f, F = known.get('d'), known.get('f'), known.get('F')
+    explanation = "Формула тонкой линзы: 1/F = 1/d + 1/f, где F — фокусное расстояние, d — расстояние до предмета, f — расстояние до изображения."
+
+    if target == 'F':
+        if d is not None and f is not None and (d + f) != 0:
+            val = (d * f) / (d + f)
+            steps = ["Формула: 1/F = 1/d + 1/f → F = d·f / (d + f)",
+                     f"F = {d}·{f} / ({d} + {f}) = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска F нужны d и f (d+f ≠ 0)")
+        return {"F": f"{val:.2f} см"}, steps, explanation
+
+    if target == 'd':
+        if F is not None and f is not None and (F - f) != 0:
+            val = (F * f) / (F - f)
+            steps = ["Из 1/F = 1/d + 1/f: d = F·f / (F - f)",
+                     f"d = {F}·{f} / ({F} - {f}) = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска d нужны F и f (F ≠ f)")
+        return {"d": f"{val:.2f} см"}, steps, explanation
+
+    if target == 'f':
+        if F is not None and d is not None and (F - d) != 0:
+            val = (F * d) / (F - d)
+            steps = ["Из 1/F = 1/d + 1/f: f = F·d / (F - d)",
+                     f"f = {F}·{d} / ({F} - {d}) = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска f нужны F и d (F ≠ d)")
+        return {"f": f"{val:.2f} см"}, steps, explanation
+
+    raise ValueError("Неизвестная цель")
+
+
+TASKS['lens'] = {
+    "name": "Формула тонкой линзы",
+    "category": "Оптика",
+    "icon": "🔍",
+    "image": "/static/img/lens.svg",
+    "quantities": {
+        "d": ("Расстояние до предмета d", "см"),
+        "f": ("Расстояние до изображения f", "см"),
+        "F": ("Фокусное расстояние F", "см"),
+    },
+    "targets": {
+        "F": "Фокусное расстояние F",
+        "d": "Расстояние до предмета d",
+        "f": "Расстояние до изображения f",
+    },
+    "solve": solve_lens,
+}
+
+
+# ============================================================
+# 18. Оптика: Оптическая сила линзы (D = 1/F)
+# ============================================================
+def solve_optical_power(known, target):
+    D, F = known.get('D'), known.get('F')
+    explanation = "Оптическая сила линзы: D = 1/F, где F — фокусное расстояние в метрах, D — в диоптриях (дптр)."
+
+    if target == 'D':
+        if F is not None and F != 0:
+            F_meters = F / 100  # перевод см в м
+            val = 1 / F_meters
+            steps = ["Формула: D = 1/F (F в метрах)",
+                     f"F = {F} см = {F_meters:.3f} м",
+                     f"D = 1 / {F_meters:.3f} = {val:.2f} дптр"]
+        else:
+            raise ValueError("Для поиска D нужно F (F ≠ 0)")
+        return {"D": f"{val:.2f} дптр"}, steps, explanation
+
+    if target == 'F':
+        if D is not None and D != 0:
+            val = 1 / D
+            val_cm = val * 100
+            steps = ["Из D = 1/F: F = 1/D",
+                     f"F = 1 / {D} = {val:.3f} м = {val_cm:.2f} см"]
+        else:
+            raise ValueError("Для поиска F нужно D (D ≠ 0)")
+        return {"F": f"{val_cm:.2f} см"}, steps, explanation
+
+    raise ValueError("Неизвестная цель")
+
+
+TASKS['optical_power'] = {
+    "name": "Оптическая сила линзы",
+    "category": "Оптика",
+    "icon": "👓",
+    "image": "/static/img/optical_power.svg",
+    "quantities": {
+        "D": ("Оптическая сила D", "дптр"),
+        "F": ("Фокусное расстояние F", "см"),
+    },
+    "targets": {
+        "D": "Оптическую силу D",
+        "F": "Фокусное расстояние F",
+    },
+    "solve": solve_optical_power,
+}
+
+
+# ============================================================
+# 19. Оптика: Линейное увеличение (Γ = f/d = H/h)
+# ============================================================
+def solve_magnification(known, target):
+    d, f, h, H, Gamma = known.get('d'), known.get('f'), known.get('h'), known.get('H'), known.get('Gamma')
+    explanation = "Линейное увеличение линзы: Γ = f/d = H/h, где Γ — увеличение, H — высота изображения, h — высота предмета."
+
+    if target == 'Gamma':
+        if d is not None and d != 0:
+            val = f / d
+            steps = ["Формула: Γ = f/d",
+                     f"Γ = {f} / {d} = {val:.2f}"]
+            if val > 1:
+                steps.append(f"Изображение увеличено в {val:.2f} раз(а)")
+            elif val < 1:
+                steps.append(f"Изображение уменьшено в {1/val:.2f} раз(а)")
+            else:
+                steps.append("Изображение действительного размера")
+        else:
+            raise ValueError("Для поиска Γ нужны d и f (d ≠ 0)")
+        return {"Gamma": f"{val:.2f}"}, steps, explanation
+
+    if target == 'f':
+        if Gamma is not None and d is not None and Gamma != 0:
+            val = Gamma * d
+            steps = ["Из Γ = f/d: f = Γ·d",
+                     f"f = {Gamma}·{d} = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска f нужны Γ и d (Γ ≠ 0)")
+        return {"f": f"{val:.2f} см"}, steps, explanation
+
+    if target == 'd':
+        if Gamma is not None and f is not None and Gamma != 0:
+            val = f / Gamma
+            steps = ["Из Γ = f/d: d = f/Γ",
+                     f"d = {f} / {Gamma} = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска d нужны Γ и f (Γ ≠ 0)")
+        return {"d": f"{val:.2f} см"}, steps, explanation
+
+    if target == 'H':
+        if h is not None and Gamma is not None:
+            val = Gamma * h
+            steps = ["Из Γ = H/h: H = Γ·h",
+                     f"H = {Gamma}·{h} = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска H нужны Γ и h")
+        return {"H": f"{val:.2f} см"}, steps, explanation
+
+    if target == 'h':
+        if H is not None and Gamma is not None and Gamma != 0:
+            val = H / Gamma
+            steps = ["Из Γ = H/h: h = H/Γ",
+                     f"h = {H} / {Gamma} = {val:.2f} см"]
+        else:
+            raise ValueError("Для поиска h нужны H и Γ (Γ ≠ 0)")
+        return {"h": f"{val:.2f} см"}, steps, explanation
+
+    raise ValueError("Неизвестная цель")
+
+
+TASKS['magnification'] = {
+    "name": "Линейное увеличение линзы",
+    "category": "Оптика",
+    "icon": "🔎",
+    "image": "/static/img/magnification.svg",
+    "quantities": {
+        "d": ("Расстояние до предмета d", "см"),
+        "f": ("Расстояние до изображения f", "см"),
+        "h": ("Высота предмета h", "см"),
+        "H": ("Высота изображения H", "см"),
+        "Gamma": ("Увеличение Γ", "раз"),
+    },
+    "targets": {
+        "Gamma": "Увеличение Γ",
+        "f": "Расстояние до изображения f",
+        "d": "Расстояние до предмета d",
+        "H": "Высоту изображения H",
+        "h": "Высоту предмета h",
+    },
+    "solve": solve_magnification,
+}

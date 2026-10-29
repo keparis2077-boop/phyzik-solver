@@ -31,3 +31,151 @@ templates:
           - "Закон отражения: α = β"
           - "α = {beta}°"
     explanation: "Закон отражения: угол падения равен углу отражения (α = β)."
+
+# ============================================================
+# Формула тонкой линзы: 1/F = 1/d + 1/f
+# ============================================================
+  - id: thin_lens
+    name: "Формула тонкой линзы"
+    category: "Оптика"
+    icon: "🔍"
+    image: "/static/img/lens.svg"
+    description: "Связь между фокусным расстоянием, расстоянием до предмета и изображения"
+    variables:
+      d: { label: "Расстояние до предмета d", unit: "см", type: float }
+      f: { label: "Расстояние до изображения f", unit: "см", type: float }
+      F: { label: "Фокусное расстояние F", unit: "см", type: float }
+    solutions:
+      - id: F_from_d_f
+        target: F
+        label: "Фокусное расстояние F"
+        requires: [d, f]
+        formula: "F = (d·f) / (d + f)"
+        steps:
+          - "Формула: 1/F = 1/d + 1/f → F = d·f / (d + f)"
+          - "F = {d}·{f} / ({d} + {f}) = {val:.2f} см"
+        check:
+          - "d + f ≠ 0"
+      - id: d_from_F_f
+        target: d
+        label: "Расстояние до предмета d"
+        requires: [F, f]
+        formula: "d = (F·f) / (F - f)"
+        steps:
+          - "Из 1/F = 1/d + 1/f: d = F·f / (F - f)"
+          - "d = {F}·{f} / ({F} - {f}) = {val:.2f} см"
+        check:
+          - "F ≠ f"
+      - id: f_from_F_d
+        target: f
+        label: "Расстояние до изображения f"
+        requires: [F, d]
+        formula: "f = (F·d) / (F - d)"
+        steps:
+          - "Из 1/F = 1/d + 1/f: f = F·d / (F - d)"
+          - "f = {F}·{d} / ({F} - {d}) = {val:.2f} см"
+        check:
+          - "F ≠ d"
+    explanation: "Формула тонкой линзы: 1/F = 1/d + 1/f, где F — фокусное расстояние, d — расстояние до предмета, f — расстояние до изображения."
+
+# ============================================================
+# Оптическая сила линзы: D = 1/F
+# ============================================================
+  - id: optical_power
+    name: "Оптическая сила линзы"
+    category: "Оптика"
+    icon: "👓"
+    image: "/static/img/optical_power.svg"
+    description: "Оптическая сила линзы — величина, обратная фокусному расстоянию"
+    variables:
+      D: { label: "Оптическая сила D", unit: "дптр", type: float }
+      F: { label: "Фокусное расстояние F", unit: "см", type: float }
+    solutions:
+      - id: D_from_F
+        target: D
+        label: "Оптическую силу D"
+        requires: [F]
+        formula: "D = 100 / F(см)"
+        steps:
+          - "Формула: D = 1/F (F в метрах)"
+          - "F = {F} см = {F/100:.3f} м"
+          - "D = 1 / {F/100:.3f} = {val:.2f} дптр"
+        check:
+          - "F ≠ 0"
+      - id: F_from_D
+        target: F
+        label: "Фокусное расстояние F"
+        requires: [D]
+        formula: "F = 100 / D(дптр)"
+        steps:
+          - "Из D = 1/F: F = 1/D"
+          - "F = 1 / {D} = {val:.3f} м = {val*100:.2f} см"
+        check:
+          - "D ≠ 0"
+    explanation: "Оптическая сила линзы: D = 1/F, где F — фокусное расстояние в метрах, D — в диоптриях (дптр)."
+
+# ============================================================
+# Линейное увеличение линзы: Γ = f/d = H/h
+# ============================================================
+  - id: lens_magnification
+    name: "Линейное увеличение линзы"
+    category: "Оптика"
+    icon: "🔎"
+    image: "/static/img/magnification.svg"
+    description: "Определение увеличения и размеров изображения"
+    variables:
+      d:  { label: "Расстояние до предмета d", unit: "см", type: float }
+      f:  { label: "Расстояние до изображения f", unit: "см", type: float }
+      h:  { label: "Высота предмета h", unit: "см", type: float }
+      H:  { label: "Высота изображения H", unit: "см", type: float }
+      Gamma: { label: "Увеличение Γ", unit: "раз", type: float }
+    solutions:
+      - id: Gamma_from_d_f
+        target: Gamma
+        label: "Увеличение Γ"
+        requires: [d, f]
+        formula: "Γ = f / d"
+        steps:
+          - "Формула: Γ = f/d"
+          - "Γ = {f} / {d} = {val:.2f}"
+          - "|Γ| > 1 — изображение увеличено"
+          - "|Γ| < 1 — изображение уменьшено"
+        check:
+          - "d ≠ 0"
+      - id: f_from_Gamma_d
+        target: f
+        label: "Расстояние до изображения f"
+        requires: [Gamma, d]
+        formula: "f = Γ·d"
+        steps:
+          - "Из Γ = f/d: f = Γ·d"
+          - "f = {Gamma}·{d} = {val:.2f} см"
+      - id: d_from_Gamma_f
+        target: d
+        label: "Расстояние до предмета d"
+        requires: [Gamma, f]
+        formula: "d = f / Γ"
+        steps:
+          - "Из Γ = f/d: d = f/Γ"
+          - "d = {f} / {Gamma} = {val:.2f} см"
+        check:
+          - "Gamma ≠ 0"
+      - id: H_from_Gamma_h
+        target: H
+        label: "Высоту изображения H"
+        requires: [Gamma, h]
+        formula: "H = Γ·h"
+        steps:
+          - "Из Γ = H/h: H = Γ·h"
+          - "H = {Gamma}·{h} = {val:.2f} см"
+      - id: h_from_Gamma_H
+        target: h
+        label: "Высоту предмета h"
+        requires: [Gamma, H]
+        formula: "h = H / Γ"
+        steps:
+          - "Из Γ = H/h: h = H/Γ"
+          - "h = {H} / {Gamma} = {val:.2f} см"
+        check:
+          - "Gamma ≠ 0"
+    explanation: "Линейное увеличение линзы: Γ = f/d = H/h, где Γ — увеличение, H — высота изображения, h — высота предмета."
