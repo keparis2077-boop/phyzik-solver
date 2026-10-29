@@ -10,6 +10,17 @@ app.secret_key = 'change-me-in-production'
 init_db()
 
 
+CATEGORY_COLORS = {
+    "Кинематика": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "Динамика": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    "Электричество": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    "Энергия": "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+    "Давление": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    "Термодинамика": "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    "Оптика": "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+}
+
+
 @app.route('/')
 def index():
     return render_template('index.html',

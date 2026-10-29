@@ -1,65 +1,96 @@
 {% extends 'base.html' %}
-{% block title %}Решение: {{ task.name }}{% endblock %}
+{% block title %}Решение: {{ task.name }} — ФИЗИК{% endblock %}
 {% block content %}
-<h1>Решение: {{ task.icon }} {{ task.name }}</h1>
 
 {% if error %}
-    <div class="flash flash-error">{{ error }}</div>
-    <a class="back" href="{{ url_for('task', task_id=task_id) }}">← Назад к задаче</a>
+    <!-- Ошибка -->
+    <div class="page-header">
+        <div class="task-icon" style="font-size: 64px;">⚠️</div>
+        <h1>Ошибка</h1>
+        <p class="subtitle">{{ error }}</p>
+    </div>
+    <div style="text-align: center; margin-top: 24px;">
+        <a href="{{ url_for('task', task_id=task_id) }}" class="btn btn-primary-light" style="display: inline-block; width: auto; padding: 14px 32px;">← Назад к задаче</a>
+    </div>
 {% else %}
 
-<div class="task-layout">
-    <div class="panel">
-        <h2>Рисунок</h2>
-        <div class="img-box">
-            <img src="{{ url_for('static', filename='img/' ~ task.image) }}"
-                 alt="{{ task.name }}">
-        </div>
+<!-- Заголовок решения -->
+<div class="result-header">
+    <div class="task-icon">{{ task.icon }}</div>
+    <h1>Решение: {{ task.name }}</h1>
+    <p class="subtitle">{{ task.category }}</p>
+</div>
 
-        <h2>Дано</h2>
-        <ul>
-            {% for key, label, unit in task.inputs %}
-                <li>{{ label }} = {{ form[key] }} {{ unit }}</li>
-            {% endfor %}
+<div class="result-grid">
+    <!-- Левая панель: Дано + Найти -->
+    <div class="task-panel">
+        <h2>📋 Дано</h2>
+        <ul class="given-list">
+            {% if task.quantities is defined %}
+                {% for key, (label, unit) in task.quantities.items() %}
+                    {% if form[key] and form[key] != '' %}
+                        <li>{{ label }} = {{ form[key] }} {{ unit }}</li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for key, label, unit in task.inputs %}
+                    <li>{{ label }} = {{ form[key] }} {{ unit }}</li>
+                {% endfor %}
+            {% endif %}
         </ul>
 
-                <h2>Найти</h2>
-        <ul>
+        <h2 style="margin-top: 24px;">🎯 Найти</h2>
+        <ul class="find-list">
             {% for r in results.keys() %}
                 <li>
-                    {% if task.outputs is defined %}
-                        {{ task.outputs[r] }}
-                    {% elif task.quantities is defined %}
+                    {% if task.quantities is defined %}
                         {{ task.quantities[r][0] }}
+                    {% elif task.outputs is defined %}
+                        {{ task.outputs[r] }}
                     {% else %}
                         {{ r }}
                     {% endif %}
-        </li>
-    {% endfor %}
+                </li>
+            {% endfor %}
         </ul>
     </div>
 
-    <div class="panel">
-        <h2>Ход решения</h2>
-        <ol class="steps">
+    <!-- Правая панель: Решение + Ответ -->
+    <div class="task-panel">
+        <h2>📝 Ход решения</h2>
+        <ol class="steps-list">
             {% for s in steps %}<li>{{ s }}</li>{% endfor %}
         </ol>
 
-        <h2>Ответ</h2>
-        <table class="results">
-            {% for k, v in results.items() %}
-            <tr><td>{{ k }}</td><td><b>{{ v }}</b></td></tr>
-            {% endfor %}
-        </table>
+        <div class="answer-box">
+            <h2>✅ Ответ</h2>
+            <table class="answer-table">
+                {% for k, v in results.items() %}
+                <tr>
+                    <td>
+                        {% if task.quantities is defined %}
+                            {{ task.quantities[k][0] }}
+                        {% elif task.outputs is defined %}
+                            {{ task.outputs[k] }}
+                        {% else %}
+                            {{ k }}
+                        {% endif %}
+                    </td>
+                    <td>{{ v }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
 
-        <h2>Пояснение</h2>
-        <p class="explain">{{ explanation }}</p>
+        <h2 style="margin-top: 20px;">💡 Пояснение</h2>
+        <p class="explanation">{{ explanation }}</p>
 
         <div class="actions">
-            <a class="btn" href="{{ url_for('task', task_id=task_id) }}">← Решить ещё раз</a>
-            <button class="btn" onclick="window.print()">🖨 Печать</button>
+            <a href="{{ url_for('task', task_id=task_id) }}" class="btn btn-primary-light">🔄 Решить ещё</a>
+            <button class="btn btn-outline" onclick="window.print()">🖨 Печать</button>
         </div>
     </div>
 </div>
+
 {% endif %}
 {% endblock %}

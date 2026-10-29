@@ -1,33 +1,50 @@
 {% extends 'base.html' %}
-{% block title %}История решений{% endblock %}
+{% block title %}История решений — ФИЗИК{% endblock %}
 {% block content %}
-<h1>История решений</h1>
+
+<div class="page-header">
+    <h1>📊 История решений</h1>
+    <p class="subtitle">Ваши прошлые решения</p>
+</div>
 
 {% if records %}
-<form method="post" action="{{ url_for('history_clear') }}"
-      onsubmit="return confirm('Удалить всю историю?');">
-    <button class="btn btn-danger">🗑 Очистить историю</button>
-</form>
+<div style="text-align: right; margin-bottom: 16px;">
+    <form method="post" action="{{ url_for('history_clear') }}"
+          onsubmit="return confirm('Удалить всю историю?');">
+        <button class="btn btn-outline" style="display: inline-block; padding: 10px 20px;">🗑 Очистить</button>
+    </form>
+</div>
 
-<table class="history-table">
-    <thead>
-        <tr>
-            <th>#</th><th>Дата</th><th>Задача</th><th>Дано</th><th>Ответ</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for r in records %}
-        <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.created_at }}</td>
-            <td>{{ r.task_name }}</td>
-            <td>{{ r.inputs }}</td>
-            <td>{{ r.results }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="history-table">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Дата</th>
+                <th>Задача</th>
+                <th>Дано</th>
+                <th>Ответ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.created_at }}</td>
+                <td><b>{{ r.task_name }}</b></td>
+                <td>{{ r.inputs }}</td>
+                <td>{{ r.results }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
-<p class="subtitle">История пуста. Решите первую задачу!</p>
+<div style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 64px; margin-bottom: 16px;">📝</div>
+    <p class="subtitle" style="font-size: 18px;">История пуста</p>
+    <p style="margin-top: 8px;">Решите первую задачу!</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary-light" style="display: inline-block; margin-top: 20px; padding: 14px 32px; text-decoration: none; border-radius: 10px;">Перейти к задачам</a>
+</div>
 {% endif %}
 {% endblock %}

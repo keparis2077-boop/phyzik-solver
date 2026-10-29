@@ -90,12 +90,25 @@ def _infer_category(task_id: str) -> str:
 TASKS = build_tasks_dict()
 
 
+CATEGORY_COLORS = {
+    "Кинематика": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "Динамика": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    "Электричество": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    "Энергия": "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+    "Давление": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    "Термодинамика": "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    "Оптика": "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+}
+
+
 def group_by_category() -> dict:
     """Группирует задачи по категориям для главной страницы."""
     groups = {}
     for tid, t in TASKS.items():
         cat = t.get("category", "Прочее")
-        groups.setdefault(cat, []).append((tid, t))
+        t_copy = dict(t)
+        t_copy["color"] = CATEGORY_COLORS.get(cat, "linear-gradient(135deg, #667eea 0%, #764ba2 100%)")
+        groups.setdefault(cat, []).append((tid, t_copy))
     return groups
 
 

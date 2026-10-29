@@ -1,51 +1,52 @@
 {% extends 'base.html' %}
-{% block title %}Справочник формул и констант{% endblock %}
+{% block title %}Справочник — ФИЗИК{% endblock %}
 {% block content %}
 
-<h1>📖 Справочник</h1>
-<p class="subtitle">Основные формулы и физические постоянные</p>
+<div class="page-header">
+    <h1>📖 Справочник</h1>
+    <p class="subtitle">Формулы и физические постоянные</p>
+</div>
 
-<div class="task-layout">
-    <!-- ЛЕВАЯ КОЛОНКА: Константы -->
-    <div class="panel">
-        <h2>Физические постоянные</h2>
-        <table class="history-table" style="margin-top: 10px;">
-            <thead>
-                <tr>
-                    <th>Величина</th>
-                    <th>Обозн.</th>
-                    <th>Значение</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in constants %}
-                <tr>
-                    <td>{{ c.name }}</td>
-                    <td><b>{{ c.symbol }}</b></td>
-                    <td style="white-space: nowrap;">{{ c.value }} {{ c.unit }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Константы -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>⚛️ Физические постоянные</h2>
     </div>
-
-    <!-- ПРАВАЯ КОЛОНКА: Формулы -->
-    <div class="panel">
-        <h2>Основные формулы</h2>
-        {% for category, items in formulas.items() %}
-            <h3 style="margin-top: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px;">
-                {{ category }}
-            </h3>
-            <ul style="list-style: none; padding-left: 0;">
-                {% for f in items %}
-                <li style="margin-bottom: 12px; line-height: 1.4;">
-                    <span style="color: var(--muted); font-size: 13px; display: block;">{{ f.name }}</span>
-                    <b style="font-size: 16px; color: var(--text);">{{ f.formula }}</b>
-                </li>
-                {% endfor %}
-            </ul>
+    <div class="reference-grid">
+        {% for c in constants %}
+        <div class="reference-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 700; font-size: 15px;">{{ c.name }}</div>
+                    <div style="color: var(--text-secondary); font-size: 13px; margin-top: 4px;">
+                        {{ c.symbol }} = <b>{{ c.value }}</b> {{ c.unit }}
+                    </div>
+                </div>
+                <div style="font-size: 32px; opacity: 0.3;">{{ c.symbol }}</div>
+            </div>
+        </div>
         {% endfor %}
     </div>
-</div>
+</section>
+
+<!-- Формулы -->
+{% for category, items in formulas.items() %}
+<section class="category-section">
+    <div class="category-header">
+        <h2>📐 {{ category }}</h2>
+        <span class="category-count">{{ items|length }} формул</span>
+    </div>
+    <div class="reference-grid">
+        {% for f in items %}
+        <div class="reference-card">
+            <h3>{{ f.name }}</h3>
+            <div style="font-size: 20px; font-weight: 700; color: var(--primary); font-family: 'Times New Roman', serif; font-style: italic; padding: 12px 0;">
+                {{ f.formula }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
 
 {% endblock %}

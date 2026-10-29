@@ -1,23 +1,66 @@
 {% extends 'base.html' %}
-{% block title %}Выбор задачи{% endblock %}
+{% block title %}Выбор задачи — ФИЗИК{% endblock %}
 {% block content %}
-<h1>Выберите задачу</h1>
-<p class="subtitle">Всего задач: <b>{{ total }}</b></p>
 
+<!-- Заголовок -->
+<div class="page-header">
+    <h1>Мои занятия</h1>
+    <p class="subtitle">Выберите тему для решения задач</p>
+</div>
+
+<!-- Фильтры по классам -->
+<div class="class-filters">
+    <button class="filter-btn active" data-filter="all">Все классы</button>
+    <button class="filter-btn" data-filter="7">7 класс</button>
+    <button class="filter-btn" data-filter="8">8 класс</button>
+    <button class="filter-btn" data-filter="9">9 класс</button>
+    <button class="filter-btn" data-filter="10">10 класс</button>
+    <button class="filter-btn" data-filter="11">11 класс</button>
+</div>
+
+<!-- Категории задач -->
 {% for category, items in groups.items() %}
-<section class="category">
-    <h2>{{ category }}</h2>
-    <div class="cards">
+<section class="category-section" data-category="{{ category }}">
+    <div class="category-header">
+        <h2>{{ category }}</h2>
+        <span class="category-count">{{ items|length }} задач{{ 'а' if items|length == 2 else 'и' if items|length < 5 else '' }}</span>
+    </div>
+
+    <div class="cards-grid">
         {% for tid, t in items %}
-        <a class="card" href="{{ url_for('task', task_id=tid) }}">
-            <div class="card-img">
-                <img src="{{ t.image }}" alt="{{ t.name }}">
+        <a href="{{ url_for('task', task_id=tid) }}" class="lesson-card" data-class="7">
+            <div class="card-cover" style="background: {{ t.color|default('linear-gradient(135deg, #667eea 0%, #764ba2 100%)') }};">
+                <span class="card-emoji">{{ t.icon }}</span>
             </div>
-            <h3>{{ t.icon }} {{ t.name }}</h3>
-            <p><b>Найти:</b> {{ t.find|join(', ') }}</p>
+            <div class="card-body">
+                <h3>{{ t.name }}</h3>
+                <div class="card-meta">
+                    <span class="card-tag">{{ t.category }}</span>
+                    <span class="card-unknowns">
+                        {% if t.quantities is defined %}
+                            {{ t.targets|length }} величин{{ 'а' if t.targets|length == 2 else '' }}
+                        {% else %}
+                            {{ t.outputs|length if t.outputs else 0 }} величин{{ 'а' if (t.outputs|length if t.outputs else 0) == 2 else '' }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
         </a>
         {% endfor %}
     </div>
 </section>
 {% endfor %}
+
+<!-- Блок подписки -->
+<div class="promo-banner">
+    <div class="promo-content">
+        <h3>🚀 Доступ ко всем задачам сразу</h3>
+        <ul class="promo-list">
+            <li>✅ Задачи для 7–11 классов</li>
+            <li>✅ Подробные решения с шагами</li>
+            <li>✅ Справочник формул и констант</li>
+        </ul>
+    </div>
+</div>
+
 {% endblock %}

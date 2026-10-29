@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Решебник задач{% endblock %}</title>
+    <title>{% block title %}Физик — Решебник{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
     <!-- MathJax для формул -->
@@ -16,17 +16,63 @@
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <div class="header-inner">
-        <a href="{{ url_for('index') }}" class="logo">📚 Решебник задач</a>
-        <nav>
-            <a href="{{ url_for('index') }}">Задачи</a>
-            <a href="{{ url_for('reference') }}">Справочник</a>
-            <a href="{{ url_for('history') }}">История</a>
-            <button id="theme-toggle" title="Сменить тему">🌙</button>
+
+<!-- ===== Верхняя панель ===== -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <!-- Логотип -->
+        <a href="{{ url_for('index') }}" class="logo">
+            <span class="logo-icon">⚛️</span>
+            <span class="logo-text">ФИЗИК</span>
+        </a>
+
+        <!-- Навигация -->
+        <nav class="topnav">
+            <a href="{{ url_for('index') }}" class="topnav-item {% if request.endpoint == 'index' %}active{% endif %}">
+                <span class="topnav-icon">📚</span>
+                <span>Занятия</span>
+            </a>
+            <a href="{{ url_for('reference') }}" class="topnav-item {% if request.endpoint == 'reference' %}active{% endif %}">
+                <span class="topnav-icon">📖</span>
+                <span>Справочник</span>
+            </a>
+            <a href="{{ url_for('history') }}" class="topnav-item {% if request.endpoint == 'history' %}active{% endif %}">
+                <span class="topnav-icon">📊</span>
+                <span>История</span>
+            </a>
         </nav>
+
+        <!-- Правая часть: пользователь + тема -->
+        <div class="topbar-right">
+            <div class="user-badge">
+                <div class="user-avatar">У</div>
+                <span class="user-name">Ученик</span>
+            </div>
+            <button id="theme-toggle" class="theme-btn" title="Сменить тему">🌙</button>
+        </div>
     </div>
 </header>
+
+<!-- ===== Блок статистики ===== -->
+<div class="stats-bar">
+    <div class="stats-inner">
+        <div class="stat-item">
+            <span class="stat-icon">⭐</span>
+            <span class="stat-value">{{ total }}</span>
+            <span class="stat-label">задач</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">🏆</span>
+            <span class="stat-value">{{ records|length if records else 0 }}</span>
+            <span class="stat-label">решено</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">🔥</span>
+            <span class="stat-value">0</span>
+            <span class="stat-label">серия</span>
+        </div>
+    </div>
+</div>
 
 <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -38,7 +84,7 @@
     {% block content %}{% endblock %}
 </main>
 
-<footer>© Учебный проект на Flask</footer>
+<footer class="site-footer">© 2025 ФИЗИК — Интерактивный решебник задач</footer>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

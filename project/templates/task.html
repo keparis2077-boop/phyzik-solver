@@ -1,78 +1,94 @@
 {% extends 'base.html' %}
-{% block title %}{{ task.name }}{% endblock %}
+{% block title %}{{ task.name }} — ФИЗИК{% endblock %}
 {% block content %}
 
 <div class="breadcrumbs">
-    <a href="{{ url_for('index') }}">← Все задачи</a>
+    <a href="{{ url_for('index') }}">← Все занятия</a>
 </div>
 
-<h1>{{ task.icon }} {{ task.name }}</h1>
-<p class="subtitle">Раздел: {{ task.category }}</p>
+<!-- Заголовок задачи -->
+<div class="task-header">
+    <div class="task-icon">{{ task.icon }}</div>
+    <div>
+        <h1>{{ task.name }}</h1>
+        <p class="subtitle">{{ task.category }}</p>
+    </div>
+</div>
 
-<div class="task-layout">
-    <div class="panel">
-        <h2>Рисунок к задаче</h2>
+<div class="task-page">
+    <!-- Левая панель: рисунок + формулы -->
+    <div class="task-panel">
+        <h2>📐 Условие</h2>
         <div class="img-box">
-    {% if task.image %}
-        <img src="{{ task.image }}" alt="{{ task.name }}">
-    {% else %}
-        <p class="subtitle">Рисунок для этой задачи пока не добавлен</p>
-    {% endif %}
-</div>
+            {% if task.image %}
+                <img src="{{ task.image }}" alt="{{ task.name }}">
+            {% else %}
+                <p class="subtitle">Иллюстрация к задаче</p>
+            {% endif %}
+        </div>
+
+        <h2>📖 Справочник</h2>
+        <div class="explanation">
+            {% if task.quantities is defined %}
+                <p>Выберите величину, которую нужно найти, и введите значения остальных величин.</p>
+            {% else %}
+                <p>Введите известные значения и выберите, что нужно найти.</p>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="panel">
-        <h2>Введите данные</h2>
+    <!-- Правая панель: форма ввода -->
+    <div class="task-panel">
+        <h2>✏️ Введите данные</h2>
         <form method="post" action="{{ url_for('solve', task_id=task_id) }}">
 
-{% if task.quantities is defined %}
-    {# --- Новый режим: выбор неизвестной --- #}
-    <label>
-        <b>Что найти?</b>
-        <select name="target" required>
-            <option value="" disabled selected>— выберите величину —</option>
-            {% for key, label in task.targets.items() %}
-                <option value="{{ key }}">{{ label }}</option>
+        {% if task.quantities is defined %}
+            {# --- Новый режим: выбор неизвестной --- #}
+            <div class="form-group">
+                <label><b>Что найти?</b></label>
+                <select name="target" required>
+                    <option value="" disabled selected>— выберите величину —</option>
+                    {% for key, label in task.targets.items() %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <p class="hint">💡 Введите все величины, <b>кроме той, что ищете</b>:</p>
+
+            {% for key, (label, unit) in task.quantities.items() %}
+                <div class="form-group">
+                    <label>{{ label }} <span class="unit">({{ unit }})</span></label>
+                    <input type="number" step="any" name="{{ key }}"
+                           placeholder="оставьте пустым, если это искомая величина">
+                </div>
             {% endfor %}
-        </select>
-    </label>
 
-    <hr>
-    <p class="hint">Введите все величины, <b>кроме той, что ищете</b>:</p>
+        {% else %}
+            {# --- Старый режим: inputs + outputs --- #}
+            {% for key, label, unit in task.inputs %}
+                <div class="form-group">
+                    <label>{{ label }} <span class="unit">({{ unit }})</span></label>
+                    <input type="number" step="any" name="{{ key }}"
+                           placeholder="Введите число" required>
+                </div>
+            {% endfor %}
 
-    {% for key, (label, unit) in task.quantities.items() %}
-        <label>
-            {{ label }} <span class="unit">({{ unit }})</span>
-            <input type="number" step="any" name="{{ key }}"
-                   placeholder="оставьте пустым, если это искомая величина">
-        </label>
-    {% endfor %}
+            {% if task.outputs %}
+                <h2 style="margin-top: 20px;">🎯 Что найти</h2>
+                <div class="find-options">
+                    {% for key, label in task.outputs.items() %}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="outputs" value="{{ key }}" checked>
+                        {{ label }}
+                    </label>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
 
-{% else %}
-    {# --- Старый режим: inputs + outputs --- #}
-    {% for key, label, unit in task.inputs %}
-        <label>
-            {{ label }} <span class="unit">({{ unit }})</span>
-            <input type="number" step="any" name="{{ key }}"
-                   placeholder="Введите число" required>
-        </label>
-    {% endfor %}
-
-    {% if task.outputs %}
-    <h2>Что найти</h2>
-    <div class="find-options">
-        {% for key, label in task.outputs.items() %}
-        <label class="checkbox-label">
-            <input type="checkbox" name="outputs" value="{{ key }}" checked>
-            {{ label }}
-        </label>
-        {% endfor %}
-    </div>
-    {% endif %}
-{% endif %}
-
-    <button type="submit">Решить задачу</button>
-</form>
+        <button type="submit" class="btn-primary">🚀 Решить задачу</button>
+        </form>
     </div>
 </div>
 
