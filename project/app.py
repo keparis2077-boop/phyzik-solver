@@ -1,21 +1,13 @@
 # app.py
 import json
 from flask import Flask, render_template, request, redirect, url_for, flash
-from tasks import TASKS
+from loader import TASKS, group_by_category
 from reference import CONSTANTS, FORMULAS
 from database import init_db, save_solution, get_history, clear_history
 
 app = Flask(__name__)
 app.secret_key = 'change-me-in-production'
 init_db()
-
-
-def group_by_category():
-    """Группирует задачи по категориям для главной страницы."""
-    groups = {}
-    for tid, t in TASKS.items():
-        groups.setdefault(t.get('category', 'Прочее'), []).append((tid, t))
-    return groups
 
 
 @app.route('/')

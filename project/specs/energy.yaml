@@ -1,0 +1,140 @@
+# ============================================================
+# ЭНЕРГИЯ И РАБОТА
+# Задачи: механическая работа, кинетическая энергия, мощность
+# ============================================================
+
+templates:
+  - id: mechanical_work
+    name: "Механическая работа"
+    category: "Энергия"
+    icon: "💪"
+    image: "/static/img/work.svg"
+    description: "A = F·s"
+    variables:
+      F: { label: "Сила F", unit: "Н", type: float }
+      s: { label: "Перемещение s", unit: "м", type: float }
+      A: { label: "Работа A", unit: "Дж", type: float }
+    solutions:
+      - id: A_from_fs
+        target: A
+        label: "Работу A"
+        requires: [F, s]
+        formula: "A = F * s"
+        steps:
+          - "Формула: A = F·s"
+          - "A = {F}·{s} = {result:.3f} Дж"
+      - id: F_from_As
+        target: F
+        label: "Силу F"
+        requires: [A, s]
+        formula: "A / s"
+        constraints:
+          - field: s
+            condition: "!="
+            value: 0
+        steps:
+          - "Из A = F·s: F = A/s"
+          - "F = {A}/{s} = {result:.3f} Н"
+      - id: s_from_Af
+        target: s
+        label: "Перемещение s"
+        requires: [A, F]
+        formula: "A / F"
+        constraints:
+          - field: F
+            condition: "!="
+            value: 0
+        steps:
+          - "Из A = F·s: s = A/F"
+          - "s = {A}/{F} = {result:.3f} м"
+    explanation: "Механическая работа: A = F·s."
+
+  - id: kinetic_energy
+    name: "Кинетическая энергия"
+    category: "Энергия"
+    icon: "⚡"
+    image: "/static/img/energy.svg"
+    description: "E = m·v²/2"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      E: { label: "Энергия E", unit: "Дж", type: float }
+    solutions:
+      - id: E_from_mv
+        target: E
+        label: "Кинетическую энергию E"
+        requires: [m, v]
+        formula: "m * v**2 / 2"
+        steps:
+          - "Формула: E = m·v²/2"
+          - "E = {m}·{v}²/2 = {result:.3f} Дж"
+      - id: m_from_Ev
+        target: m
+        label: "Массу m"
+        requires: [E, v]
+        formula: "2 * E / v**2"
+        constraints:
+          - field: v
+            condition: "!="
+            value: 0
+        steps:
+          - "Из E = m·v²/2: m = 2·E/v²"
+          - "m = 2·{E}/{v}² = {result:.3f} кг"
+      - id: v_from_Em
+        target: v
+        label: "Скорость v"
+        requires: [E, m]
+        formula: "(2 * E / m)**0.5"
+        constraints:
+          - field: m
+            condition: "!="
+            value: 0
+        steps:
+          - "Из E = m·v²/2: v = √(2·E/m)"
+          - "v = √(2·{E}/{m}) = {result:.3f} м/с"
+    explanation: "Кинетическая энергия: E = m·v²/2."
+
+  - id: mechanical_power
+    name: "Механическая мощность"
+    category: "Энергия"
+    icon: "⚙️"
+    image: "/static/img/power.svg"
+    description: "N = A/t"
+    variables:
+      A: { label: "Работа A", unit: "Дж", type: float }
+      t: { label: "Время t", unit: "с", type: float }
+      N: { label: "Мощность N", unit: "Вт", type: float }
+    solutions:
+      - id: N_from_At
+        target: N
+        label: "Мощность N"
+        requires: [A, t]
+        formula: "A / t"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Формула: N = A/t"
+          - "N = {A}/{t} = {result:.2f} Вт"
+      - id: A_from_Nt
+        target: A
+        label: "Работу A"
+        requires: [N, t]
+        formula: "N * t"
+        steps:
+          - "Из N = A/t: A = N·t"
+          - "A = {N}·{t} = {result:.2f} Дж"
+      - id: t_from_An
+        target: t
+        label: "Время t"
+        requires: [A, N]
+        formula: "A / N"
+        constraints:
+          - field: N
+            condition: "!="
+            value: 0
+        steps:
+          - "Из N = A/t: t = A/N"
+          - "t = {A}/{N} = {result:.2f} с"
+    explanation: "Мощность: N = A/t."

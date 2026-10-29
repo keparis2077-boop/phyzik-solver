@@ -1,0 +1,33 @@
+# ============================================================
+# ОПТИКА
+# Задача: закон отражения света
+# ============================================================
+
+templates:
+  - id: reflection_law
+    name: "Закон отражения света"
+    category: "Оптика"
+    icon: "🪞"
+    image: "/static/img/reflection.svg"
+    description: "Угол падения равен углу отражения (α = β)"
+    variables:
+      alpha: { label: "Угол падения α", unit: "°", type: float }
+      beta:  { label: "Угол отражения β", unit: "°", type: float }
+    solutions:
+      - id: beta_from_alpha
+        target: beta
+        label: "Угол отражения β"
+        requires: [alpha]
+        formula: "alpha"
+        steps:
+          - "Закон отражения: β = α"
+          - "β = {alpha}°"
+      - id: alpha_from_beta
+        target: alpha
+        label: "Угол падения α"
+        requires: [beta]
+        formula: "beta"
+        steps:
+          - "Закон отражения: α = β"
+          - "α = {beta}°"
+    explanation: "Закон отражения: угол падения равен углу отражения (α = β)."

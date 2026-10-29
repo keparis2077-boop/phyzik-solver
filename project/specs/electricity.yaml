@@ -1,0 +1,136 @@
+# ============================================================
+# ЭЛЕКТРИЧЕСТВО
+# Задачи: закон Ома, последовательное и параллельное соединение
+# ============================================================
+
+templates:
+  - id: ohms_law
+    name: "Закон Ома"
+    category: "Электричество"
+    icon: "🔌"
+    image: "/static/img/ohm.svg"
+    description: "I = U/R"
+    variables:
+      U: { label: "Напряжение U", unit: "В", type: float }
+      R: { label: "Сопротивление R", unit: "Ом", type: float }
+      I: { label: "Сила тока I", unit: "А", type: float }
+    solutions:
+      - id: I_from_Ur
+        target: I
+        label: "Силу тока I"
+        requires: [U, R]
+        formula: "U / R"
+        constraints:
+          - field: R
+            condition: "!="
+            value: 0
+        steps:
+          - "Формула: I = U/R"
+          - "I = {U}/{R} = {result:.3f} А"
+      - id: U_from_Ir
+        target: U
+        label: "Напряжение U"
+        requires: [I, R]
+        formula: "I * R"
+        steps:
+          - "Из I = U/R: U = I·R"
+          - "U = {I}·{R} = {result:.3f} В"
+      - id: R_from_Ui
+        target: R
+        label: "Сопротивление R"
+        requires: [U, I]
+        formula: "U / I"
+        constraints:
+          - field: I
+            condition: "!="
+            value: 0
+        steps:
+          - "Из I = U/R: R = U/I"
+          - "R = {U}/{I} = {result:.3f} Ом"
+    explanation: "Закон Ома для участка цепи: I = U/R."
+
+  - id: series_resistance
+    name: "Последовательное соединение"
+    category: "Электричество"
+    icon: "🔗"
+    image: "/static/img/series.svg"
+    description: "R = R₁ + R₂"
+    variables:
+      R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
+      R2: { label: "Сопротивление R₂", unit: "Ом", type: float }
+      R:  { label: "Общее сопротивление R", unit: "Ом", type: float }
+    solutions:
+      - id: R_from_r1r2
+        target: R
+        label: "Общее сопротивление R"
+        requires: [R1, R2]
+        formula: "R1 + R2"
+        steps:
+          - "Формула: R = R₁ + R₂"
+          - "R = {R1} + {R2} = {result:.3f} Ом"
+      - id: R1_from_Rr2
+        target: R1
+        label: "Сопротивление R₁"
+        requires: [R, R2]
+        formula: "R - R2"
+        steps:
+          - "Из R = R₁ + R₂: R₁ = R - R₂"
+          - "R₁ = {R} - {R2} = {result:.3f} Ом"
+      - id: R2_from_Rr1
+        target: R2
+        label: "Сопротивление R₂"
+        requires: [R, R1]
+        formula: "R - R1"
+        steps:
+          - "Из R = R₁ + R₂: R₂ = R - R₁"
+          - "R₂ = {R} - {R1} = {result:.3f} Ом"
+    explanation: "Последовательное соединение: R = R₁ + R₂."
+
+  - id: parallel_resistance
+    name: "Параллельное соединение"
+    category: "Электричество"
+    icon: "🔀"
+    image: "/static/img/parallel.svg"
+    description: "R = R₁·R₂ / (R₁ + R₂)"
+    variables:
+      R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
+      R2: { label: "Сопротивление R₂", unit: "Ом", type: float }
+      R:  { label: "Общее сопротивление R", unit: "Ом", type: float }
+    solutions:
+      - id: R_from_r1r2
+        target: R
+        label: "Общее сопротивление R"
+        requires: [R1, R2]
+        formula: "R1 * R2 / (R1 + R2)"
+        constraints:
+          - expression: "R1 + R2"
+            condition: "!="
+            value: 0
+        steps:
+          - "Формула: R = R₁·R₂ / (R₁ + R₂)"
+          - "R = {R1}·{R2} / ({R1} + {R2}) = {result:.3f} Ом"
+      - id: R1_from_Rr2
+        target: R1
+        label: "Сопротивление R₁"
+        requires: [R, R2]
+        formula: "R * R2 / (R2 - R)"
+        constraints:
+          - expression: "R2 - R"
+            condition: "!="
+            value: 0
+        steps:
+          - "Из R = R₁·R₂/(R₁+R₂): R₁ = R·R₂ / (R₂ - R)"
+          - "R₁ = {R}·{R2} / ({R2} - {R}) = {result:.3f} Ом"
+      - id: R2_from_Rr1
+        target: R2
+        label: "Сопротивление R₂"
+        requires: [R, R1]
+        formula: "R * R1 / (R1 - R)"
+        constraints:
+          - expression: "R1 - R"
+            condition: "!="
+            value: 0
+        steps:
+          - "Из R = R₁·R₂/(R₁+R₂): R₂ = R·R₁ / (R₁ - R)"
+          - "R₂ = {R}·{R1} / ({R1} - {R}) = {result:.3f} Ом"
+    explanation: "Параллельное соединение: R = R₁·R₂ / (R₁ + R₂)."

@@ -1,0 +1,80 @@
+# ============================================================
+# ДИНАМИКА
+# Задачи: второй закон Ньютона, сила тяжести
+# ============================================================
+
+templates:
+  - id: newton_second_law
+    name: "Второй закон Ньютона"
+    category: "Динамика"
+    icon: "⚙️"
+    image: "/static/img/newton.svg"
+    description: "F = m·a"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      F: { label: "Сила F", unit: "Н", type: float }
+      a: { label: "Ускорение a", unit: "м/с²", type: float }
+    solutions:
+      - id: F_from_ma
+        target: F
+        label: "Силу F"
+        requires: [m, a]
+        formula: "F = m * a"
+        steps:
+          - "Формула: F = m·a"
+          - "F = {m}·{a} = {result:.3f} Н"
+      - id: m_from_Fa
+        target: m
+        label: "Массу m"
+        requires: [F, a]
+        formula: "F / a"
+        constraints:
+          - field: a
+            condition: "!="
+            value: 0
+        steps:
+          - "Из F = m·a: m = F/a"
+          - "m = {F}/{a} = {result:.3f} кг"
+      - id: a_from_Fm
+        target: a
+        label: "Ускорение a"
+        requires: [F, m]
+        formula: "F / m"
+        constraints:
+          - field: m
+            condition: "!="
+            value: 0
+        steps:
+          - "Из F = m·a: a = F/m"
+          - "a = {F}/{m} = {result:.3f} м/с²"
+    explanation: "Второй закон Ньютона: F = m·a."
+
+  - id: gravity_force
+    name: "Сила тяжести"
+    category: "Динамика"
+    icon: "🌍"
+    image: "/static/img/gravity.svg"
+    description: "F = m·g"
+    constants:
+      g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      F: { label: "Сила тяжести F", unit: "Н", type: float }
+    solutions:
+      - id: F_from_m
+        target: F
+        label: "Силу тяжести F"
+        requires: [m]
+        formula: "m * g"
+        steps:
+          - "Формула: F = m·g"
+          - "F = {m}·9.8 = {result:.2f} Н"
+      - id: m_from_F
+        target: m
+        label: "Массу m"
+        requires: [F]
+        formula: "F / g"
+        steps:
+          - "Из F = m·g: m = F/g"
+          - "m = {F}/9.8 = {result:.3f} кг"
+    explanation: "Сила тяжести: F = m·g, где g = 9.8 м/с²."

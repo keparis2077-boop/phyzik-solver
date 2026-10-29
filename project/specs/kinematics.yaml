@@ -1,0 +1,240 @@
+# ============================================================
+# КИНЕМАТИКА
+# Задачи: равноускоренное движение, свободное падение, баллистика
+# ============================================================
+
+templates:
+  - id: uniform_acceleration
+    name: "Равноускоренное движение"
+    category: "Кинематика"
+    icon: "🚀"
+    image: "/static/img/kinematics.svg"
+    description: "v = v₀ + a·t, s = v₀·t + a·t²/2, s = (v₀ + v)·t/2"
+    variables:
+      v0: { label: "Начальная скорость v₀", unit: "м/с", type: float }
+      v:  { label: "Конечная скорость v",   unit: "м/с", type: float }
+      a:  { label: "Ускорение a",            unit: "м/с²", type: float }
+      t:  { label: "Время t",                unit: "с", type: float }
+      s:  { label: "Путь s",                 unit: "м", type: float }
+    solutions:
+      - id: v_vat
+        target: v
+        label: "Конечную скорость v"
+        requires: [v0, a, t]
+        formula: "v = v0 + a * t"
+        steps:
+          - "Формула: v = v₀ + a·t"
+          - "v = {v0} + {a}·{t} = {result:.3f} м/с"
+      - id: v_vst
+        target: v
+        label: "Конечную скорость v"
+        requires: [v0, s, t]
+        formula: "v = 2*s/t - v0"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Из s = (v₀ + v)·t/2: v = 2s/t - v₀"
+          - "v = 2·{s}/{t} - {v0} = {result:.3f} м/с"
+      - id: a_vvt
+        target: a
+        label: "Ускорение a"
+        requires: [v0, v, t]
+        formula: "a = (v - v0) / t"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Из v = v₀ + a·t: a = (v - v₀)/t"
+          - "a = ({v} - {v0})/{t} = {result:.3f} м/с²"
+      - id: a_vst
+        target: a
+        label: "Ускорение a"
+        requires: [v, s, t]
+        formula: "a = 2*(v*t - s) / t**2"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Из s = v·t - a·t²/2: a = 2(v·t - s)/t²"
+          - "a = 2·({v}·{t} - {s})/{t}² = {result:.3f} м/с²"
+      - id: a_v0st
+        target: a
+        label: "Ускорение a"
+        requires: [v0, s, t]
+        formula: "a = 2*(s - v0*t) / t**2"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Из s = v₀·t + a·t²/2: a = 2(s - v₀·t)/t²"
+          - "a = 2·({s} - {v0}·{t})/{t}² = {result:.3f} м/с²"
+      - id: t_vva
+        target: t
+        label: "Время t"
+        requires: [v0, v, a]
+        formula: "t = (v - v0) / a"
+        constraints:
+          - field: a
+            condition: "!="
+            value: 0
+        steps:
+          - "Из v = v₀ + a·t: t = (v - v₀)/a"
+          - "t = ({v} - {v0})/{a} = {result:.3f} с"
+      - id: t_v0as
+        target: t
+        label: "Время t"
+        requires: [v0, a, s]
+        formula: "t = (-v0 + (v0**2 + 2*a*s)**0.5) / a"
+        validation:
+          - field: disc
+            expression: "v0**2 + 2*a*s"
+            condition: ">="
+            value: 0
+            error: "Нет решения: подкоренное выражение отрицательно"
+        steps:
+          - "Из s = v₀·t + a·t²/2: t = (-v₀ + √(v₀² + 2·a·s)) / a"
+          - "t = (-{v0} + √({v0}² + 2·{a}·{s})) / {a} = {result:.3f} с"
+      - id: s_vat
+        target: s
+        label: "Путь s"
+        requires: [v0, a, t]
+        formula: "s = v0*t + a*t**2/2"
+        steps:
+          - "Формула: s = v₀·t + a·t²/2"
+          - "s = {v0}·{t} + {a}·{t}²/2 = {result:.3f} м"
+      - id: s_vvt
+        target: s
+        label: "Путь s"
+        requires: [v0, v, t]
+        formula: "s = (v0 + v)*t/2"
+        steps:
+          - "Формула: s = (v₀ + v)·t/2"
+          - "s = ({v0} + {v})·{t}/2 = {result:.3f} м"
+    explanation: "Равноускоренное движение: v = v₀ + a·t, s = v₀·t + a·t²/2, s = (v₀ + v)·t/2."
+
+  - id: free_fall
+    name: "Свободное падение"
+    category: "Кинематика"
+    icon: "🍎"
+    image: "/static/img/freefall.svg"
+    description: "h = g·t²/2, v = g·t"
+    constants:
+      g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
+    variables:
+      t: { label: "Время t", unit: "с", type: float }
+      h: { label: "Высота h", unit: "м", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+    solutions:
+      - id: h_from_t
+        target: h
+        label: "Высоту h"
+        requires: [t]
+        formula: "g * t**2 / 2"
+        steps:
+          - "Формула: h = g·t²/2"
+          - "h = 9.8·{t}²/2 = {result:.2f} м"
+      - id: v_from_t
+        target: v
+        label: "Скорость v"
+        requires: [t]
+        formula: "g * t"
+        steps:
+          - "Формула: v = g·t"
+          - "v = 9.8·{t} = {result:.2f} м/с"
+      - id: t_from_h
+        target: t
+        label: "Время t"
+        requires: [h]
+        formula: "(2*h/g)**0.5"
+        validation:
+          - field: h
+            condition: ">="
+            value: 0
+            error: "Высота не может быть отрицательной"
+        steps:
+          - "Из h = g·t²/2: t = √(2h/g)"
+          - "t = √(2·{h}/9.8) = {result:.2f} с"
+      - id: t_from_v
+        target: t
+        label: "Время t"
+        requires: [v]
+        formula: "v / g"
+        validation:
+          - field: v
+            condition: ">="
+            value: 0
+            error: "Скорость не может быть отрицательной"
+        steps:
+          - "Из v = g·t: t = v/g"
+          - "t = {v}/9.8 = {result:.2f} с"
+    explanation: "Свободное падение: h = g·t²/2, v = g·t."
+
+  - id: ballistics
+    name: "Баллистика (движение под углом к горизонту)"
+    category: "Кинематика"
+    icon: "🎯"
+    image: "/static/img/ballistics.svg"
+    description: "L = v₀²·sin(2α)/g, H = v₀²·sin²(α)/(2g), t = 2·v₀·sin(α)/g"
+    constants:
+      g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
+    variables:
+      v0: { label: "Начальная скорость v₀", unit: "м/с", type: float }
+      alpha: { label: "Угол α", unit: "градусы", type: float }
+      t: { label: "Время полета t", unit: "с", type: float }
+      H: { label: "Макс. высота H", unit: "м", type: float }
+      L: { label: "Дальность L", unit: "м", type: float }
+    solutions:
+      - id: L_from_v0alpha
+        target: L
+        label: "Дальность L"
+        requires: [v0, alpha]
+        formula: "v0**2 * sin(2*radians(alpha)) / g"
+        steps:
+          - "Формула дальности: L = v₀²·sin(2α) / g"
+          - "L = {v0}²·sin(2·{alpha}°) / 9.8 = {result:.2f} м"
+      - id: H_from_v0alpha
+        target: H
+        label: "Максимальную высоту H"
+        requires: [v0, alpha]
+        formula: "v0**2 * sin(radians(alpha))**2 / (2*g)"
+        steps:
+          - "Формула макс. высоты: H = v₀²·sin²(α) / (2g)"
+          - "H = {v0}²·sin²({alpha}°) / (2·9.8) = {result:.2f} м"
+      - id: t_from_v0alpha
+        target: t
+        label: "Время полета t"
+        requires: [v0, alpha]
+        formula: "2*v0*sin(radians(alpha)) / g"
+        steps:
+          - "Формула времени полета: t = 2·v₀·sin(α) / g"
+          - "t = 2·{v0}·sin({alpha}°) / 9.8 = {result:.2f} с"
+      - id: v0_from_talpha
+        target: v0
+        label: "Начальную скорость v₀"
+        requires: [alpha, t]
+        formula: "t*g / (2*sin(radians(alpha)))"
+        constraints:
+          - expression: "sin(radians(alpha))"
+            condition: "!="
+            value: 0
+        steps:
+          - "Из t = 2·v₀·sin(α)/g: v₀ = t·g / (2·sin(α))"
+          - "v₀ = {t}·9.8 / (2·sin({alpha}°)) = {result:.2f} м/с"
+      - id: v0_from_Lalpha
+        target: v0
+        label: "Начальную скорость v₀"
+        requires: [alpha, L]
+        formula: "(L*g / sin(2*radians(alpha)))**0.5"
+        constraints:
+          - expression: "sin(2*radians(alpha))"
+            condition: "!="
+            value: 0
+        steps:
+          - "Из L = v₀²·sin(2α)/g: v₀ = √(L·g / sin(2α))"
+          - "v₀ = √({L}·9.8 / sin(2·{alpha}°)) = {result:.2f} м/с"
+    explanation: "Движение под углом к горизонту раскладывается на два независимых: равномерное по горизонтали и равноускоренное по вертикали."

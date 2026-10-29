@@ -1,0 +1,39 @@
+# ============================================================
+# ТЕРМОДИНАМИКА
+# Задача: количество теплоты при нагревании
+# ============================================================
+
+templates:
+  - id: heat_quantity
+    name: "Нагревание вещества"
+    category: "Термодинамика"
+    icon: "🔥"
+    image: "/static/img/heat.svg"
+    description: "Q = c·m·ΔT"
+    variables:
+      c:  { label: "Удельная теплоёмкость c", unit: "Дж/(кг·°C)", type: float }
+      m:  { label: "Масса m", unit: "кг", type: float }
+      dt: { label: "Изменение температуры ΔT", unit: "°C", type: float }
+      Q:  { label: "Количество теплоты Q", unit: "Дж", type: float }
+    solutions:
+      - id: Q_from_cdt
+        target: Q
+        label: "Количество теплоты Q"
+        requires: [c, m, dt]
+        formula: "c * m * dt"
+        steps:
+          - "Формула: Q = c·m·ΔT"
+          - "Q = {c}·{m}·{dt} = {result:.3f} Дж"
+      - id: m_from_Qdt
+        target: m
+        label: "Массу m"
+        requires: [Q, c, dt]
+        formula: "Q / (c * dt)"
+        constraints:
+          - expression: "c * dt"
+            condition: "!="
+            value: 0
+        steps:
+          - "Из Q = c·m·ΔT: m = Q / (c·ΔT)"
+          - "m = {Q} / ({c}·{dt}) = {result:.3f} кг"
+    explanation: "Количество теплоты при нагревании: Q = c·m·ΔT, где c — удельная теплоёмкость."

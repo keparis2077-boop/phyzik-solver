@@ -1,0 +1,142 @@
+# ============================================================
+# ДАВЛЕНИЕ
+# Задачи: давление, плотность, сила Архимеда
+# ============================================================
+
+templates:
+  - id: pressure
+    name: "Давление"
+    category: "Давление"
+    icon: "📏"
+    image: "/static/img/pressure.svg"
+    description: "p = F/S"
+    variables:
+      F: { label: "Сила F", unit: "Н", type: float }
+      S: { label: "Площадь S", unit: "м²", type: float }
+      p: { label: "Давление p", unit: "Па", type: float }
+    solutions:
+      - id: p_from_FS
+        target: p
+        label: "Давление p"
+        requires: [F, S]
+        formula: "F / S"
+        constraints:
+          - field: S
+            condition: "!="
+            value: 0
+        steps:
+          - "Формула: p = F/S"
+          - "p = {F}/{S} = {result:.3f} Па"
+      - id: F_from_pS
+        target: F
+        label: "Силу F"
+        requires: [p, S]
+        formula: "p * S"
+        steps:
+          - "Из p = F/S: F = p·S"
+          - "F = {p}·{S} = {result:.3f} Н"
+      - id: S_from_Fp
+        target: S
+        label: "Площадь S"
+        requires: [F, p]
+        formula: "F / p"
+        constraints:
+          - field: p
+            condition: "!="
+            value: 0
+        steps:
+          - "Из p = F/S: S = F/p"
+          - "S = {F}/{p} = {result:.4f} м²"
+    explanation: "Давление: p = F/S."
+
+  - id: density
+    name: "Плотность вещества"
+    category: "Давление"
+    icon: "🧪"
+    image: "/static/img/density.svg"
+    description: "ρ = m/V"
+    variables:
+      m:   { label: "Масса m", unit: "кг", type: float }
+      V:   { label: "Объём V", unit: "м³", type: float }
+      rho: { label: "Плотность ρ", unit: "кг/м³", type: float }
+    solutions:
+      - id: rho_from_mV
+        target: rho
+        label: "Плотность ρ"
+        requires: [m, V]
+        formula: "m / V"
+        constraints:
+          - field: V
+            condition: "!="
+            value: 0
+        steps:
+          - "Формула: ρ = m/V"
+          - "ρ = {m}/{V} = {result:.3f} кг/м³"
+      - id: m_from_rhoV
+        target: m
+        label: "Массу m"
+        requires: [rho, V]
+        formula: "rho * V"
+        steps:
+          - "Из ρ = m/V: m = ρ·V"
+          - "m = {rho}·{V} = {result:.3f} кг"
+      - id: V_from_rhom
+        target: V
+        label: "Объём V"
+        requires: [rho, m]
+        formula: "m / rho"
+        constraints:
+          - field: rho
+            condition: "!="
+            value: 0
+        steps:
+          - "Из ρ = m/V: V = m/ρ"
+          - "V = {m}/{rho} = {result:.4f} м³"
+    explanation: "Плотность: ρ = m/V."
+
+  - id: archimedes_force
+    name: "Сила Архимеда"
+    category: "Давление"
+    icon: "🚢"
+    image: "/static/img/archimedes.svg"
+    description: "F_A = ρ·g·V"
+    constants:
+      g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
+    variables:
+      rho: { label: "Плотность жидкости ρ", unit: "кг/м³", type: float }
+      V:   { label: "Объём тела V", unit: "м³", type: float }
+      F:   { label: "Сила Архимеда F_A", unit: "Н", type: float }
+    solutions:
+      - id: F_from_rhoV
+        target: F
+        label: "Силу Архимеда F_A"
+        requires: [rho, V]
+        formula: "rho * g * V"
+        steps:
+          - "Формула: F_A = ρ·g·V"
+          - "F_A = {rho}·9.8·{V} = {result:.3f} Н"
+      - id: V_from_Frho
+        target: V
+        label: "Объём V"
+        requires: [F, rho]
+        formula: "F / (rho * g)"
+        constraints:
+          - field: rho
+            condition: "!="
+            value: 0
+        steps:
+          - "Из F_A = ρ·g·V: V = F_A/(ρ·g)"
+          - "V = {F}/({rho}·9.8) = {result:.4f} м³"
+      - id: rho_from_FV
+        target: rho
+        label: "Плотность жидкости ρ"
+        requires: [F, V]
+        formula: "F / (g * V)"
+        constraints:
+          - field: V
+            condition: "!="
+            value: 0
+        steps:
+          - "Из F_A = ρ·g·V: ρ = F_A/(g·V)"
+          - "ρ = {F}/(9.8·{V}) = {result:.3f} кг/м³"
+    explanation: "Сила Архимеда: F_A = ρ_ж·g·V."
