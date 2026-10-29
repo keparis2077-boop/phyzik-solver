@@ -3,11 +3,14 @@ import json
 from flask import Flask, render_template, request, redirect, url_for, flash
 from loader import TASKS, group_by_category
 from reference import CONSTANTS, FORMULAS
-from database import init_db, save_solution, get_history, clear_history
+from database import init_db, save_solution, get_history, clear_all_history, get_device_id
 
 app = Flask(__name__)
 app.secret_key = 'change-me-in-production'
+
+# Сбрасываем историю при каждом запуске
 init_db()
+clear_all_history()
 
 
 CATEGORY_COLORS = {
@@ -41,6 +44,7 @@ def solve(task_id):
         return redirect(url_for('index'))
 
     t = TASKS[task_id]
+    device_id = get_device_id(request)
 
     # --- Новый режим: выбор неизвестной (есть поле quantities) ---
     if 'quantities' in t:
@@ -68,7 +72,7 @@ def solve(task_id):
             error = None
             inputs_str = ', '.join(f"{k}={v}" for k, v in known.items()) + f' | найти: {target}'
             results_str = ', '.join(f"{k}={v}" for k, v in results.items())
-            save_solution(task_id, t['name'], inputs_str, results_str)
+            save_solution(task_id, t['name'], inputs_str, results_str, device_id)
         except Exception as e:
             results, steps, explanation = {}, [], ''
             error = str(e)
@@ -80,7 +84,7 @@ def solve(task_id):
             error=error, form=request.form,
         )
 
-    # --- Старый режим: inputs + outputs (для остальных 12 задач) ---
+    # --- Старый режим: inputs + outputs (для остальных задач) ---
     selected = request.form.getlist('outputs') or list(t.get('outputs', {}).keys())
     try:
         results, steps, explanation = t['solve'](request.form, selected)
@@ -90,7 +94,7 @@ def solve(task_id):
             for key, label, unit in t['inputs']
         )
         results_str = '; '.join(f"{k}: {v}" for k, v in results.items())
-        save_solution(task_id, t['name'], inputs_str, results_str)
+        save_solution(task_id, t['name'], inputs_str, results_str, device_id)
     except Exception as e:
         results, steps, explanation = {}, [], ""
         error = f"Ошибка ввода: {e}"
@@ -105,13 +109,16 @@ def solve(task_id):
 
 @app.route('/history')
 def history():
-    records = get_history()
+    device_id = get_device_id(request)
+    records = get_history(device_id)
     return render_template('history.html', records=records)
 
 
 @app.route('/history/clear', methods=['POST'])
 def history_clear():
-    clear_history()
+    device_id = get_device_id(request)
+    from database import clear_device_history
+    clear_device_history(device_id)
     flash('История очищена', 'success')
     return redirect(url_for('history'))
 
@@ -121,4 +128,4 @@ def reference():
     return render_template('reference.html', constants=CONSTANTS, formulas=FORMULAS)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
