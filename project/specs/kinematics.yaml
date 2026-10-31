@@ -10,6 +10,7 @@ templates:
     icon: "🚀"
     image: "/static/img/kinematics.svg"
     description: "v = v₀ + a·t, s = v₀·t + a·t²/2, s = (v₀ + v)·t/2"
+    graph_type: "kinematics"
     variables:
       v0: { label: "Начальная скорость v₀", unit: "м/с", type: float }
       v:  { label: "Конечная скорость v",   unit: "м/с", type: float }
@@ -123,6 +124,7 @@ templates:
     icon: "🍎"
     image: "/static/img/freefall.svg"
     description: "h = g·t²/2, v = g·t"
+    graph_type: "freefall"
     constants:
       g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
     variables:
@@ -180,6 +182,7 @@ templates:
     icon: "🎯"
     image: "/static/img/ballistics.svg"
     description: "L = v₀²·sin(2α)/g, H = v₀²·sin²(α)/(2g), t = 2·v₀·sin(α)/g"
+    graph_type: "ballistics"
     constants:
       g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
     variables:

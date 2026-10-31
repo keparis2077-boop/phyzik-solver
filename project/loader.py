@@ -56,6 +56,7 @@ def build_tasks_dict() -> dict:
             "quantities": quantities,
             "targets": targets,
             "solve": _build_solve_function(tmpl),
+            "graph_type": tmpl.get("graph_type", _infer_graph_type(task_id)),
         }
 
     return tasks
@@ -82,6 +83,31 @@ def _infer_category(task_id: str) -> str:
         "reflection": "Оптика",
     }
     return category_map.get(task_id, "Прочее")
+
+
+def _infer_graph_type(task_id: str) -> str:
+    """Выводит тип графика из task_id."""
+    graph_map = {
+        "kinematics": "kinematics",
+        "freefall": "freefall",
+        "ballistics": "ballistics",
+        "newton": "newton",
+        "gravity": "newton",
+        "ohm": "ohm",
+        "series": "ohm",
+        "parallel": "ohm",
+        "work": "energy",
+        "energy": "energy",
+        "power": "power",
+        "pressure": "pressure",
+        "density": "pressure",
+        "archimedes": "pressure",
+        "heat": "heat",
+        "lens": "lens",
+        "optical_power": "lens",
+        "magnification": "lens",
+    }
+    return graph_map.get(task_id, None)
 
 
 # ─── Глобальная переменная TASKS ───────────────────────────────

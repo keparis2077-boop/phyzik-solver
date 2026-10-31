@@ -92,5 +92,15 @@
     </div>
 </div>
 
+<!-- График -->
+{% if graph_svg %}
+<div class="graph-section">
+    <h2>📊 График</h2>
+    <div class="graph-container">
+        <img src="{{ graph_svg }}" alt="График зависимости" style="max-width: 100%; height: auto;">
+    </div>
+</div>
+{% endif %}
+
 {% endif %}
 {% endblock %}

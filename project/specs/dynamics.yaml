@@ -10,6 +10,7 @@ templates:
     icon: "⚙️"
     image: "/static/img/newton.svg"
     description: "F = m·a"
+    graph_type: "newton"
     variables:
       m: { label: "Масса m", unit: "кг", type: float }
       F: { label: "Сила F", unit: "Н", type: float }
@@ -55,6 +56,7 @@ templates:
     icon: "🌍"
     image: "/static/img/gravity.svg"
     description: "F = m·g"
+    graph_type: "newton"
     constants:
       g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
     variables:

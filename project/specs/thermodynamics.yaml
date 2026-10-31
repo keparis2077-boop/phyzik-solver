@@ -1,6 +1,5 @@
 # ============================================================
 # ТЕРМОДИНАМИКА
-# Задача: количество теплоты при нагревании
 # ============================================================
 
 templates:
@@ -10,6 +9,7 @@ templates:
     icon: "🔥"
     image: "/static/img/heat.svg"
     description: "Q = c·m·ΔT"
+    graph_type: "heat"
     variables:
       c:  { label: "Удельная теплоёмкость c", unit: "Дж/(кг·°C)", type: float }
       m:  { label: "Масса m", unit: "кг", type: float }
@@ -37,3 +37,262 @@ templates:
           - "Из Q = c·m·ΔT: m = Q / (c·ΔT)"
           - "m = {Q} / ({c}·{dt}) = {result:.3f} кг"
     explanation: "Количество теплоты при нагревании: Q = c·m·ΔT, где c — удельная теплоёмкость."
+
+  - id: mixing_two_liquids
+    name: "Смешивание двух жидкостей"
+    category: "Термодинамика"
+    icon: "🫗"
+    image: "/static/img/mixing.svg"
+    description: "Уравнение теплового баланса при смешивании двух жидкостей"
+    graph_type: "heat"
+    variables:
+      c1: { label: "Теплоёмкость 1-й жидкости c₁", unit: "Дж/(кг·°C)", type: float }
+      m1: { label: "Масса 1-й жидкости m₁", unit: "кг", type: float }
+      t1: { label: "Температура 1-й жидкости t₁", unit: "°C", type: float }
+      c2: { label: "Теплоёмкость 2-й жидкости c₂", unit: "Дж/(кг·°C)", type: float }
+      m2: { label: "Масса 2-й жидкости m₂", unit: "кг", type: float }
+      t2: { label: "Температура 2-й жидкости t₂", unit: "°C", type: float }
+      t_eq: { label: "Конечная температура t_равн", unit: "°C", type: float }
+    solutions:
+      - id: t_eq_from_mixed
+        target: t_eq
+        label: "Конечную температуру t_равн"
+        requires: [c1, m1, t1, c2, m2, t2]
+        formula: "(c1*m1*t1 + c2*m2*t2) / (c1*m1 + c2*m2)"
+        steps:
+          - "Уравнение теплового баланса: Q_отданное = Q_полученное"
+          - "c₁·m₁·(t₁ - t_равн) = c₂·m₂·(t_равн - t₂)"
+          - "t_равн = (c₁·m₁·t₁ + c₂·m₂·t₂) / (c₁·m₁ + c₂·m₂)"
+          - "t_равн = ({c1}·{m1}·{t1} + {c2}·{m2}·{t2}) / ({c1}·{m1} + {c2}·{m2})"
+          - "t_равн = {result:.2f} °C"
+        check:
+          - expression: "c1*m1 + c2*m2"
+            condition: "!="
+            value: 0
+      - id: m1_from_mixing
+        target: m1
+        label: "Массу 1-й жидкости m₁"
+        requires: [c1, t1, c2, m2, t2, t_eq]
+        formula: "c2 * m2 * (t_eq - t2) / (c1 * (t1 - t_eq))"
+        steps:
+          - "Уравнение теплового баланса: c₁·m₁·(t₁ - t_равн) = c₂·m₂·(t_равн - t₂)"
+          - "m₁ = c₂·m₂·(t_равн - t₂) / (c₁·(t₁ - t_равн))"
+          - "m₁ = {c2}·{m2}·({t_eq} - {t2}) / ({c1}·({t1} - {t_eq}))"
+          - "m₁ = {result:.3f} кг"
+        check:
+          - expression: "t1 - t_eq"
+            condition: "!="
+            value: 0
+      - id: m2_from_mixing
+        target: m2
+        label: "Массу 2-й жидкости m₂"
+        requires: [c1, m1, t1, c2, t2, t_eq]
+        formula: "c1 * m1 * (t1 - t_eq) / (c2 * (t_eq - t2))"
+        steps:
+          - "Уравнение теплового баланса: c₁·m₁·(t₁ - t_равн) = c₂·m₂·(t_равн - t₂)"
+          - "m₂ = c₁·m₁·(t₁ - t_равн) / (c₂·(t_равн - t₂))"
+          - "m₂ = {c1}·{m1}·({t1} - {t_eq}) / ({c2}·({t_eq} - {t2}))"
+          - "m₂ = {result:.3f} кг"
+        check:
+          - expression: "t_eq - t2"
+            condition: "!="
+            value: 0
+    explanation: "При смешивании двух жидкостей горячая отдаёт тепло, холодная получает. В состоянии теплового равновесия температуры выравниваются."
+
+  - id: mixing_same_liquid
+    name: "Смешивание воды с водой"
+    category: "Термодинамика"
+    icon: "💧"
+    image: "/static/img/water_mixing.svg"
+    description: "Упрощённый расчёт: t_равн = (m1·t1 + m2·t2) / (m1 + m2)"
+    graph_type: "heat"
+    variables:
+      m1: { label: "Масса горячей воды m₁", unit: "кг", type: float }
+      t1: { label: "Температура горячей воды t₁", unit: "°C", type: float }
+      m2: { label: "Масса холодной воды m₂", unit: "кг", type: float }
+      t2: { label: "Температура холодной воды t₂", unit: "°C", type: float }
+      t_eq: { label: "Конечная температура t_равн", unit: "°C", type: float }
+    solutions:
+      - id: t_eq_water
+        target: t_eq
+        label: "Конечную температуру t_равн"
+        requires: [m1, t1, m2, t2]
+        formula: "(m1*t1 + m2*t2) / (m1 + m2)"
+        steps:
+          - "Жидкости одинаковые (c₁ = c₂), формула упрощается:"
+          - "t_равн = (m₁·t₁ + m₂·t₂) / (m₁ + m₂)"
+          - "t_равн = ({m1}·{t1} + {m2}·{t2}) / ({m1} + {m2})"
+          - "t_равн = {result:.2f} °C"
+        check:
+          - expression: "m1 + m2"
+            condition: "!="
+            value: 0
+      - id: m1_water
+        target: m1
+        label: "Массу горячей воды m₁"
+        requires: [t1, m2, t2, t_eq]
+        formula: "m2 * (t_eq - t2) / (t1 - t_eq)"
+        steps:
+          - "Из t_равн = (m₁·t₁ + m₂·t₂) / (m₁ + m₂):"
+          - "m₁ = m₂·(t_равн - t₂) / (t₁ - t_равн)"
+          - "m₁ = {m2}·({t_eq} - {t2}) / ({t1} - {t_eq})"
+          - "m₁ = {result:.3f} кг"
+        check:
+          - expression: "t1 - t_eq"
+            condition: "!="
+            value: 0
+      - id: m2_water
+        target: m2
+        label: "Массу холодной воды m₂"
+        requires: [m1, t1, t2, t_eq]
+        formula: "m1 * (t1 - t_eq) / (t_eq - t2)"
+        steps:
+          - "Из t_равн = (m₁·t₁ + m₂·t₂) / (m₁ + m₂):"
+          - "m₂ = m₁·(t₁ - t_равн) / (t_равн - t₂)"
+          - "m₂ = {m1}·({t1} - {t_eq}) / ({t_eq} - {t2})"
+          - "m₂ = {result:.3f} кг"
+        check:
+          - expression: "t_eq - t2"
+            condition: "!="
+            value: 0
+    explanation: "При смешивании одинаковых жидкостей теплоёмкости сокращаются. Формула упрощается до взвешенного среднего температур."
+
+  - id: ice_melting
+    name: "Плавление льда в воде"
+    category: "Термодинамика"
+    icon: "🧊"
+    image: "/static/img/ice.svg"
+    description: "Учёт плавления льда: Q = c·m·ΔT + λ·m"
+    graph_type: "heat"
+    variables:
+      c_water: { label: "Теплоёмкость воды c_в", unit: "Дж/(кг·°C)", type: float }
+      c_ice: { label: "Теплоёмкость льда c_л", unit: "Дж/(кг·°C)", type: float }
+      lambda_fusion: { label: "Уд. теплота плавления льда λ", unit: "Дж/кг", type: float }
+      m_water: { label: "Масса воды m_в", unit: "кг", type: float }
+      t_water: { label: "Температура воды t_в", unit: "°C", type: float }
+      m_ice: { label: "Масса льда m_л", unit: "кг", type: float }
+      t_ice: { label: "Температура льда t_л", unit: "°C", type: float }
+      t_eq: { label: "Конечная температура t_равн", unit: "°C", type: float }
+    solutions:
+      - id: t_eq_ice
+        target: t_eq
+        label: "Конечную температуру t_равн"
+        requires: [c_water, c_ice, lambda_fusion, m_water, t_water, m_ice, t_ice]
+        formula: "(c_water*m_water*t_water + c_ice*m_ice*(0 - t_ice) + lambda_fusion*m_ice) / (c_water*(m_water + m_ice))"
+        steps:
+          - "Уравнение теплового баланса с учётом плавления льда:"
+          - "Q_нагрев льда до 0°C + Q_плавления + Q_нагр. воды от льда = Q_отд. воды"
+          - "c_л·m_л·(0 - t_л) + λ·m_л + c_в·m_л·t_равн = c_в·m_в·(t_в - t_равн)"
+          - "t_равн = (c_в·m_в·t_в + c_л·m_л·(0 - t_л) + λ·m_л) / (c_в·(m_в + m_л))"
+          - "t_равн = {result:.2f} °C"
+        check:
+          - expression: "c_water * (m_water + m_ice)"
+            condition: "!="
+            value: 0
+      - id: m_ice_melting
+        target: m_ice
+        label: "Массу льда m_л"
+        requires: [c_water, c_ice, lambda_fusion, m_water, t_water, t_ice, t_eq]
+        formula: "c_water * m_water * (t_water - t_eq) / (c_ice * (0 - t_ice) + lambda_fusion + c_water * t_eq)"
+        steps:
+          - "Из уравнения теплового баланса с учётом плавления:"
+          - "m_л = c_в·m_в·(t_в - t_равн) / (c_л·(0 - t_л) + λ + c_в·t_равн)"
+          - "m_л = {result:.3f} кг"
+        check:
+          - expression: "c_ice * (0 - t_ice) + lambda_fusion + c_water * t_eq"
+            condition: "!="
+            value: 0
+    explanation: "При добавлении льда в воду происходит три процесса: нагрев льда до 0°C, плавление при 0°C, нагрев получившейся воды до температуры равновесия."
+
+  - id: multi_body_balance
+    name: "Тепловой баланс: несколько тел"
+    category: "Термодинамика"
+    icon: "⚖️"
+    image: "/static/img/balance.svg"
+    description: "Уравнение теплового баланса для нескольких тел"
+    graph_type: "heat"
+    variables:
+      c1: { label: "Теплоёмкость тела 1 c₁", unit: "Дж/(кг·°C)", type: float }
+      m1: { label: "Масса тела 1 m₁", unit: "кг", type: float }
+      t1: { label: "Температура тела 1 t₁", unit: "°C", type: float }
+      c2: { label: "Теплоёмкость тела 2 c₂", unit: "Дж/(кг·°C)", type: float }
+      m2: { label: "Масса тела 2 m₂", unit: "кг", type: float }
+      t2: { label: "Температура тела 2 t₂", unit: "°C", type: float }
+      c3: { label: "Теплоёмкость тела 3 c₃", unit: "Дж/(кг·°C)", type: float }
+      m3: { label: "Масса тела 3 m₃", unit: "кг", type: float }
+      t3: { label: "Температура тела 3 t₃", unit: "°C", type: float }
+      t_eq: { label: "Конечная температура t_равн", unit: "°C", type: float }
+    solutions:
+      - id: t_eq_multi
+        target: t_eq
+        label: "Конечную температуру t_равн"
+        requires: [c1, m1, t1, c2, m2, t2, c3, m3, t3]
+        formula: "(c1*m1*t1 + c2*m2*t2 + c3*m3*t3) / (c1*m1 + c2*m2 + c3*m3)"
+        steps:
+          - "Уравнение теплового баланса для трёх тел:"
+          - "Σ Q_отданное = Σ Q_полученное"
+          - "t_равн = (c₁·m₁·t₁ + c₂·m₂·t₂ + c₃·m₃·t₃) / (c₁·m₁ + c₂·m₂ + c₃·m₃)"
+          - "t_равн = ({c1}·{m1}·{t1} + {c2}·{m2}·{t2} + {c3}·{m3}·{t3}) / ({c1}·{m1} + {c2}·{m2} + {c3}·{m3})"
+          - "t_равн = {result:.2f} °C"
+        check:
+          - expression: "c1*m1 + c2*m2 + c3*m3"
+            condition: "!="
+            value: 0
+      - id: m3_multi
+        target: m3
+        label: "Массу тела 3 m₃"
+        requires: [c1, m1, t1, c2, m2, t2, c3, t3, t_eq]
+        formula: "(c1*m1*(t1 - t_eq) + c2*m2*(t2 - t_eq)) / (c3 * (t_eq - t3))"
+        steps:
+          - "Из уравнения теплового баланса для трёх тел:"
+          - "m₃ = (c₁·m₁·(t₁ - t_равн) + c₂·m₂·(t₂ - t_равн)) / (c₃·(t_равн - t₃))"
+          - "m₃ = {result:.3f} кг"
+        check:
+          - expression: "c3 * (t_eq - t3)"
+            condition: "!="
+            value: 0
+    explanation: "При контакте нескольких тел тепло переходит от горячих к холодным до достижения единой температуры равновесия."
+
+  - id: crystallization
+    name: "Кристаллизация вещества"
+    category: "Термодинамика"
+    icon: "❄️"
+    image: "/static/img/crystal.svg"
+    description: "Охлаждение жидкости с учётом фазового перехода"
+    graph_type: "heat"
+    variables:
+      c_liquid: { label: "Теплоёмкость жидкости c_ж", unit: "Дж/(кг·°C)", type: float }
+      c_solid: { label: "Теплоёмкость твёрдого тела c_т", unit: "Дж/(кг·°C)", type: float }
+      lambda_cryst: { label: "Уд. теплота кристаллизации λ", unit: "Дж/кг", type: float }
+      m: { label: "Масса вещества m", unit: "кг", type: float }
+      t_liquid: { label: "Температура жидкости t_ж", unit: "°C", type: float }
+      t_freeze: { label: "Температура кристаллизации t_кр", unit: "°C", type: float }
+      t_final: { label: "Конечная температура t_кон", unit: "°C", type: float }
+      Q: { label: "Выделенное тепло Q", unit: "Дж", type: float }
+    solutions:
+      - id: Q_crystallization
+        target: Q
+        label: "Выделенное тепло Q"
+        requires: [c_liquid, m, t_liquid, lambda_cryst, c_solid, t_freeze, t_final]
+        formula: "c_liquid * m * (t_liquid - t_freeze) + lambda_cryst * m + c_solid * m * (t_freeze - t_final)"
+        steps:
+          - "Тепло выделяется в три этапа:"
+          - "1. Охлаждение жидкости от t_ж до t_кр: Q₁ = c_ж·m·(t_ж - t_кр)"
+          - "2. Кристаллизация при t_кр: Q₂ = λ·m"
+          - "3. Охлаждение твёрдого тела от t_кр до t_кон: Q₃ = c_т·m·(t_кр - t_кон)"
+          - "Q = Q₁ + Q₂ + Q₃"
+          - "Q = {result:.2f} Дж"
+      - id: m_crystallization
+        target: m
+        label: "Массу вещества m"
+        requires: [c_liquid, t_liquid, lambda_cryst, c_solid, t_freeze, t_final, Q]
+        formula: "Q / (c_liquid * (t_liquid - t_freeze) + lambda_cryst + c_solid * (t_freeze - t_final))"
+        steps:
+          - "Из Q = m·(c_ж·(t_ж - t_кр) + λ + c_т·(t_кр - t_кон)):"
+          - "m = Q / (c_ж·(t_ж - t_кр) + λ + c_т·(t_кр - t_кон))"
+          - "m = {result:.3f} кг"
+        check:
+          - expression: "c_liquid * (t_liquid - t_freeze) + lambda_cryst + c_solid * (t_freeze - t_final)"
+            condition: "!="
+            value: 0
+    explanation: "При кристаллизации вещество выделяет тепло в три этапа: охлаждение жидкости до температуры кристаллизации, фазовый переход, охлаждение твёрдого тела."

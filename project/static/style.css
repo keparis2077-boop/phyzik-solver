@@ -926,3 +926,37 @@ main {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+
+/* ========== ГРАФИК ========== */
+.graph-section {
+    margin-top: 32px;
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+
+.graph-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.graph-container {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.graph-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}

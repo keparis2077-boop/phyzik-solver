@@ -10,6 +10,7 @@ templates:
     icon: "📏"
     image: "/static/img/pressure.svg"
     description: "p = F/S"
+    graph_type: "pressure"
     variables:
       F: { label: "Сила F", unit: "Н", type: float }
       S: { label: "Площадь S", unit: "м²", type: float }
@@ -55,6 +56,7 @@ templates:
     icon: "🧪"
     image: "/static/img/density.svg"
     description: "ρ = m/V"
+    graph_type: "pressure"
     variables:
       m:   { label: "Масса m", unit: "кг", type: float }
       V:   { label: "Объём V", unit: "м³", type: float }
@@ -100,6 +102,7 @@ templates:
     icon: "🚢"
     image: "/static/img/archimedes.svg"
     description: "F_A = ρ·g·V"
+    graph_type: "pressure"
     constants:
       g: { value: 9.8, unit: "м/с²", label: "Ускорение свободного падения" }
     variables:

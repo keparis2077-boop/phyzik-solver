@@ -10,6 +10,7 @@ templates:
     icon: "🔌"
     image: "/static/img/ohm.svg"
     description: "I = U/R"
+    graph_type: "ohm"
     variables:
       U: { label: "Напряжение U", unit: "В", type: float }
       R: { label: "Сопротивление R", unit: "Ом", type: float }
@@ -55,6 +56,7 @@ templates:
     icon: "🔗"
     image: "/static/img/series.svg"
     description: "R = R₁ + R₂"
+    graph_type: "ohm"
     variables:
       R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
       R2: { label: "Сопротивление R₂", unit: "Ом", type: float }
@@ -92,6 +94,7 @@ templates:
     icon: "🔀"
     image: "/static/img/parallel.svg"
     description: "R = R₁·R₂ / (R₁ + R₂)"
+    graph_type: "ohm"
     variables:
       R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
       R2: { label: "Сопротивление R₂", unit: "Ом", type: float }

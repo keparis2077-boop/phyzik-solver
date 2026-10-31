@@ -41,6 +41,7 @@ templates:
     icon: "🔍"
     image: "/static/img/lens.svg"
     description: "Связь между фокусным расстоянием, расстоянием до предмета и изображения"
+    graph_type: "lens"
     variables:
       d: { label: "Расстояние до предмета d", unit: "см", type: float }
       f: { label: "Расстояние до изображения f", unit: "см", type: float }
@@ -87,6 +88,7 @@ templates:
     icon: "👓"
     image: "/static/img/optical_power.svg"
     description: "Оптическая сила линзы — величина, обратная фокусному расстоянию"
+    graph_type: "lens"
     variables:
       D: { label: "Оптическая сила D", unit: "дптр", type: float }
       F: { label: "Фокусное расстояние F", unit: "см", type: float }
@@ -123,6 +125,7 @@ templates:
     icon: "🔎"
     image: "/static/img/magnification.svg"
     description: "Определение увеличения и размеров изображения"
+    graph_type: "lens"
     variables:
       d:  { label: "Расстояние до предмета d", unit: "см", type: float }
       f:  { label: "Расстояние до изображения f", unit: "см", type: float }

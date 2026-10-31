@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from loader import TASKS, group_by_category
 from reference import CONSTANTS, FORMULAS
 from database import init_db, save_solution, get_history, clear_all_history, get_device_id
+from graphs import generate_graph
 
 app = Flask(__name__)
 app.secret_key = 'change-me-in-production'
@@ -73,19 +74,29 @@ def solve(task_id):
             inputs_str = ', '.join(f"{k}={v}" for k, v in known.items()) + f' | найти: {target}'
             results_str = ', '.join(f"{k}={v}" for k, v in results.items())
             save_solution(task_id, t['name'], inputs_str, results_str, device_id)
+            
+            # Генерация графика
+            graph_type = t.get('graph_type')
+            graph_svg = None
+            if graph_type:
+                try:
+                    graph_svg = generate_graph(graph_type, known)
+                except Exception:
+                    graph_svg = None
         except Exception as e:
-            results, steps, explanation = {}, [], ''
+            results, steps, explanation, graph_svg = {}, [], '', None
             error = str(e)
 
         return render_template(
             'result.html',
             task_id=task_id, task=t,
             results=results, steps=steps, explanation=explanation,
-            error=error, form=request.form,
+            error=error, form=request.form, graph_svg=graph_svg,
         )
 
     # --- Старый режим: inputs + outputs (для остальных задач) ---
     selected = request.form.getlist('outputs') or list(t.get('outputs', {}).keys())
+    graph_svg = None
     try:
         results, steps, explanation = t['solve'](request.form, selected)
         error = None
@@ -95,15 +106,23 @@ def solve(task_id):
         )
         results_str = '; '.join(f"{k}: {v}" for k, v in results.items())
         save_solution(task_id, t['name'], inputs_str, results_str, device_id)
+        
+        # Генерация графика
+        graph_type = t.get('graph_type')
+        if graph_type:
+            try:
+                graph_svg = generate_graph(graph_type, dict(request.form))
+            except Exception:
+                graph_svg = None
     except Exception as e:
-        results, steps, explanation = {}, [], ""
+        results, steps, explanation, graph_svg = {}, [], '', None
         error = f"Ошибка ввода: {e}"
 
     return render_template(
         'result.html',
         task_id=task_id, task=t,
         results=results, steps=steps, explanation=explanation,
-        error=error, form=request.form,
+        error=error, form=request.form, graph_svg=graph_svg,
     )
 
 
