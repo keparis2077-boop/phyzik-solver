@@ -32,6 +32,10 @@
                 <span class="topnav-icon">📚</span>
                 <span>Занятия</span>
             </a>
+            <a href="{{ url_for('math') }}" class="topnav-item {% if request.endpoint == 'math' %}active{% endif %}">
+                <span class="topnav-icon">📐</span>
+                <span>Математика</span>
+            </a>
             <a href="{{ url_for('reference') }}" class="topnav-item {% if request.endpoint == 'reference' %}active{% endif %}">
                 <span class="topnav-icon">📖</span>
                 <span>Справочник</span>
@@ -87,5 +91,6 @@
 <footer class="site-footer">© 2025 ФИЗИК — Интерактивный решебник задач</footer>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Математика — ФИЗИК{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div class="task-icon">📐</div>
+    <h1>Математика</h1>
+    <p class="subtitle">Алгебра, геометрия и другие разделы</p>
+</div>
+
+<!-- Алгебра -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>📊 Алгебра</h2>
+        <span class="category-count">{{ algebra_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in algebra_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <div class="card-meta">
+                    <span class="card-tag">Алгебра</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Геометрия -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>📏 Геометрия</h2>
+        <span class="category-count">{{ geometry_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in geometry_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <div class="card-meta">
+                    <span class="card-tag">Геометрия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Тригонометрия -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>📈 Тригонометрия</h2>
+        <span class="category-count">{{ trigonometry_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in trigonometry_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <div class="card-meta">
+                    <span class="card-tag">Тригонометрия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
