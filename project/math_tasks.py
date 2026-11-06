@@ -61,12 +61,14 @@ MATH_TASKS = {
         'icon': '🔺',
         'category': 'Геометрия',
         'difficulty': '7-8',
-        'condition': 'Найдите площадь треугольника по основанию и высоте',
+        'condition': 'Найдите площадь, основание или высоту треугольника',
         'formulas': ['S = ½ · a · h'],
         'inputs': {
             'a': {'label': 'Основание a', 'placeholder': 'Например: 10'},
             'h': {'label': 'Высота h', 'placeholder': 'Например: 5'},
+            'S': {'label': 'Площадь S', 'placeholder': 'Например: 20'},
         },
+        'unknowns': ['a', 'h', 'S'],
         'solve': lambda data: solve_triangle_area(data),
     },
     
@@ -76,11 +78,13 @@ MATH_TASKS = {
         'icon': '⭕',
         'category': 'Геометрия',
         'difficulty': '7',
-        'condition': 'Найдите площадь круга по радиусу',
+        'condition': 'Найдите площадь круга или радиус',
         'formulas': ['S = π · r²'],
         'inputs': {
             'r': {'label': 'Радиус r', 'placeholder': 'Например: 5'},
+            'S': {'label': 'Площадь S', 'placeholder': 'Например: 78.5'},
         },
+        'unknowns': ['r', 'S'],
         'solve': lambda data: solve_circle_area(data),
     },
     
@@ -93,10 +97,11 @@ MATH_TASKS = {
         'condition': 'Найдите гипотенузу или катет прямоугольного треугольника',
         'formulas': ['c² = a² + b²', 'a = √(c² - b²)', 'b = √(c² - a²)'],
         'inputs': {
-            'a': {'label': 'Катет a', 'placeholder': 'Оставьте пустым, если ищете a'},
-            'b': {'label': 'Катет b', 'placeholder': 'Оставьте пустым, если ищете b'},
-            'c': {'label': 'Гипотенуза c', 'placeholder': 'Оставьте пустым, если ищете c'},
+            'a': {'label': 'Катет a', 'placeholder': 'Введите значение'},
+            'b': {'label': 'Катет b', 'placeholder': 'Введите значение'},
+            'c': {'label': 'Гипотенуза c', 'placeholder': 'Введите значение'},
         },
+        'unknowns': ['a', 'b', 'c'],
         'solve': lambda data: solve_pythagorean(data),
     },
     
@@ -107,11 +112,15 @@ MATH_TASKS = {
         'icon': '📈',
         'category': 'Тригонометрия',
         'difficulty': '9-10',
-        'condition': 'Найдите sin, cos или tan угла',
+        'condition': 'Найдите sin, cos, tan или угол',
         'formulas': ['sin(α) = противолежащий катет / гипотенуза', 'cos(α) = прилежащий катет / гипотенуза', 'tan(α) = sin(α) / cos(α)'],
         'inputs': {
             'angle': {'label': 'Угол α (градусы)', 'placeholder': 'Например: 30'},
+            'sin': {'label': 'sin(α)', 'placeholder': 'Например: 0.5'},
+            'cos': {'label': 'cos(α)', 'placeholder': 'Например: 0.866'},
+            'tan': {'label': 'tan(α)', 'placeholder': 'Например: 0.577'},
         },
+        'unknowns': ['angle', 'sin', 'cos', 'tan'],
         'solve': lambda data: solve_trig_functions(data),
     },
     
@@ -121,13 +130,15 @@ MATH_TASKS = {
         'icon': '📏',
         'category': 'Тригонометрия',
         'difficulty': '9-10',
-        'condition': 'Найдите сторону треугольника по двум сторонам и углу между ними',
+        'condition': 'Найдите сторону или угол треугольника',
         'formulas': ['c² = a² + b² - 2ab·cos(γ)'],
         'inputs': {
             'a': {'label': 'Сторона a', 'placeholder': 'Например: 5'},
             'b': {'label': 'Сторона b', 'placeholder': 'Например: 7'},
             'gamma': {'label': 'Угол γ (градусы)', 'placeholder': 'Например: 60'},
+            'c': {'label': 'Сторона c', 'placeholder': 'Например: 8'},
         },
+        'unknowns': ['a', 'b', 'gamma', 'c'],
         'solve': lambda data: solve_law_of_cosines(data),
     },
     
@@ -147,11 +158,12 @@ MATH_TASKS = {
             'α + β = 90°',
         ],
         'inputs': {
-            'a': {'label': 'Катет a', 'placeholder': 'Катет a'},
-            'b': {'label': 'Катет b', 'placeholder': 'Катет b'},
-            'c': {'label': 'Гипотенуза c', 'placeholder': 'Гипотенуза c'},
-            'alpha': {'label': 'Угол α (градусы)', 'placeholder': 'Угол α (противолежащий катету a)'},
+            'a': {'label': 'Катет a', 'placeholder': 'Введите значение'},
+            'b': {'label': 'Катет b', 'placeholder': 'Введите значение'},
+            'c': {'label': 'Гипотенуза c', 'placeholder': 'Введите значение'},
+            'alpha': {'label': 'Угол α (градусы)', 'placeholder': 'Например: 30'},
         },
+        'unknowns': ['a', 'b', 'c', 'alpha'],
         'solve': lambda data: solve_right_triangle(data),
     },
 }
@@ -232,28 +244,87 @@ def solve_system(data):
 
 def solve_triangle_area(data):
     """Площадь треугольника"""
-    a = float(data.get('a', 0))
-    h = float(data.get('h', 0))
+    unknown = data.get('unknown', '').strip()
+    a = data.get('a', '').strip()
+    h = data.get('h', '').strip()
+    S = data.get('S', '').strip()
     
-    S = 0.5 * a * h
-    steps = [
-        f"Дано: a={a}, h={h}",
-        f"S = ½ · a · h = 0.5 · {a} · {h} = {S:.2f}",
-    ]
-    return {'S': f'{S:.2f}'}, steps, "Площадь треугольника вычисляется по формуле S = ½ah"
+    if not unknown:
+        raise ValueError("Выберите, что нужно найти!")
+    
+    a_val = float(a) if a else None
+    h_val = float(h) if h else None
+    S_val = float(S) if S else None
+    
+    if unknown == 'S':
+        if a_val is None or h_val is None:
+            raise ValueError("Для нахождения площади нужны основание и высота")
+        S_val = 0.5 * a_val * h_val
+        steps = [
+            f"Дано: a={a_val}, h={h_val}",
+            f"S = ½ · a · h = 0.5 · {a_val} · {h_val} = {S_val:.2f}",
+        ]
+        return {'S': f'{S_val:.2f}'}, steps, "Площадь треугольника вычисляется по формуле S = ½ah"
+    
+    elif unknown == 'a':
+        if S_val is None or h_val is None:
+            raise ValueError("Для нахождения основания нужны площадь и высота")
+        if h_val == 0:
+            raise ValueError("Высота не может быть равна 0")
+        a_val = 2 * S_val / h_val
+        steps = [
+            f"Дано: S={S_val}, h={h_val}",
+            f"a = 2S / h = 2·{S_val} / {h_val} = {a_val:.2f}",
+        ]
+        return {'a': f'{a_val:.2f}'}, steps, "Площадь треугольника: S = ½ah, откуда a = 2S/h"
+    
+    elif unknown == 'h':
+        if S_val is None or a_val is None:
+            raise ValueError("Для нахождения высоты нужны площадь и основание")
+        if a_val == 0:
+            raise ValueError("Основание не может быть равно 0")
+        h_val = 2 * S_val / a_val
+        steps = [
+            f"Дано: S={S_val}, a={a_val}",
+            f"h = 2S / a = 2·{S_val} / {a_val} = {h_val:.2f}",
+        ]
+        return {'h': f'{h_val:.2f}'}, steps, "Площадь треугольника: S = ½ah, откуда h = 2S/a"
 
 
 def solve_circle_area(data):
     """Площадь круга"""
     import math
-    r = float(data.get('r', 0))
+    unknown = data.get('unknown', '').strip()
+    r = data.get('r', '').strip()
+    S = data.get('S', '').strip()
     
-    S = math.pi * r**2
-    steps = [
-        f"Дано: r={r}",
-        f"S = π · r² = 3.14159 · {r}² = {S:.2f}",
-    ]
-    return {'S': f'{S:.2f}'}, steps, "Площадь круга вычисляется по формуле S = πr²"
+    if not unknown:
+        raise ValueError("Выберите, что нужно найти!")
+    
+    r_val = float(r) if r else None
+    S_val = float(S) if S else None
+    
+    if unknown == 'S':
+        if r_val is None:
+            raise ValueError("Для нахождения площади нужен радиус")
+        S_val = math.pi * r_val**2
+        steps = [
+            f"Дано: r={r_val}",
+            f"S = π · r² = 3.14159 · {r_val}² = {S_val:.2f}",
+        ]
+        return {'S': f'{S_val:.2f}'}, steps, "Площадь круга вычисляется по формуле S = πr²"
+    
+    elif unknown == 'r':
+        if S_val is None:
+            raise ValueError("Для нахождения радиуса нужна площадь")
+        if S_val <= 0:
+            raise ValueError("Площадь должна быть положительной")
+        r_val = (S_val / math.pi)**0.5
+        steps = [
+            f"Дано: S={S_val}",
+            f"r = √(S/π) = √({S_val}/3.14159) = {r_val:.2f}",
+        ]
+        return {'r': f'{r_val:.2f}'}, steps, "Площадь круга: S = πr², откуда r = √(S/π)"
 
 
 def solve_pythagorean(data):
@@ -306,50 +377,198 @@ def solve_pythagorean(data):
 def solve_trig_functions(data):
     """Тригонометрические функции"""
     import math
-    angle = float(data.get('angle', 0))
-    angle_rad = math.radians(angle)
+    unknown = data.get('unknown', '').strip()
+    angle = data.get('angle', '').strip()
+    sin_val = data.get('sin', '').strip()
+    cos_val = data.get('cos', '').strip()
+    tan_val = data.get('tan', '').strip()
     
-    sin_val = math.sin(angle_rad)
-    cos_val = math.cos(angle_rad)
-    tan_val = math.tan(angle_rad) if cos_val != 0 else None
+    if not unknown:
+        raise ValueError("Выберите, что нужно найти!")
     
-    steps = [
-        f"Угол: α = {angle}° = {angle_rad:.4f} рад",
-        f"sin({angle}°) = {sin_val:.4f}",
-        f"cos({angle}°) = {cos_val:.4f}",
-    ]
-    if tan_val is not None:
-        steps.append(f"tan({angle}°) = {tan_val:.4f}")
-    else:
-        steps.append("tan({angle}°) = не определено (cos = 0)")
+    angle_val = float(angle) if angle else None
+    sin_input = float(sin_val) if sin_val else None
+    cos_input = float(cos_val) if cos_val else None
+    tan_input = float(tan_val) if tan_val else None
     
-    result = {'sin': f'{sin_val:.4f}', 'cos': f'{cos_val:.4f}'}
-    if tan_val is not None:
-        result['tan'] = f'{tan_val:.4f}'
+    if unknown == 'angle':
+        # Ищем угол по sin, cos или tan
+        if sin_input is not None:
+            if abs(sin_input) > 1:
+                raise ValueError("sin не может быть больше 1 или меньше -1")
+            angle_val = math.degrees(math.asin(sin_input))
+            steps = [
+                f"Дано: sin(α) = {sin_input}",
+                f"α = arcsin({sin_input}) = {angle_val:.2f}°",
+            ]
+        elif cos_input is not None:
+            if abs(cos_input) > 1:
+                raise ValueError("cos не может быть больше 1 или меньше -1")
+            angle_val = math.degrees(math.acos(cos_input))
+            steps = [
+                f"Дано: cos(α) = {cos_input}",
+                f"α = arccos({cos_input}) = {angle_val:.2f}°",
+            ]
+        elif tan_input is not None:
+            angle_val = math.degrees(math.atan(tan_input))
+            steps = [
+                f"Дано: tan(α) = {tan_input}",
+                f"α = arctan({tan_input}) = {angle_val:.2f}°",
+            ]
+        else:
+            raise ValueError("Введите sin, cos или tan для нахождения угла")
+        
+        result = {'α': f'{angle_val:.2f}°'}
+        result['sin'] = f'{math.sin(math.radians(angle_val)):.4f}'
+        result['cos'] = f'{math.cos(math.radians(angle_val)):.4f}'
+        result['tan'] = f'{math.tan(math.radians(angle_val)):.4f}'
+        return result, steps, "Тригонометрические функции вычисляются по единичной окружности"
     
-    return result, steps, "Тригонометрические функции вычисляются по единичной окружности"
+    elif unknown == 'sin':
+        if angle_val is None:
+            raise ValueError("Для нахождения sin нужен угол")
+        angle_rad = math.radians(angle_val)
+        sin_result = math.sin(angle_rad)
+        steps = [
+            f"Угол: α = {angle_val}° = {math.radians(angle_val):.4f} рад",
+            f"sin({angle_val}°) = {sin_result:.4f}",
+        ]
+        result = {'sin': f'{sin_result:.4f}'}
+        result['cos'] = f'{math.cos(angle_rad):.4f}'
+        result['tan'] = f'{math.tan(angle_rad):.4f}'
+        result['α'] = f'{angle_val}°'
+        return result, steps, "Тригонометрические функции вычисляются по единичной окружности"
+    
+    elif unknown == 'cos':
+        if angle_val is None:
+            raise ValueError("Для нахождения cos нужен угол")
+        angle_rad = math.radians(angle_val)
+        cos_result = math.cos(angle_rad)
+        steps = [
+            f"Угол: α = {angle_val}° = {math.radians(angle_val):.4f} рад",
+            f"cos({angle_val}°) = {cos_result:.4f}",
+        ]
+        result = {'cos': f'{cos_result:.4f}'}
+        result['sin'] = f'{math.sin(angle_rad):.4f}'
+        result['tan'] = f'{math.tan(angle_rad):.4f}'
+        result['α'] = f'{angle_val}°'
+        return result, steps, "Тригонометрические функции вычисляются по единичной окружности"
+    
+    elif unknown == 'tan':
+        if angle_val is None:
+            raise ValueError("Для нахождения tan нужен угол")
+        angle_rad = math.radians(angle_val)
+        tan_result = math.tan(angle_rad) if math.cos(angle_rad) != 0 else None
+        steps = [
+            f"Угол: α = {angle_val}° = {math.radians(angle_val):.4f} рад",
+        ]
+        if tan_result is not None:
+            steps.append(f"tan({angle_val}°) = {tan_result:.4f}")
+        else:
+            steps.append(f"tan({angle_val}°) = не определено (cos = 0)")
+        
+        result = {}
+        result['sin'] = f'{math.sin(angle_rad):.4f}'
+        result['cos'] = f'{math.cos(angle_rad):.4f}'
+        result['α'] = f'{angle_val}°'
+        if tan_result is not None:
+            result['tan'] = f'{tan_result:.4f}'
+        else:
+            result['tan'] = 'не определено'
+        return result, steps, "Тригонометрические функции вычисляются по единичной окружности"
 
 
 def solve_law_of_cosines(data):
     """Теорема косинусов"""
     import math
-    a = float(data.get('a', 0))
-    b = float(data.get('b', 0))
-    gamma = float(data.get('gamma', 0))
+    unknown = data.get('unknown', '').strip()
+    a = data.get('a', '').strip()
+    b = data.get('b', '').strip()
+    gamma = data.get('gamma', '').strip()
+    c = data.get('c', '').strip()
     
-    gamma_rad = math.radians(gamma)
-    c = (a**2 + b**2 - 2*a*b*math.cos(gamma_rad))**0.5
+    if not unknown:
+        raise ValueError("Выберите, что нужно найти!")
     
-    steps = [
-        f"Дано: a={a}, b={b}, γ={gamma}°",
-        f"γ в радианах: {gamma_rad:.4f} рад",
-        f"c² = a² + b² - 2ab·cos(γ)",
-        f"c² = {a}² + {b}² - 2·{a}·{b}·cos({gamma}°)",
-        f"c² = {a**2} + {b**2} - {2*a*b}·{math.cos(gamma_rad):.4f}",
-        f"c² = {a**2 + b**2 - 2*a*b*math.cos(gamma_rad):.4f}",
-        f"c = √{a**2 + b**2 - 2*a*b*math.cos(gamma_rad):.4f} = {c:.2f}",
-    ]
-    return {'c': f'{c:.2f}'}, steps, "Теорема косинусов: c² = a² + b² - 2ab·cos(γ)"
+    a_val = float(a) if a else None
+    b_val = float(b) if b else None
+    gamma_val = float(gamma) if gamma else None
+    c_val = float(c) if c else None
+    
+    if unknown == 'c':
+        # c² = a² + b² - 2ab·cos(γ)
+        if a_val is None or b_val is None or gamma_val is None:
+            raise ValueError("Для нахождения стороны c нужны a, b и угол γ")
+        gamma_rad = math.radians(gamma_val)
+        c_val = (a_val**2 + b_val**2 - 2*a_val*b_val*math.cos(gamma_rad))**0.5
+        steps = [
+            f"Дано: a={a_val}, b={b_val}, γ={gamma_val}°",
+            f"γ в радианах: {math.radians(gamma_val):.4f} рад",
+            f"c² = a² + b² - 2ab·cos(γ)",
+            f"c² = {a_val}² + {b_val}² - 2·{a_val}·{b_val}·cos({gamma_val}°)",
+            f"c² = {a_val**2} + {b_val**2} - {2*a_val*b_val}·{math.cos(gamma_rad):.4f}",
+            f"c² = {a_val**2 + b_val**2 - 2*a_val*b_val*math.cos(gamma_rad):.4f}",
+            f"c = √{a_val**2 + b_val**2 - 2*a_val*b_val*math.cos(gamma_rad):.4f} = {c_val:.2f}",
+        ]
+        return {'c': f'{c_val:.2f}'}, steps, "Теорема косинусов: c² = a² + b² - 2ab·cos(γ)"
+    
+    elif unknown == 'a':
+        # a² = c² - b² + 2bc·cos(γ)
+        if c_val is None or b_val is None or gamma_val is None:
+            raise ValueError("Для нахождения стороны a нужны c, b и угол γ")
+        gamma_rad = math.radians(gamma_val)
+        a_squared = c_val**2 - b_val**2 + 2*b_val*c_val*math.cos(gamma_rad)
+        if a_squared <= 0:
+            raise ValueError("Некорректные данные: подкоренное выражение отрицательное")
+        a_val = a_squared**0.5
+        steps = [
+            f"Дано: c={c_val}, b={b_val}, γ={gamma_val}°",
+            f"a² = c² - b² + 2bc·cos(γ)",
+            f"a² = {c_val}² - {b_val}² + 2·{b_val}·{c_val}·cos({gamma_val}°)",
+            f"a² = {c_val**2} - {b_val**2} + {2*b_val*c_val}·{math.cos(gamma_rad):.4f}",
+            f"a² = {a_squared:.4f}",
+            f"a = √{a_squared:.4f} = {a_val:.2f}",
+        ]
+        return {'a': f'{a_val:.2f}'}, steps, "Теорема косинусов: a² = c² + b² - 2bc·cos(γ)"
+    
+    elif unknown == 'b':
+        # b² = c² - a² + 2ac·cos(γ)
+        if c_val is None or a_val is None or gamma_val is None:
+            raise ValueError("Для нахождения стороны b нужны c, a и угол γ")
+        gamma_rad = math.radians(gamma_val)
+        b_squared = c_val**2 - a_val**2 + 2*a_val*c_val*math.cos(gamma_rad)
+        if b_squared <= 0:
+            raise ValueError("Некорректные данные: подкоренное выражение отрицательное")
+        b_val = b_squared**0.5
+        steps = [
+            f"Дано: c={c_val}, a={a_val}, γ={gamma_val}°",
+            f"b² = c² - a² + 2ac·cos(γ)",
+            f"b² = {c_val}² - {a_val}² + 2·{a_val}·{c_val}·cos({gamma_val}°)",
+            f"b² = {c_val**2} - {a_val**2} + {2*a_val*c_val}·{math.cos(gamma_rad):.4f}",
+            f"b² = {b_squared:.4f}",
+            f"b = √{b_squared:.4f} = {b_val:.2f}",
+        ]
+        return {'b': f'{b_val:.2f}'}, steps, "Теорема косинусов: b² = c² + a² - 2ac·cos(γ)"
+    
+    elif unknown == 'gamma':
+        # cos(γ) = (a² + b² - c²) / (2ab)
+        if a_val is None or b_val is None or c_val is None:
+            raise ValueError("Для нахождения угла γ нужны все три стороны")
+        if a_val == 0 or b_val == 0:
+            raise ValueError("Стороны не могут быть равны 0")
+        cos_gamma = (a_val**2 + b_val**2 - c_val**2) / (2*a_val*b_val)
+        if abs(cos_gamma) > 1:
+            raise ValueError("Некорректные данные: cos не может быть больше 1 или меньше -1")
+        gamma_val = math.degrees(math.acos(cos_gamma))
+        steps = [
+            f"Дано: a={a_val}, b={b_val}, c={c_val}",
+            f"cos(γ) = (a² + b² - c²) / (2ab)",
+            f"cos(γ) = ({a_val}² + {b_val}² - {c_val}²) / (2·{a_val}·{b_val})",
+            f"cos(γ) = ({a_val**2} + {b_val**2} - {c_val**2}) / {2*a_val*b_val}",
+            f"cos(γ) = {cos_gamma:.4f}",
+            f"γ = arccos({cos_gamma:.4f}) = {gamma_val:.2f}°",
+        ]
+        return {'γ': f'{gamma_val:.2f}°'}, steps, "Теорема косинусов: cos(γ) = (a² + b² - c²) / (2ab)"
 
 
 def solve_right_triangle(data):
