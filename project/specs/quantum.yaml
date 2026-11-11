@@ -1,0 +1,98 @@
+# ============================================================
+# КВАНТОВАЯ ФИЗИКА — 11 КЛАСС
+# Фотоэффект, фотон, энергия фотона
+# ============================================================
+
+templates:
+  - id: photon_energy
+    name: "Энергия фотона"
+    category: "Квантовая физика"
+    icon: "🔆"
+    description: "E = h·ν = h·c/λ"
+    variables:
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      lam: { label: "Длина волны λ", unit: "м", type: float }
+      E: { label: "Энергия E", unit: "Дж", type: float }
+    solutions:
+      - id: E_from_nu
+        target: E
+        label: "Энергию E"
+        requires: [nu]
+        formula: "6.626e-34 * nu"
+        steps:
+          - "Формула: E = h·ν"
+          - "E = 6.626·10⁻³⁴·{nu:.2e} = {result:.3e} Дж"
+      - id: E_from_lam
+        target: E
+        label: "Энергию E"
+        requires: [lam]
+        formula: "6.626e-34 * 3e8 / lam"
+        steps:
+          - "Формула: E = h·c/λ"
+          - "E = 6.626·10⁻³⁴·3·10⁸/{lam:.2e} = {result:.3e} Дж"
+      - id: nu_from_E
+        target: nu
+        label: "Частоту ν"
+        requires: [E]
+        formula: "E / 6.626e-34"
+        steps:
+          - "Из E = h·ν: ν = E/h"
+          - "ν = {E:.3e}/6.626·10⁻³⁴ = {result:.3e} Гц"
+    explanation: "Энергия фотона: E = h·ν = h·c/λ."
+
+  - id: photoelectric
+    name: "Уравнение Эйнштейна для фотоэффекта"
+    category: "Квантовая физика"
+    icon: "⚡"
+    description: "hν = Aвых + Ek"
+    variables:
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      A: { label: "Работа выхода A", unit: "Дж", type: float }
+      Ek: { label: "Кинетическая энергия Ek", unit: "Дж", type: float }
+    solutions:
+      - id: Ek_from_nuA
+        target: Ek
+        label: "Кинетическую энергию Ek"
+        requires: [nu, A]
+        formula: "6.626e-34 * nu - A"
+        steps:
+          - "Уравнение Эйнштейна: hν = A + Ek"
+          - "Ek = hν - A = 6.626·10⁻³⁴·{nu:.2e} - {A:.3e}"
+          - "Ek = {result:.3e} Дж"
+      - id: nu_from_AEk
+        target: nu
+        label: "Частоту ν"
+        requires: [A, Ek]
+        formula: "(A + Ek) / 6.626e-34"
+        steps:
+          - "Из hν = A + Ek: ν = (A + Ek)/h"
+          - "ν = ({A:.3e} + {Ek:.3e})/6.626·10⁻³⁴ = {result:.3e} Гц"
+    explanation: "Уравнение Эйнштейна для фотоэффекта: hν = Aвых + Ek."
+
+  - id: de_broglie
+    name: "Длина волны де Бройля"
+    category: "Квантовая физика"
+    icon: "🌊"
+    description: "λ = h/(m·v)"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      lam: { label: "Длина волны λ", unit: "м", type: float }
+    solutions:
+      - id: lam_from_mv
+        target: lam
+        label: "Длину волны λ"
+        requires: [m, v]
+        formula: "6.626e-34 / (m * v)"
+        steps:
+          - "Формула: λ = h/(m·v)"
+          - "λ = 6.626·10⁻³⁴/({m}·{v}) = {result:.3e} м"
+      - id: v_from_ml
+        target: v
+        label: "Скорость v"
+        requires: [m, lam]
+        formula: "6.626e-34 / (m * lam)"
+        steps:
+          - "Из λ = h/(m·v): v = h/(m·λ)"
+          - "v = 6.626·10⁻³⁴/({m}·{lam:.2e}) = {result:.3e} м/с"
+    explanation: "Длина волны де Бройля: λ = h/p = h/(m·v)."

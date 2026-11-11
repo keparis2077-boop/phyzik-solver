@@ -1,139 +1,129 @@
 # ============================================================
-# ЭЛЕКТРИЧЕСТВО
-# Задачи: закон Ома, последовательное и параллельное соединение
+# ЭЛЕКТРИЧЕСТВО — 8-9 КЛАСС
+# Закон Ома, последовательное/параллельное соединение, мощность
 # ============================================================
 
 templates:
-  - id: ohms_law
-    name: "Закон Ома"
+  - id: ohm_law
+    name: "Закон Ома для участка цепи"
     category: "Электричество"
-    icon: "🔌"
-    image: "/static/img/ohm.svg"
-    description: "I = U/R"
-    graph_type: "ohm"
+    icon: "⚡"
+    description: "I = U / R"
     variables:
       U: { label: "Напряжение U", unit: "В", type: float }
-      R: { label: "Сопротивление R", unit: "Ом", type: float }
       I: { label: "Сила тока I", unit: "А", type: float }
+      R: { label: "Сопротивление R", unit: "Ом", type: float }
     solutions:
-      - id: I_from_Ur
+      - id: I_from_UR
         target: I
         label: "Силу тока I"
         requires: [U, R]
         formula: "U / R"
-        constraints:
-          - field: R
-            condition: "!="
-            value: 0
         steps:
           - "Формула: I = U/R"
           - "I = {U}/{R} = {result:.3f} А"
-      - id: U_from_Ir
+      - id: U_from_IR
         target: U
         label: "Напряжение U"
         requires: [I, R]
         formula: "I * R"
         steps:
           - "Из I = U/R: U = I·R"
-          - "U = {I}·{R} = {result:.3f} В"
-      - id: R_from_Ui
+          - "U = {I}·{R} = {result:.2f} В"
+      - id: R_from_UI
         target: R
         label: "Сопротивление R"
         requires: [U, I]
         formula: "U / I"
-        constraints:
-          - field: I
-            condition: "!="
-            value: 0
         steps:
           - "Из I = U/R: R = U/I"
-          - "R = {U}/{I} = {result:.3f} Ом"
-    explanation: "Закон Ома для участка цепи: I = U/R."
+          - "R = {U}/{I} = {result:.2f} Ом"
+    explanation: "Закон Ома: сила тока прямо пропорциональна напряжению и обратно пропорциональна сопротивлению."
 
-  - id: series_resistance
+  - id: series_circuit
     name: "Последовательное соединение"
     category: "Электричество"
     icon: "🔗"
-    image: "/static/img/series.svg"
-    description: "R = R₁ + R₂"
-    graph_type: "ohm"
+    description: "R = R₁ + R₂, I = I₁ = I₂, U = U₁ + U₂"
     variables:
       R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
       R2: { label: "Сопротивление R₂", unit: "Ом", type: float }
-      R:  { label: "Общее сопротивление R", unit: "Ом", type: float }
+      U: { label: "Общее напряжение U", unit: "В", type: float }
+      I: { label: "Сила тока I", unit: "А", type: float }
     solutions:
-      - id: R_from_r1r2
-        target: R
+      - id: Rtotal_from_R1R2
+        target: R_total
         label: "Общее сопротивление R"
         requires: [R1, R2]
         formula: "R1 + R2"
         steps:
           - "Формула: R = R₁ + R₂"
-          - "R = {R1} + {R2} = {result:.3f} Ом"
-      - id: R1_from_Rr2
-        target: R1
-        label: "Сопротивление R₁"
-        requires: [R, R2]
-        formula: "R - R2"
+          - "R = {R1} + {R2} = {result:.2f} Ом"
+      - id: U1_from_IR1
+        target: U1
+        label: "Напряжение U₁"
+        requires: [I, R1]
+        formula: "I * R1"
         steps:
-          - "Из R = R₁ + R₂: R₁ = R - R₂"
-          - "R₁ = {R} - {R2} = {result:.3f} Ом"
-      - id: R2_from_Rr1
-        target: R2
-        label: "Сопротивление R₂"
-        requires: [R, R1]
-        formula: "R - R1"
-        steps:
-          - "Из R = R₁ + R₂: R₂ = R - R₁"
-          - "R₂ = {R} - {R1} = {result:.3f} Ом"
-    explanation: "Последовательное соединение: R = R₁ + R₂."
+          - "Из закона Ома: U₁ = I·R₁"
+          - "U₁ = {I}·{R1} = {result:.2f} В"
+    explanation: "При последовательном соединении: R = R₁ + R₂, I = const."
 
-  - id: parallel_resistance
+  - id: parallel_circuit
     name: "Параллельное соединение"
     category: "Электричество"
     icon: "🔀"
-    image: "/static/img/parallel.svg"
-    description: "R = R₁·R₂ / (R₁ + R₂)"
-    graph_type: "ohm"
+    description: "1/R = 1/R₁ + 1/R₂"
     variables:
       R1: { label: "Сопротивление R₁", unit: "Ом", type: float }
       R2: { label: "Сопротивление R₂", unit: "Ом", type: float }
-      R:  { label: "Общее сопротивление R", unit: "Ом", type: float }
+      U: { label: "Напряжение U", unit: "В", type: float }
     solutions:
-      - id: R_from_r1r2
-        target: R
+      - id: Rtotal_parallel
+        target: R_total
         label: "Общее сопротивление R"
         requires: [R1, R2]
         formula: "R1 * R2 / (R1 + R2)"
-        constraints:
-          - expression: "R1 + R2"
-            condition: "!="
-            value: 0
         steps:
-          - "Формула: R = R₁·R₂ / (R₁ + R₂)"
-          - "R = {R1}·{R2} / ({R1} + {R2}) = {result:.3f} Ом"
-      - id: R1_from_Rr2
-        target: R1
-        label: "Сопротивление R₁"
-        requires: [R, R2]
-        formula: "R * R2 / (R2 - R)"
-        constraints:
-          - expression: "R2 - R"
-            condition: "!="
-            value: 0
+          - "Формула: R = (R₁·R₂)/(R₁ + R₂)"
+          - "R = ({R1}·{R2})/({R1}+{R2}) = {result:.2f} Ом"
+      - id: I1_from_UR1
+        target: I1
+        label: "Силу тока I₁"
+        requires: [U, R1]
+        formula: "U / R1"
         steps:
-          - "Из R = R₁·R₂/(R₁+R₂): R₁ = R·R₂ / (R₂ - R)"
-          - "R₁ = {R}·{R2} / ({R2} - {R}) = {result:.3f} Ом"
-      - id: R2_from_Rr1
-        target: R2
-        label: "Сопротивление R₂"
-        requires: [R, R1]
-        formula: "R * R1 / (R1 - R)"
-        constraints:
-          - expression: "R1 - R"
-            condition: "!="
-            value: 0
+          - "Из закона Ома: I₁ = U/R₁"
+          - "I₁ = {U}/{R1} = {result:.3f} А"
+    explanation: "При параллельном соединении: 1/R = 1/R₁ + 1/R₂, U = const."
+
+  - id: electrical_power
+    name: "Электрическая мощность"
+    category: "Электричество"
+    icon: "💡"
+    description: "P = U·I, P = I²·R, P = U²/R"
+    variables:
+      U: { label: "Напряжение U", unit: "В", type: float }
+      I: { label: "Сила тока I", unit: "А", type: float }
+      R: { label: "Сопротивление R", unit: "Ом", type: float }
+      P: { label: "Мощность P", unit: "Вт", type: float }
+      A: { label: "Работа A", unit: "Дж", type: float }
+      t: { label: "Время t", unit: "с", type: float }
+    solutions:
+      - id: P_from_UI
+        target: P
+        label: "Мощность P"
+        requires: [U, I]
+        formula: "U * I"
         steps:
-          - "Из R = R₁·R₂/(R₁+R₂): R₂ = R·R₁ / (R₁ - R)"
-          - "R₂ = {R}·{R1} / ({R1} - {R}) = {result:.3f} Ом"
-    explanation: "Параллельное соединение: R = R₁·R₂ / (R₁ + R₂)."
+          - "Формула: P = U·I"
+          - "P = {U}·{I} = {result:.2f} Вт"
+      - id: A_from_Pt
+        target: A
+        label: "Работу A"
+        requires: [P, t]
+        formula: "P * t"
+        steps:
+          - "Из P = A/t: A = P·t"
+          - "A = {P}·{t} = {result:.2f} Дж"
+    explanation: "Мощность электрического тока: P = U·I = I²·R = U²/R."

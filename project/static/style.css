@@ -40,12 +40,23 @@
 /* ---------- Основное ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 body {
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg);
     color: var(--text);
     min-height: 100vh;
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---------- Плавные переходы для всех элементов ---------- */
+.topbar, .stats-bar, .lesson-card, .task-panel, .form-group input, .form-group select {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* ---------- Шапка ---------- */
@@ -81,6 +92,10 @@ body {
 
 .logo:hover { color: var(--primary-hover); }
 
+.logo:hover .logo-icon {
+    transform: rotate(15deg) scale(1.1);
+}
+
 .logo-icon {
     width: 36px;
     height: 36px;
@@ -91,6 +106,7 @@ body {
     justify-content: center;
     color: white;
     font-size: 18px;
+    transition: transform 0.3s ease;
 }
 
 .topnav {
@@ -127,6 +143,9 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 6px 12px;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
 }
 
 .user-avatar {
@@ -140,11 +159,16 @@ body {
     color: white;
     font-weight: 700;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
 .user-name {
     font-weight: 600;
     font-size: 14px;
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .theme-btn {
@@ -199,6 +223,18 @@ main {
 /* ---------- Заголовки ---------- */
 .page-header {
     margin-bottom: 32px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.page-header .task-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
 
 .page-header h1 {
@@ -229,6 +265,15 @@ main {
     font-weight: 700;
 }
 
+.category-header {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .category-count {
     background: var(--primary-light);
     color: var(--primary);
@@ -236,6 +281,12 @@ main {
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .cards-grid {
@@ -260,11 +311,31 @@ main {
     box-shadow: var(--shadow-lg);
 }
 
+.lesson-card .card-body p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .card-cover {
     height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-cover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0.5;
 }
 
 .card-emoji {
@@ -350,6 +421,37 @@ main {
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---------- Анимация загрузки для кнопок ---------- */
+.btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .btn-primary-light {
@@ -439,6 +541,38 @@ main {
     border: 1px solid var(--danger);
 }
 
+/* ---------- Уведомления (toast) ---------- */
+.toast {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 320px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success {
+    border-left: 4px solid var(--success);
+}
+
+.toast-error {
+    border-left: 4px solid var(--danger);
+}
+
+.toast-info {
+    border-left: 4px solid var(--primary);
+}
+
 /* ---------- Страницы авторизации ---------- */
 .auth-container {
     display: flex;
@@ -455,6 +589,18 @@ main {
     max-width: 480px;
     width: 100%;
     box-shadow: var(--shadow-lg);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .auth-header {
@@ -527,6 +673,10 @@ main {
     background: var(--primary-light);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+.demo-btn:active {
+    transform: translateY(0);
 }
 
 .demo-avatar {
@@ -622,6 +772,12 @@ main {
     border-radius: var(--radius-sm);
     padding: 20px;
     text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 
 .stat-box .stat-icon {
@@ -639,6 +795,23 @@ main {
 .stat-box .stat-label {
     font-size: 13px;
     color: var(--text-secondary);
+}
+
+/* ---------- Прогресс-бар для XP ---------- */
+.xp-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.xp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #8b5cf6);
+    border-radius: 4px;
+    transition: width 0.5s ease;
 }
 
 .history-section {
@@ -679,6 +852,11 @@ main {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.history-table td small {
+    color: var(--text-secondary);
+    font-size: 11px;
 }
 
 .history-table td {
@@ -834,6 +1012,12 @@ main {
     text-align: center;
     padding: 40px 20px;
     color: var(--text-secondary);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.empty-state a {
+    display: inline-block;
+    margin-top: 16px;
 }
 
 /* ---------- Визуализация системы тел ---------- */
@@ -917,6 +1101,12 @@ main {
     border-radius: var(--radius);
     padding: 24px;
     box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .task-panel h2 {
@@ -956,6 +1146,12 @@ main {
     counter-increment: step;
     position: relative;
     padding-left: 50px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.steps-list li:hover {
+    transform: translateX(4px);
+    background: var(--primary-light);
 }
 
 .steps-list li::before {
@@ -982,6 +1178,12 @@ main {
     padding: 20px;
     border-radius: var(--radius);
     margin-top: 16px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+    50% { box-shadow: 0 4px 25px rgba(99, 102, 241, 0.5); }
 }
 
 .answer-box h2 {
@@ -1022,12 +1224,23 @@ main {
     font-size: 14px;
     line-height: 1.7;
     margin-top: 16px;
+    transition: box-shadow 0.2s ease;
+}
+
+.explanation:hover {
+    box-shadow: var(--shadow-sm);
 }
 
 .actions {
     display: flex;
     gap: 12px;
     margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.actions .btn {
+    flex: 1;
+    min-width: 140px;
 }
 
 /* ---------- Справочник ---------- */
@@ -1043,6 +1256,12 @@ main {
     border-radius: var(--radius);
     padding: 20px;
     box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reference-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
 }
 
 .reference-card h3 {
@@ -1078,11 +1297,19 @@ main {
 /* ---------- Блок подписки ---------- */
 .promo-banner {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
     border-radius: var(--radius);
     padding: 40px;
     margin-top: 48px;
     color: white;
     box-shadow: var(--shadow-lg);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .promo-content h3 {
@@ -1145,6 +1372,12 @@ main {
     font-size: 13px;
     border-top: 1px solid var(--border);
     margin-top: 48px;
+    background: var(--panel);
+}
+
+.site-footer a:hover {
+    color: var(--primary);
+    text-decoration: none;
 }
 
 /* ---------- Визуализация процесса ---------- */
@@ -1240,6 +1473,11 @@ main {
     font-size: 16px;
     line-height: 1.7;
     margin-bottom: 20px;
+    transition: box-shadow 0.2s ease;
+}
+
+.problem-statement:hover {
+    box-shadow: var(--shadow-sm);
 }
 
 .formulas-list {
@@ -1255,4 +1493,96 @@ main {
     font-size: 15px;
     font-weight: 500;
     border-left: 3px solid var(--success);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formulas-list li:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Конструктор — вкладки ---------- */
+.builder-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.tab-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.builder-tabs-inner {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.sub-tab-btn {
+    padding: 10px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.sub-tab-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.sub-tab-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.sub-tab-content {
+    display: none;
+}
+
+.sub-tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
 }

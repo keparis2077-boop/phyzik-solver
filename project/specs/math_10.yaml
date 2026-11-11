@@ -1,0 +1,131 @@
+# ============================================================
+# МАТЕМАТИКА — 10 КЛАСС
+# Степени, логарифмы, тригонометрические уравнения
+# ============================================================
+
+templates:
+  - id: logarithm
+    name: "Логарифм"
+    category: "Алгебра"
+    icon: "📊"
+    description: "logₐb = x, aˣ = b"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      b: { label: "Число b", unit: "", type: float }
+      x: { label: "Логарифм logₐb", unit: "", type: float }
+    solutions:
+      - id: log_from_ab
+        target: x
+        label: "Логарифм logₐb"
+        requires: [a, b]
+        formula: "math.log(b, a)"
+        steps:
+          - "Формула: logₐb = x, где aˣ = b"
+          - "log_{a}({b}) = {result:.4f}"
+    explanation: "Логарифм: logₐb — степень, в которую нужно возвести a, чтобы получить b."
+
+  - id: log_properties
+    name: "Свойства логарифмов"
+    category: "Алгебра"
+    icon: "📋"
+    description: "logₐ(bc) = logₐb + logₐc"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      b: { label: "Число b", unit: "", type: float }
+      c: { label: "Число c", unit: "", type: float }
+      log_bc: { label: "logₐ(bc)", unit: "", type: float }
+      log_b: { label: "logₐb", unit: "", type: float }
+      log_c: { label: "logₐc", unit: "", type: float }
+    solutions:
+      - id: log_product
+        target: log_bc
+        label: "logₐ(bc)"
+        requires: [a, b, c]
+        formula: "math.log(b*c, a)"
+        steps:
+          - "Свойство: logₐ(bc) = logₐb + logₐc"
+          - "log_{a}({b}·{c}) = log_{a}({b}) + log_{a}({c})"
+          - "= {math.log(b,a):.4f} + {math.log(c,a):.4f} = {result:.4f}"
+    explanation: "Логарифм произведения: logₐ(bc) = logₐb + logₐc."
+
+  - id: trig_equation_sin
+    name: "Простейшее тригонометрическое уравнение"
+    category: "Тригонометрия"
+    icon: "📐"
+    description: "sin x = a"
+    variables:
+      a: { label: "Значение sin x", unit: "", type: float }
+      x1: { label: "Решение x₁", unit: "рад", type: float }
+      x2: { label: "Решение x₂", unit: "рад", type: float }
+    solutions:
+      - id: x_from_sin
+        target: x1
+        label: "Решение x₁, x₂"
+        requires: [a]
+        formula: "complex"
+        steps:
+          - "Уравнение: sin x = {a}"
+          - "x₁ = arcsin({a}) = {math.asin(a):.4f} рад"
+          - "x₂ = π - arcsin({a}) = {3.14159 - math.asin(a):.4f} рад"
+    explanation: "Решение: x = (-1)ⁿ·arcsin a + πn."
+
+  - id: trig_equation_cos
+    name: "cos x = a"
+    category: "Тригонометрия"
+    icon: "📐"
+    description: "cos x = a"
+    variables:
+      a: { label: "Значение cos x", unit: "", type: float }
+      x1: { label: "Решение x₁", unit: "рад", type: float }
+      x2: { label: "Решение x₂", unit: "рад", type: float }
+    solutions:
+      - id: x_from_cos
+        target: x1
+        label: "Решение x₁, x₂"
+        requires: [a]
+        formula: "complex"
+        steps:
+          - "Уравнение: cos x = {a}"
+          - "x₁ = arccos({a}) = {math.acos(a):.4f} рад"
+          - "x₂ = -arccos({a}) = {-math.acos(a):.4f} рад"
+    explanation: "Решение: x = ±arccos a + 2πn."
+
+  - id: trig_equation_tan
+    name: "tg x = a"
+    category: "Тригонометрия"
+    icon: "📐"
+    description: "tg x = a"
+    variables:
+      a: { label: "Значение tg x", unit: "", type: float }
+      x: { label: "Решение x", unit: "рад", type: float }
+    solutions:
+      - id: x_from_tan
+        target: x
+        label: "Решение x"
+        requires: [a]
+        formula: "math.atan(a)"
+        steps:
+          - "Уравнение: tg x = {a}"
+          - "x = arctg({a}) = {result:.4f} рад"
+    explanation: "Решение: x = arctg a + πn."
+
+  - id: exponential_equation
+    name: "Показательное уравнение"
+    category: "Алгебра"
+    icon: "📈"
+    description: "aˣ = b"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      b: { label: "Значение b", unit: "", type: float }
+      x: { label: "Степень x", unit: "", type: float }
+    solutions:
+      - id: x_from_ab
+        target: x
+        label: "Степень x"
+        requires: [a, b]
+        formula: "math.log(b, a)"
+        steps:
+          - "Уравнение: aˣ = b"
+          - "x = logₐb = ln b / ln a"
+          - "x = ln({b})/ln({a}) = {result:.4f}"
+    explanation: "Показательное уравнение: x = logₐb."

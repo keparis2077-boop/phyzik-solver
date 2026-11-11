@@ -1,0 +1,128 @@
+# ============================================================
+# ТЕПЛОВЫЕ ЯВЛЕНИЯ — 8 КЛАСС
+# Теплоёмкость, плавление, парообразование, горение
+# ============================================================
+
+templates:
+  - id: heat_capacity
+    name: "Количество теплоты"
+    category: "Тепловые явления"
+    icon: "🌡️"
+    description: "Q = c·m·Δt"
+    variables:
+      c: { label: "Удельная теплоёмкость c", unit: "Дж/(кг·°C)", type: float }
+      m: { label: "Масса m", unit: "кг", type: float }
+      t1: { label: "Начальная температура t₁", unit: "°C", type: float }
+      t2: { label: "Конечная температура t₂", unit: "°C", type: float }
+      Q: { label: "Количество теплоты Q", unit: "Дж", type: float }
+    solutions:
+      - id: Q_from_cmt
+        target: Q
+        label: "Количество теплоты Q"
+        requires: [c, m, t1, t2]
+        formula: "c * m * (t2 - t1)"
+        steps:
+          - "Формула: Q = c·m·(t₂ - t₁)"
+          - "Δt = {t2} - {t1} = {t2-t1:.1f} °C"
+          - "Q = {c}·{m}·{t2-t1:.1f} = {result:.0f} Дж"
+      - id: m_from_Qct
+        target: m
+        label: "Массу m"
+        requires: [Q, c, t1, t2]
+        formula: "Q / (c * (t2 - t1))"
+        steps:
+          - "Из Q = c·m·Δt: m = Q/(c·Δt)"
+          - "m = {Q} / ({c}·{t2-t1:.1f}) = {result:.3f} кг"
+      - id: c_from_Qmt
+        target: c
+        label: "Удельную теплоёмкость c"
+        requires: [Q, m, t1, t2]
+        formula: "Q / (m * (t2 - t1))"
+        steps:
+          - "Из Q = c·m·Δt: c = Q/(m·Δt)"
+          - "c = {Q} / ({m}·{t2-t1:.1f}) = {result:.1f} Дж/(кг·°C)"
+    explanation: "Количество теплоты для нагрева: Q = c·m·Δt."
+
+  - id: melting
+    name: "Плавление / кристаллизация"
+    category: "Тепловые явления"
+    icon: "🧊"
+    description: "Q = λ·m"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      Q: { label: "Количество теплоты Q", unit: "Дж", type: float }
+      lambda_val: { label: "Уд. теплота плавления λ", unit: "Дж/кг", type: float }
+    solutions:
+      - id: Q_from_lambdam
+        target: Q
+        label: "Количество теплоты Q"
+        requires: [lambda_val, m]
+        formula: "lambda_val * m"
+        steps:
+          - "Формула: Q = λ·m"
+          - "Q = {lambda_val}·{m} = {result:.0f} Дж"
+      - id: m_from_Qlambda
+        target: m
+        label: "Массу m"
+        requires: [Q, lambda_val]
+        formula: "Q / lambda_val"
+        steps:
+          - "Из Q = λ·m: m = Q/λ"
+          - "m = {Q}/{lambda_val} = {result:.3f} кг"
+    explanation: "Теплота плавления: Q = λ·m."
+
+  - id: vaporization
+    name: "Парообразование"
+    category: "Тепловые явления"
+    icon: "💨"
+    description: "Q = L·m"
+    variables:
+      L: { label: "Уд. теплота парообразования L", unit: "Дж/кг", type: float }
+      m: { label: "Масса m", unit: "кг", type: float }
+      Q: { label: "Количество теплоты Q", unit: "Дж", type: float }
+    solutions:
+      - id: Q_from_Lm
+        target: Q
+        label: "Количество теплоты Q"
+        requires: [L, m]
+        formula: "L * m"
+        steps:
+          - "Формула: Q = L·m"
+          - "Q = {L}·{m} = {result:.0f} Дж"
+      - id: m_from_QL
+        target: m
+        label: "Массу m"
+        requires: [Q, L]
+        formula: "Q / L"
+        steps:
+          - "Из Q = L·m: m = Q/L"
+          - "m = {Q}/{L} = {result:.3f} кг"
+    explanation: "Теплота парообразования: Q = L·m."
+
+  - id: fuel_combustion
+    name: "Горение топлива"
+    category: "Тепловые явления"
+    icon: "🔥"
+    description: "Q = q·m"
+    variables:
+      q: { label: "Уд. теплота сгорания q", unit: "Дж/кг", type: float }
+      m: { label: "Масса топлива m", unit: "кг", type: float }
+      Q: { label: "Количество теплоты Q", unit: "Дж", type: float }
+    solutions:
+      - id: Q_from_qm
+        target: Q
+        label: "Количество теплоты Q"
+        requires: [q, m]
+        formula: "q * m"
+        steps:
+          - "Формула: Q = q·m"
+          - "Q = {q}·{m} = {result:.0f} Дж"
+      - id: m_from_qQ
+        target: m
+        label: "Массу топлива m"
+        requires: [Q, q]
+        formula: "Q / q"
+        steps:
+          - "Из Q = q·m: m = Q/q"
+          - "m = {Q}/{q} = {result:.3f} кг"
+    explanation: "Теплота сгорания топлива: Q = q·m."

@@ -5,7 +5,7 @@
 <div class="page-header">
     <div class="task-icon">📐</div>
     <h1>Математика</h1>
-    <p class="subtitle">Алгебра, геометрия и другие разделы</p>
+    <p class="subtitle">Алгебра, геометрия и тригонометрия — решайте задачи с пошаговым решением</p>
 </div>
 
 <!-- Алгебра -->
@@ -22,6 +22,7 @@
             </div>
             <div class="card-body">
                 <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
                 <div class="card-meta">
                     <span class="card-tag">Алгебра</span>
                     <span class="card-unknowns">{{ task.difficulty }} класс</span>
@@ -46,6 +47,7 @@
             </div>
             <div class="card-body">
                 <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
                 <div class="card-meta">
                     <span class="card-tag">Геометрия</span>
                     <span class="card-unknowns">{{ task.difficulty }} класс</span>
@@ -70,8 +72,84 @@
             </div>
             <div class="card-body">
                 <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
                 <div class="card-meta">
                     <span class="card-tag">Тригонометрия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Анализ -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>📉 Анализ</h2>
+        <span class="category-count">{{ analysis_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in analysis_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Анализ</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Векторы -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>➡️ Векторы</h2>
+        <span class="category-count">{{ vectors_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in vectors_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Векторы</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Теория вероятностей -->
+<section class="category-section">
+    <div class="category-header">
+        <h2>🎲 Теория вероятностей</h2>
+        <span class="category-count">{{ probability_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in probability_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Теория вероятностей</span>
                     <span class="card-unknowns">{{ task.difficulty }} класс</span>
                 </div>
             </div>

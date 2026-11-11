@@ -1,0 +1,109 @@
+# ============================================================
+# МЕХАНИКА — 7 КЛАСС
+# Равномерное движение, средняя скорость, плотность
+# ============================================================
+
+templates:
+  - id: uniform_motion
+    name: "Равномерное движение"
+    category: "Механика"
+    icon: "🚶"
+    description: "s = v·t — движение с постоянной скоростью"
+    graph_type: "motion"
+    variables:
+      s: { label: "Путь s", unit: "м", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      t: { label: "Время t", unit: "с", type: float }
+    solutions:
+      - id: s_from_vt
+        target: s
+        label: "Путь s"
+        requires: [v, t]
+        formula: "v * t"
+        steps:
+          - "Формула: s = v·t"
+          - "s = {v}·{t} = {result:.2f} м"
+      - id: v_from_st
+        target: v
+        label: "Скорость v"
+        requires: [s, t]
+        formula: "s / t"
+        constraints:
+          - field: t
+            condition: "!="
+            value: 0
+        steps:
+          - "Из s = v·t: v = s/t"
+          - "v = {s}/{t} = {result:.2f} м/с"
+      - id: t_from_sv
+        target: t
+        label: "Время t"
+        requires: [s, v]
+        formula: "s / v"
+        constraints:
+          - field: v
+            condition: "!="
+            value: 0
+        steps:
+          - "Из s = v·t: t = s/v"
+          - "t = {s}/{v} = {result:.2f} с"
+    explanation: "Равномерное движение: путь равен произведению скорости на время."
+
+  - id: average_speed
+    name: "Средняя скорость"
+    category: "Механика"
+    icon: "📊"
+    description: "vср = (s₁ + s₂) / (t₁ + t₂)"
+    variables:
+      s1: { label: "Путь s₁", unit: "м", type: float }
+      v1: { label: "Скорость v₁", unit: "м/с", type: float }
+      s2: { label: "Путь s₂", unit: "м", type: float }
+      v2: { label: "Скорость v₂", unit: "м/с", type: float }
+    solutions:
+      - id: vavg_from_paths
+        target: v_avg
+        label: "Среднюю скорость"
+        requires: [s1, v1, s2, v2]
+        formula: "(s1 + s2) / (s1/v1 + s2/v2)"
+        steps:
+          - "Формула: vср = (s₁ + s₂) / (t₁ + t₂)"
+          - "t₁ = s₁/v₁ = {s1}/{v1} = {s1/v1:.3f} с"
+          - "t₂ = s₂/v₂ = {s2}/{v2} = {s2/v2:.3f} с"
+          - "vср = ({s1} + {s2}) / ({s1/v1:.3f} + {s2/v2:.3f}) = {result:.2f} м/с"
+    explanation: "Средняя скорость — общий путь, делённый на общее время."
+
+  - id: density
+    name: "Плотность вещества"
+    category: "Механика"
+    icon: "⚖️"
+    description: "ρ = m / V"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      V: { label: "Объём V", unit: "м³", type: float }
+      rho: { label: "Плотность ρ", unit: "кг/м³", type: float }
+    solutions:
+      - id: rho_from_mV
+        target: rho
+        label: "Плотность ρ"
+        requires: [m, V]
+        formula: "m / V"
+        steps:
+          - "Формула: ρ = m/V"
+          - "ρ = {m}/{V} = {result:.2f} кг/м³"
+      - id: m_from_rhoV
+        target: m
+        label: "Массу m"
+        requires: [rho, V]
+        formula: "rho * V"
+        steps:
+          - "Из ρ = m/V: m = ρ·V"
+          - "m = {rho}·{V} = {result:.2f} кг"
+      - id: V_from_mrho
+        target: V
+        label: "Объём V"
+        requires: [m, rho]
+        formula: "m / rho"
+        steps:
+          - "Из ρ = m/V: V = m/ρ"
+          - "V = {m}/{rho} = {result:.4f} м³"
+    explanation: "Плотность — масса единицы объёма вещества."

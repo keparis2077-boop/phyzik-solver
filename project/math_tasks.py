@@ -166,14 +166,162 @@ MATH_TASKS = {
         'unknowns': ['a', 'b', 'c', 'alpha'],
         'solve': lambda data: solve_right_triangle(data),
     },
+
+    # ===== АНАЛИЗ =====
+    'derivative_power': {
+        'id': 'derivative_power',
+        'name': 'Производная степени',
+        'icon': '📉',
+        'category': 'Анализ',
+        'difficulty': '10-11',
+        'condition': 'Найдите производную функции f(x) = xⁿ в точке x',
+        'formulas': ["f'(x) = n · xⁿ⁻¹"],
+        'inputs': {
+            'n': {'label': 'n (степень)', 'placeholder': 'Например: 3'},
+            'x': {'label': 'x (точка вычисления)', 'placeholder': 'Например: 2'},
+        },
+        'solve': lambda data: solve_derivative_power(data),
+    },
+
+    'integral_power': {
+        'id': 'integral_power',
+        'name': 'Интеграл степени',
+        'icon': '📊',
+        'category': 'Анализ',
+        'difficulty': '11',
+        'condition': 'Вычислите определённый интеграл ∫(xⁿ) dx от a до b',
+        'formulas': ['∫xⁿ dx = xⁿ⁺¹/(n+1)'],
+        'inputs': {
+            'n': {'label': 'n (степень)', 'placeholder': 'Например: 2'},
+            'a': {'label': 'a (нижний предел)', 'placeholder': 'Например: 0'},
+            'b': {'label': 'b (верхний предел)', 'placeholder': 'Например: 3'},
+        },
+        'solve': lambda data: solve_integral_power(data),
+    },
+
+    'limit_function': {
+        'id': 'limit_function',
+        'name': 'Предел функции',
+        'icon': '🔍',
+        'category': 'Анализ',
+        'difficulty': '10-11',
+        'condition': 'Вычислите предел замечательной функции',
+        'formulas': ['lim(x→0) sin(x)/x = 1', 'lim(x→∞) (1+1/x)ˣ = e'],
+        'inputs': {
+            'type': {'label': 'Тип предела', 'placeholder': 'sin (sin(x)/x) или euler ((1+1/x)^x)', 'input_type': 'text'},
+        },
+        'solve': lambda data: solve_limit(data),
+    },
+
+    # ===== ВЕКТОРЫ =====
+    'vector_addition': {
+        'id': 'vector_addition',
+        'name': 'Сложение векторов',
+        'icon': '➡️',
+        'category': 'Векторы',
+        'difficulty': '9-10',
+        'condition': 'Найдите модуль суммы двух векторов и угол между суммой и первым вектором',
+        'formulas': ['|a + b| = √(a² + b² + 2ab·cos(γ))', 'α = arctan(b·sin(γ) / (a + b·cos(γ)))'],
+        'inputs': {
+            'a': {'label': 'Модуль вектора a', 'placeholder': 'Например: 5'},
+            'b': {'label': 'Модуль вектора b', 'placeholder': 'Например: 3'},
+            'angle': {'label': 'Угол γ между векторами (градусы)', 'placeholder': 'Например: 60'},
+        },
+        'solve': lambda data: solve_vector_addition(data),
+    },
+
+    'vector_scalar_product': {
+        'id': 'vector_scalar_product',
+        'name': 'Скалярное произведение',
+        'icon': '🔢',
+        'category': 'Векторы',
+        'difficulty': '10',
+        'condition': 'Вычислите скалярное произведение двух векторов',
+        'formulas': ['a · b = |a| · |b| · cos(γ)'],
+        'inputs': {
+            'a': {'label': 'Модуль вектора a', 'placeholder': 'Например: 4'},
+            'b': {'label': 'Модуль вектора b', 'placeholder': 'Например: 6'},
+            'angle': {'label': 'Угол γ (градусы)', 'placeholder': 'Например: 45'},
+        },
+        'solve': lambda data: solve_scalar_product(data),
+    },
+
+    'vector_projection': {
+        'id': 'vector_projection',
+        'name': 'Проекция вектора',
+        'icon': '📐',
+        'category': 'Векторы',
+        'difficulty': '10',
+        'condition': 'Найдите проекцию вектора a на направление вектора b',
+        'formulas': ['Pr_b(a) = |a| · cos(γ)'],
+        'inputs': {
+            'a': {'label': 'Модуль вектора a', 'placeholder': 'Например: 10'},
+            'angle': {'label': 'Угол γ между векторами (градусы)', 'placeholder': 'Например: 30'},
+        },
+        'solve': lambda data: solve_projection(data),
+    },
+
+    # ===== ТЕОРИЯ ВЕРОЯТНОСТЕЙ =====
+    'probability_classic': {
+        'id': 'probability_classic',
+        'name': 'Классическая вероятность',
+        'icon': '🎲',
+        'category': 'Теория вероятностей',
+        'difficulty': '9-10',
+        'condition': 'Вычислите вероятность по формуле P = m/n',
+        'formulas': ['P = m / n', 'm — благоприятные исходы', 'n — все исходы'],
+        'inputs': {
+            'm': {'label': 'm (благоприятные исходы)', 'placeholder': 'Например: 3'},
+            'n': {'label': 'n (все исходы)', 'placeholder': 'Например: 6'},
+        },
+        'solve': lambda data: solve_probability_classic(data),
+    },
+
+    'probability_combinatorics': {
+        'id': 'probability_combinatorics',
+        'name': 'Комбинаторика',
+        'icon': '🔢',
+        'category': 'Теория вероятностей',
+        'difficulty': '10-11',
+        'condition': 'Найдите число перестановок/размещений/сочетаний',
+        'formulas': ['P(n) = n!', 'A(n,k) = n!/(n-k)!', 'C(n,k) = n!/(k!(n-k)!)'],
+        'inputs': {
+            'n': {'label': 'n (элементов)', 'placeholder': 'Например: 5'},
+            'k': {'label': 'k (выбираем)', 'placeholder': 'Например: 3'},
+            'method': {'label': 'Метод (permutation/arrangement/combination)', 'placeholder': 'combination', 'input_type': 'text'},
+        },
+        'solve': lambda data: solve_combinatorics(data),
+    },
+
+    'probability_distribution': {
+        'id': 'probability_distribution',
+        'name': 'Распределение Бернулли',
+        'icon': '📊',
+        'category': 'Теория вероятностей',
+        'difficulty': '11',
+        'condition': 'Вычислите вероятность по формуле Бернулли (biномное распределение)',
+        'formulas': ['P(k,n) = C(n,k) · pᵏ · (1-p)ⁿ⁻ᵏ'],
+        'inputs': {
+            'n': {'label': 'n (испытаний)', 'placeholder': 'Например: 10'},
+            'k': {'label': 'k (успехов)', 'placeholder': 'Например: 3'},
+            'p': {'label': 'p (вероятность успеха)', 'placeholder': 'Например: 0.5'},
+        },
+        'solve': lambda data: solve_probability_distribution(data),
+    },
 }
 
 
 def solve_quadratic(data):
     """Решение квадратного уравнения"""
-    a = float(data.get('a', 0))
-    b = float(data.get('b', 0))
-    c = float(data.get('c', 0))
+    def to_float(key):
+        val = data.get(key, '0')
+        if not val or val.strip() == '':
+            return 0.0
+        return float(val)
+    
+    a = to_float('a')
+    b = to_float('b')
+    c = to_float('c')
     
     if a == 0:
         raise ValueError("a не может быть 0 для квадратного уравнения")
@@ -204,8 +352,14 @@ def solve_quadratic(data):
 
 def solve_linear(data):
     """Решение линейного уравнения"""
-    a = float(data.get('a', 0))
-    b = float(data.get('b', 0))
+    def to_float(key):
+        val = data.get(key, '0')
+        if not val or val.strip() == '':
+            return 0.0
+        return float(val)
+    
+    a = to_float('a')
+    b = to_float('b')
     
     if a == 0:
         if b == 0:
@@ -223,8 +377,14 @@ def solve_linear(data):
 
 def solve_system(data):
     """Решение системы уравнений"""
-    a1, b1, c1 = float(data.get('a1', 0)), float(data.get('b1', 0)), float(data.get('c1', 0))
-    a2, b2, c2 = float(data.get('a2', 0)), float(data.get('b2', 0)), float(data.get('c2', 0))
+    def to_float(key):
+        val = data.get(key, '0')
+        if not val or val.strip() == '':
+            return 0.0
+        return float(val)
+    
+    a1, b1, c1 = to_float('a1'), to_float('b1'), to_float('c1')
+    a2, b2, c2 = to_float('a2'), to_float('b2'), to_float('c2')
     
     D = a1*b2 - a2*b1
     
@@ -248,6 +408,18 @@ def solve_triangle_area(data):
     a = data.get('a', '').strip()
     h = data.get('h', '').strip()
     S = data.get('S', '').strip()
+    
+    # Fallback для задач без выбора unknown
+    if not unknown:
+        filled = [k for k, v in [('a', a), ('h', h), ('S', S)] if v]
+        if len(filled) == 2:
+            missing = ['a', 'h', 'S']
+            for m in missing:
+                if m not in filled:
+                    unknown = m
+                    break
+        else:
+            unknown = 'S'
     
     if not unknown:
         raise ValueError("Выберите, что нужно найти!")
@@ -298,8 +470,17 @@ def solve_circle_area(data):
     r = data.get('r', '').strip()
     S = data.get('S', '').strip()
     
+    # Fallback для задач без выбора unknown
     if not unknown:
-        raise ValueError("Выберите, что нужно найти!")
+        if r:
+            unknown = 'S'
+        elif S:
+            unknown = 'r'
+        else:
+            raise ValueError("Введите радиус или площадь")
+    
+    r_val = float(r) if r else None
+    S_val = float(S) if S else None
     
     r_val = float(r) if r else None
     S_val = float(S) if S else None
@@ -333,6 +514,18 @@ def solve_pythagorean(data):
     a = data.get('a', '').strip()
     b = data.get('b', '').strip()
     c = data.get('c', '').strip()
+    
+    # Fallback для задач без выбора unknown
+    if not unknown:
+        filled = [k for k, v in [('a', a), ('b', b), ('c', c)] if v]
+        if len(filled) == 2:
+            missing = ['a', 'b', 'c']
+            for m in missing:
+                if m not in filled:
+                    unknown = m
+                    break
+        else:
+            unknown = 'c'
     
     if not unknown:
         raise ValueError("Выберите, что нужно найти!")
@@ -383,8 +576,18 @@ def solve_trig_functions(data):
     cos_val = data.get('cos', '').strip()
     tan_val = data.get('tan', '').strip()
     
+    # Fallback для задач без выбора unknown
     if not unknown:
-        raise ValueError("Выберите, что нужно найти!")
+        if angle:
+            unknown = 'sin'
+        elif sin_val:
+            unknown = 'angle'
+        elif cos_val:
+            unknown = 'angle'
+        elif tan_val:
+            unknown = 'angle'
+        else:
+            raise ValueError("Введите угол или тригонометрическое значение")
     
     angle_val = float(angle) if angle else None
     sin_input = float(sin_val) if sin_val else None
@@ -487,6 +690,18 @@ def solve_law_of_cosines(data):
     gamma = data.get('gamma', '').strip()
     c = data.get('c', '').strip()
     
+    # Fallback для задач без выбора unknown
+    if not unknown:
+        filled = [k for k, v in [('a', a), ('b', b), ('gamma', gamma), ('c', c)] if v]
+        if len(filled) == 3:
+            missing = ['a', 'b', 'gamma', 'c']
+            for m in missing:
+                if m not in filled:
+                    unknown = m
+                    break
+        else:
+            unknown = 'c'
+    
     if not unknown:
         raise ValueError("Выберите, что нужно найти!")
     
@@ -581,6 +796,18 @@ def solve_right_triangle(data):
     c = data.get('c', '').strip()
     alpha = data.get('alpha', '').strip()
     
+    # Fallback для задач без выбора unknown
+    if not unknown:
+        filled = [k for k, v in [('a', a), ('b', b), ('c', c), ('alpha', alpha)] if v]
+        if len(filled) >= 2:
+            missing = ['a', 'b', 'c', 'alpha']
+            for m in missing:
+                if m not in filled:
+                    unknown = m
+                    break
+        else:
+            unknown = 'c'
+    
     if not unknown:
         raise ValueError("Выберите, что нужно найти!")
     
@@ -588,6 +815,17 @@ def solve_right_triangle(data):
     b_val = float(b) if b else None
     c_val = float(c) if c else None
     alpha_val = float(alpha) if alpha else None
+    
+    # Если unknown не определён fallback'ом, определяем по заполненным полям
+    if not unknown:
+        if a_val is not None and b_val is not None:
+            unknown = 'c'
+        elif a_val is not None and c_val is not None:
+            unknown = 'b'
+        elif b_val is not None and c_val is not None:
+            unknown = 'a'
+        else:
+            unknown = 'c'
     
     steps = []
     results = {}
@@ -695,3 +933,275 @@ def solve_right_triangle(data):
     explanation = "Прямоугольный треугольник решается по теореме Пифагора и тригонометрическим функциям. Сумма острых углов = 90°."
     
     return results, steps, explanation
+
+
+# ===== ФУНКЦИИ ДЛЯ АНАЛИЗА =====
+
+def solve_derivative_power(data):
+    """Производная степени: f(x) = xⁿ"""
+    import math
+    n = float(data.get('n', '0'))
+    x = float(data.get('x', '0'))
+    
+    # f'(x) = n * x^(n-1)
+    if x == 0 and n - 1 < 0:
+        raise ValueError("Производная не определена в точке x = 0")
+    
+    derivative = n * (x ** (n - 1))
+    steps = [
+        f"Дано: f(x) = x^{n}",
+        f"f'(x) = n · xⁿ⁻¹ = {n} · x^{n-1}",
+        f"f'({x}) = {n} · ({x})^{n-1} = {derivative:.4f}",
+    ]
+    return {'f\'(x)': f'{derivative:.4f}'}, steps, "Производная степени: d/dx(xⁿ) = n·xⁿ⁻¹"
+
+
+def solve_integral_power(data):
+    """Определённый интеграл: ∫(xⁿ) dx от a до b"""
+    import math
+    n = float(data.get('n', '0'))
+    a = float(data.get('a', '0'))
+    b = float(data.get('b', '0'))
+    
+    if n == -1:
+        raise ValueError("Для n = -1 используется ln|x|")
+    
+    # F(x) = xⁿ⁺¹/(n+1)
+    F_a = (a ** (n + 1)) / (n + 1)
+    F_b = (b ** (n + 1)) / (n + 1)
+    result = F_b - F_a
+    
+    steps = [
+        f"Дано: ∫(x^{n}) dx от {a} до {b}",
+        f"Первообразная: F(x) = xⁿ⁺¹/(n+1) = x^{n+1}/{n+1}",
+        f"F({b}) = {b}^{n+1}/{n+1} = {F_b:.4f}",
+        f"F({a}) = {a}^{n+1}/{n+1} = {F_a:.4f}",
+        f"∫ = F({b}) - F({a}) = {F_b:.4f} - {F_a:.4f} = {result:.4f}",
+    ]
+    return {'∫': f'{result:.4f}'}, steps, "Определённый интеграл вычисляется по формуле Ньютона-Лейбница"
+
+
+def solve_limit(data):
+    """Предел функции — замечательные пределы"""
+    import math
+    limit_type = data.get('type', '').strip().lower()
+    
+    if limit_type in ['sinx', 'sin(x)/x', 'sin']:
+        # lim(x→0) sin(x)/x = 1
+        steps = [
+            "lim(x→0) sin(x)/x",
+            "Это первый замечательный предел",
+            "lim(x→0) sin(x)/x = 1",
+        ]
+        return {'lim': '1'}, steps, "Первый замечательный предел: lim(x→0) sin(x)/x = 1"
+    
+    elif limit_type in ['exp', '(1+1/x)^x', 'euler', 'число e']:
+        # lim(x→∞) (1+1/x)^x = e
+        steps = [
+            "lim(x→∞) (1+1/x)ˣ",
+            "Это определение числа Эйлера (второй замечательный предел)",
+            "lim(x→∞) (1+1/x)ˣ = e ≈ 2.71828",
+        ]
+        return {'lim': '2.71828'}, steps, "Второй замечательный предел: lim(x→∞) (1+1/x)ˣ = e"
+    
+    else:
+        raise ValueError("Укажите тип предела: 'sin' (sin(x)/x) или 'euler' ((1+1/x)^x)")
+
+
+# ===== ФУНКЦИИ ДЛЯ ВЕКТОРОВ =====
+
+def solve_vector_addition(data):
+    """Сложение векторов"""
+    import math
+    a = float(data.get('a', '0'))
+    b = float(data.get('b', '0'))
+    angle = float(data.get('angle', '0'))
+    
+    angle_rad = math.radians(angle)
+    
+    # |a + b| = √(a² + b² + 2ab·cos(γ))
+    result = (a**2 + b**2 + 2*a*b*math.cos(angle_rad))**0.5
+    
+    # Угол между суммой и вектором a
+    # tan(α) = b·sin(γ) / (a + b·cos(γ))
+    denominator = a + b * math.cos(angle_rad)
+    if abs(denominator) > 1e-10:
+        alpha = math.degrees(math.atan2(b * math.sin(angle_rad), denominator))
+    else:
+        alpha = 90.0
+    
+    steps = [
+        f"Дано: |a| = {a}, |b| = {b}, γ = {angle}°",
+        f"γ в радианах: {angle_rad:.4f} рад",
+        f"|a + b| = √(a² + b² + 2ab·cos(γ))",
+        f"|a + b| = √({a}² + {b}² + 2·{a}·{b}·cos({angle}°))",
+        f"|a + b| = √({a**2} + {b**2} + {2*a*b}·{math.cos(angle_rad):.4f})",
+        f"|a + b| = √{a**2 + b**2 + 2*a*b*math.cos(angle_rad):.4f} = {result:.2f}",
+        f"Угол α между суммой и вектором a: α = {alpha:.2f}°",
+    ]
+    return {
+        '|a+b|': f'{result:.2f}',
+        'α': f'{alpha:.2f}°'
+    }, steps, "Сложение векторов: модуль суммы находится по теореме косинусов"
+
+
+def solve_scalar_product(data):
+    """Скалярное произведение"""
+    import math
+    a = float(data.get('a', '0'))
+    b = float(data.get('b', '0'))
+    angle = float(data.get('angle', '0'))
+    
+    angle_rad = math.radians(angle)
+    scalar = a * b * math.cos(angle_rad)
+    
+    steps = [
+        f"Дано: |a| = {a}, |b| = {b}, γ = {angle}°",
+        f"a · b = |a| · |b| · cos(γ)",
+        f"a · b = {a} · {b} · cos({angle}°)",
+        f"a · b = {a*b} · {math.cos(angle_rad):.4f} = {scalar:.4f}",
+    ]
+    
+    # Проверка: если скалярное = 0, векторы перпендикулярны
+    if abs(scalar) < 1e-6:
+        steps.append("a · b ≈ 0 → векторы перпендикулярны (γ = 90°)")
+    
+    return {'a·b': f'{scalar:.4f}'}, steps, "Скалярное произведение: a·b = |a|·|b|·cos(γ)"
+
+
+def solve_projection(data):
+    """Проекция вектора"""
+    import math
+    a = float(data.get('a', '0'))
+    angle = float(data.get('angle', '0'))
+    
+    angle_rad = math.radians(angle)
+    projection = a * math.cos(angle_rad)
+    
+    steps = [
+        f"Дано: |a| = {a}, |b| = {b}, γ = {angle}°",
+        f"Pr_b(a) = |a| · cos(γ)",
+        f"Pr_b(a) = {a} · cos({angle}°)",
+        f"Pr_b(a) = {a} · {math.cos(angle_rad):.4f} = {projection:.4f}",
+    ]
+    
+    if projection > 0:
+        steps.append("Проекция положительна → острый угол между векторами")
+    elif projection < 0:
+        steps.append("Проекция отрицательна → тупой угол между векторами")
+    else:
+        steps.append("Проекция равна 0 → векторы перпендикулярны")
+    
+    return {'Pr_b(a)': f'{projection:.4f}'}, steps, "Проекция вектора: Pr_b(a) = |a|·cos(γ)"
+
+
+# ===== ФУНКЦИИ ДЛЯ ТЕОРИИ ВЕРОЯТНОСТЕЙ =====
+
+def solve_probability_classic(data):
+    """Классическая вероятность"""
+    m = int(data.get('m', '0'))
+    n = int(data.get('n', '1'))
+    
+    if n == 0:
+        raise ValueError("Общее число исходов не может быть 0")
+    if m < 0 or m > n:
+        raise ValueError("m должно быть в диапазоне [0, n]")
+    
+    probability = m / n
+    percentage = probability * 100
+    
+    steps = [
+        f"Дано: m = {m} (благоприятные), n = {n} (все исходы)",
+        f"P = m / n = {m} / {n} = {probability:.4f}",
+        f"P = {percentage:.2f}%",
+    ]
+    return {
+        'P': f'{probability:.4f}',
+        'P(%)': f'{percentage:.2f}%'
+    }, steps, "Классическая вероятность: P = m/n"
+
+
+def solve_combinatorics(data):
+    """Комбинаторика: перестановки, размещения, сочетания"""
+    import math
+    n = int(data.get('n', '0'))
+    k = int(data.get('k', '0'))
+    method = data.get('method', 'combination').strip().lower()
+    
+    if k < 0 or k > n:
+        raise ValueError("k должно быть в диапазоне [0, n]")
+    
+    if method in ['permutation', 'p', 'перестановк']:
+        # P(n) = n!
+        count = math.factorial(n)
+        formula = f"P({n}) = {n}!"
+        steps = [
+            f"Метод: перестановки",
+            f"Формула: P(n) = n!",
+            f"{formula} = {count}",
+        ]
+    
+    elif method in ['arrangement', 'a', 'размещение']:
+        # A(n,k) = n!/(n-k)!
+        count = math.factorial(n) // math.factorial(n - k)
+        formula = f"A({n},{k})"
+        steps = [
+            f"Метод: размещения",
+            f"Формула: A(n,k) = n!/(n-k)!",
+            f"{formula} = {n}! / ({n}-{k})! = {n}! / {n-k}!",
+            f"{formula} = {math.factorial(n)} / {math.factorial(n-k)} = {count}",
+        ]
+    
+    elif method in ['combination', 'c', 'сочетание']:
+        # C(n,k) = n!/(k!(n-k)!)
+        count = math.comb(n, k)
+        formula = f"C({n},{k})"
+        steps = [
+            f"Метод: сочетания",
+            f"Формула: C(n,k) = n!/(k!(n-k)!)",
+            f"{formula} = {n}! / ({k}! · {n-k}!)",
+            f"{formula} = {math.factorial(n)} / ({math.factorial(k)} · {math.factorial(n-k)}) = {count}",
+        ]
+    
+    else:
+        raise ValueError("Неизвестный метод. Используйте: permutation, arrangement, combination")
+    
+    return {
+        'count': str(count),
+        'formula': formula
+    }, steps, f"Комбинаторика: {formula} = {count}"
+
+
+def solve_probability_distribution(data):
+    """Формула Бернулли (биномиальное распределение)"""
+    import math
+    n = int(data.get('n', '0'))
+    k = int(data.get('k', '0'))
+    p = float(data.get('p', '0'))
+    
+    if n <= 0:
+        raise ValueError("n должно быть > 0")
+    if k < 0 or k > n:
+        raise ValueError("k должно быть в диапазоне [0, n]")
+    if p < 0 or p > 1:
+        raise ValueError("p должно быть в диапазоне [0, 1]")
+    
+    # C(n,k) * p^k * (1-p)^(n-k)
+    c_nk = math.comb(n, k)
+    prob = c_nk * (p ** k) * ((1 - p) ** (n - k))
+    expected = n * p
+    
+    steps = [
+        f"Дано: n = {n} (испытаний), k = {k} (успехов), p = {p}",
+        f"Формула Бернулли: P(k,n) = C(n,k) · pᵏ · (1-p)ⁿ⁻ᵏ",
+        f"C({n},{k}) = {c_nk}",
+        f"pᵏ = {p}^{k} = {p**k:.6f}",
+        f"(1-p)ⁿ⁻ᵏ = {1-p}^{n-k} = {(1-p)**(n-k):.6f}",
+        f"P({k},{n}) = {c_nk} · {p**k:.6f} · {(1-p)**(n-k):.6f} = {prob:.6f}",
+        f"Мат. ожидание: M = n·p = {n}·{p} = {expected:.2f}",
+    ]
+    return {
+        'P(k,n)': f'{prob:.6f}',
+        'M': f'{expected:.2f}',
+        'D': f'{n * p * (1-p):.4f}',
+    }, steps, "Формула Бернулли: P(k,n) = C(n,k) · pᵏ · (1-p)ⁿ⁻ᵏ"

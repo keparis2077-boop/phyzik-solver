@@ -1,0 +1,182 @@
+# ============================================================
+# ДИНАМИКА — 7-9 КЛАСС
+# Сила тяжести, трение, упругость, второй закон Ньютона
+# ============================================================
+
+templates:
+  - id: gravity_force
+    name: "Сила тяжести"
+    category: "Динамика"
+    icon: "🌍"
+    description: "F = m·g"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      g: { label: "Ускорение свободного падения g", unit: "м/с²", type: float }
+      F: { label: "Сила тяжести F", unit: "Н", type: float }
+    solutions:
+      - id: F_from_mg
+        target: F
+        label: "Силу тяжести F"
+        requires: [m, g]
+        formula: "m * g"
+        steps:
+          - "Формула: F = m·g"
+          - "F = {m}·{g} = {result:.2f} Н"
+      - id: m_from_Fg
+        target: m
+        label: "Массу m"
+        requires: [F, g]
+        formula: "F / g"
+        steps:
+          - "Из F = m·g: m = F/g"
+          - "m = {F}/{g} = {result:.3f} кг"
+    explanation: "Сила тяжести: F = m·g, где g ≈ 9.8 м/с²."
+
+  - id: elastic_force
+    name: "Сила упругости (закон Гука)"
+    category: "Динамика"
+    icon: "🔩"
+    description: "F = k·|x|"
+    variables:
+      k: { label: "Жёсткость k", unit: "Н/м", type: float }
+      x: { label: "Деформация x", unit: "м", type: float }
+      F: { label: "Сила упругости F", unit: "Н", type: float }
+    solutions:
+      - id: F_from_kx
+        target: F
+        label: "Силу упругости F"
+        requires: [k, x]
+        formula: "k * abs(x)"
+        steps:
+          - "Формула: F = k·|x|"
+          - "F = {k}·{abs(x):.4f} = {result:.2f} Н"
+      - id: k_from_Fx
+        target: k
+        label: "Жёсткость k"
+        requires: [F, x]
+        formula: "F / abs(x)"
+        steps:
+          - "Из F = k·|x|: k = F/|x|"
+          - "k = {F}/{abs(x):.4f} = {result:.2f} Н/м"
+    explanation: "Закон Гука: сила упругости пропорциональна деформации."
+
+  - id: friction_force
+    name: "Сила трения"
+    category: "Динамика"
+    icon: "🛷"
+    description: "Fтр = μ·N"
+    variables:
+      mu: { label: "Коэффициент трения μ", unit: "", type: float }
+      m: { label: "Масса m", unit: "кг", type: float }
+      g: { label: "Ускорение свободного падения g", unit: "м/с²", type: float }
+      F: { label: "Сила трения Fтр", unit: "Н", type: float }
+    solutions:
+      - id: F_from_mumg
+        target: F
+        label: "Силу трения Fтр"
+        requires: [mu, m, g]
+        formula: "mu * m * g"
+        steps:
+          - "Формула: Fтр = μ·N = μ·m·g"
+          - "Fтр = {mu}·{m}·{g} = {result:.2f} Н"
+      - id: mu_from_Fmg
+        target: mu
+        label: "Коэффициент трения μ"
+        requires: [F, m, g]
+        formula: "F / (m * g)"
+        steps:
+          - "Из Fтр = μ·m·g: μ = F/(m·g)"
+          - "μ = {F}/({m}·{g}) = {result:.3f}"
+    explanation: "Сила трения скольжения: Fтр = μ·N."
+
+  - id: newton_second
+    name: "Второй закон Ньютона"
+    category: "Динамика"
+    icon: "🏃"
+    description: "F = m·a"
+    variables:
+      F: { label: "Сила F", unit: "Н", type: float }
+      m: { label: "Масса m", unit: "кг", type: float }
+      a: { label: "Ускорение a", unit: "м/с²", type: float }
+    solutions:
+      - id: F_from_ma
+        target: F
+        label: "Силу F"
+        requires: [m, a]
+        formula: "m * a"
+        steps:
+          - "Формула: F = m·a"
+          - "F = {m}·{a} = {result:.2f} Н"
+      - id: a_from_Fm
+        target: a
+        label: "Ускорение a"
+        requires: [F, m]
+        formula: "F / m"
+        steps:
+          - "Из F = m·a: a = F/m"
+          - "a = {F}/{m} = {result:.3f} м/с²"
+      - id: m_from_Fa
+        target: m
+        label: "Массу m"
+        requires: [F, a]
+        formula: "F / a"
+        steps:
+          - "Из F = m·a: m = F/a"
+          - "m = {F}/{a} = {result:.3f} кг"
+    explanation: "Второй закон Ньютона: ускорение прямо пропорционально силе и обратно пропорционально массе."
+
+  - id: momentum
+    name: "Импульс тела"
+    category: "Динамика"
+    icon: "💨"
+    description: "p = m·v"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      p: { label: "Импульс p", unit: "кг·м/с", type: float }
+    solutions:
+      - id: p_from_mv
+        target: p
+        label: "Импульс p"
+        requires: [m, v]
+        formula: "m * v"
+        steps:
+          - "Формула: p = m·v"
+          - "p = {m}·{v} = {result:.2f} кг·м/с"
+      - id: v_from_pm
+        target: v
+        label: "Скорость v"
+        requires: [p, m]
+        formula: "p / m"
+        steps:
+          - "Из p = m·v: v = p/m"
+          - "v = {p}/{m} = {result:.3f} м/с"
+    explanation: "Импульс тела: p = m·v."
+
+  - id: weight
+    name: "Вес тела"
+    category: "Динамика"
+    icon: "⚖️"
+    description: "P = m·g"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      g: { label: "Ускорение свободного падения g", unit: "м/с²", type: float }
+      P: { label: "Вес P", unit: "Н", type: float }
+    solutions:
+      - id: P_from_mg
+        target: P
+        label: "Вес P"
+        requires: [m, g]
+        formula: "m * g"
+        steps:
+          - "Формула: P = m·g"
+          - "P = {m}·{g} = {result:.2f} Н"
+      - id: m_from_Pg
+        target: m
+        label: "Массу m"
+        requires: [P, g]
+        formula: "P / g"
+        steps:
+          - "Из P = m·g: m = P/g"
+          - "m = {P}/{g} = {result:.3f} кг"
+    explanation: "Вес — сила, с которой тело давит на опору или растягивает подвес."

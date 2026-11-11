@@ -1,0 +1,92 @@
+# ============================================================
+# ОПТИКА — 7-8 КЛАСС
+# Закон отражения, преломление, линзы
+# ============================================================
+
+templates:
+  - id: refraction_angle
+    name: "Закон преломления света"
+    category: "Оптика"
+    icon: "🔍"
+    description: "n₁·sin(α) = n₂·sin(β)"
+    variables:
+      n1: { label: "Показатель преломления n₁", unit: "", type: float }
+      n2: { label: "Показатель преломления n₂", unit: "", type: float }
+      alpha: { label: "Угол падения α", unit: "градусы", type: float }
+      beta: { label: "Угол преломления β", unit: "градусы", type: float }
+    solutions:
+      - id: beta_from_n1n2alpha
+        target: beta
+        label: "Угол преломления β"
+        requires: [n1, n2, alpha]
+        formula: "degrees(asin(n1*sin(radians(alpha))/n2))"
+        steps:
+          - "Закон Снеллиуса: n₁·sin(α) = n₂·sin(β)"
+          - "sin(β) = n₁·sin(α)/n₂ = {n1}·sin({alpha}°)/{n2} = {n1*sin(radians(alpha))/n2:.4f}"
+          - "β = arcsin({n1*sin(radians(alpha))/n2:.4f}) = {result:.2f}°"
+      - id: n2_from_n1alpha
+        target: n2
+        label: "Показатель преломления n₂"
+        requires: [n1, alpha, beta]
+        formula: "n1 * sin(radians(alpha)) / sin(radians(beta))"
+        steps:
+          - "Из закона Снеллиуса: n₂ = n₁·sin(α)/sin(β)"
+          - "n₂ = {n1}·sin({alpha}°)/sin({beta}°) = {result:.3f}"
+    explanation: "Закон преломления: n₁·sin(α) = n₂·sin(β)."
+
+  - id: thin_lens
+    name: "Тонкая линза"
+    category: "Оптика"
+    icon: "🔬"
+    description: "1/F = 1/d + 1/f, Γ = f/d"
+    variables:
+      F: { label: "Фокусное расстояние F", unit: "см", type: float }
+      d: { label: "Расстояние d", unit: "см", type: float }
+      f: { label: "Расстояние f (изображение)", unit: "см", type: float }
+      H: { label: "Высота предмета H", unit: "см", type: float }
+      h: { label: "Высота изображения h", unit: "см", type: float }
+    solutions:
+      - id: F_from_df
+        target: F
+        label: "Фокусное расстояние F"
+        requires: [d, f]
+        formula: "d * f / (d + f)"
+        steps:
+          - "Формула тонкой линзы: 1/F = 1/d + 1/f"
+          - "F = d·f/(d+f) = {d}·{f}/({d}+{f}) = {result:.2f} см"
+      - id: magnification
+        target: Gamma
+        label: "Увеличение Γ"
+        requires: [d, f]
+        formula: "f / d"
+        steps:
+          - "Формула увеличения: Γ = f/d"
+          - "Γ = {f}/{d} = {result:.3f}"
+    explanation: "Формула тонкой линзы: 1/F = 1/d + 1/f."
+
+  - id: optical_power
+    name: "Оптическая сила линзы"
+    category: "Оптика"
+    icon: "👓"
+    description: "D = 1/F"
+    variables:
+      F: { label: "Фокусное расстояние F", unit: "м", type: float }
+      D: { label: "Оптическая сила D", unit: "дптр", type: float }
+    solutions:
+      - id: D_from_F
+        target: D
+        label: "Оптическую силу D"
+        requires: [F]
+        formula: "1 / F"
+        steps:
+          - "Формула: D = 1/F"
+          - "D = 1/{F} = {result:.2f} дптр"
+      - id: F_from_D
+        target: F
+        label: "Фокусное расстояние F"
+        requires: [D]
+        formula: "1 / D"
+        steps:
+          - "Из D = 1/F: F = 1/D"
+          - "F = 1/{D} = {result:.2f} м"
+    explanation: "Оптическая сила: D = 1/F, измеряется в диоптриях."

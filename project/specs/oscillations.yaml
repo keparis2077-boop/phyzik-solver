@@ -1,0 +1,134 @@
+# ============================================================
+# КОЛЕБАНИЯ И ВОЛНЫ — 9 КЛАСС
+# Период, частота, длина волны, маятник
+# ============================================================
+
+templates:
+  - id: frequency_period
+    name: "Период и частота"
+    category: "Колебания и волны"
+    icon: "〰️"
+    description: "ν = 1/T, ν = N/t"
+    variables:
+      T: { label: "Период T", unit: "с", type: float }
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      N: { label: "Число колебаний N", unit: "", type: float }
+      t: { label: "Время t", unit: "с", type: float }
+    solutions:
+      - id: nu_from_T
+        target: nu
+        label: "Частоту ν"
+        requires: [T]
+        formula: "1 / T"
+        steps:
+          - "Формула: ν = 1/T"
+          - "ν = 1/{T} = {result:.3f} Гц"
+      - id: T_from_nu
+        target: T
+        label: "Период T"
+        requires: [nu]
+        formula: "1 / nu"
+        steps:
+          - "Из ν = 1/T: T = 1/ν"
+          - "T = 1/{nu} = {result:.3f} с"
+      - id: nu_from_Nt
+        target: nu
+        label: "Частоту ν"
+        requires: [N, t]
+        formula: "N / t"
+        steps:
+          - "Формула: ν = N/t"
+          - "ν = {N}/{t} = {result:.3f} Гц"
+    explanation: "Частота — число колебаний в единицу времени."
+
+  - id: wave
+    name: "Длина волны"
+    category: "Колебания и волны"
+    icon: "🌊"
+    description: "λ = v·T = v/ν"
+    variables:
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      T: { label: "Период T", unit: "с", type: float }
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      lam: { label: "Длина волны λ", unit: "м", type: float }
+    solutions:
+      - id: lam_from_vT
+        target: lam
+        label: "Длину волны λ"
+        requires: [v, T]
+        formula: "v * T"
+        steps:
+          - "Формула: λ = v·T"
+          - "λ = {v}·{T} = {result:.3f} м"
+      - id: lam_from_vnu
+        target: lam
+        label: "Длину волны λ"
+        requires: [v, nu]
+        formula: "v / nu"
+        steps:
+          - "Формула: λ = v/ν"
+          - "λ = {v}/{nu} = {result:.3f} м"
+      - id: v_from_lamT
+        target: v
+        label: "Скорость v"
+        requires: [lam, T]
+        formula: "lam / T"
+        steps:
+          - "Из λ = v·T: v = λ/T"
+          - "v = {lam}/{T} = {result:.2f} м/с"
+    explanation: "Длина волны: λ = v·T = v/ν."
+
+  - id: pendulum
+    name: "Маятник (период колебаний)"
+    category: "Колебания и волны"
+    icon: "🕰️"
+    description: "T = 2π·√(l/g)"
+    variables:
+      l: { label: "Длина нити l", unit: "м", type: float }
+      T: { label: "Период T", unit: "с", type: float }
+    solutions:
+      - id: T_from_l
+        target: T
+        label: "Период T"
+        requires: [l]
+        formula: "2 * pi * sqrt(l/9.8)"
+        steps:
+          - "Формула: T = 2π·√(l/g)"
+          - "T = 2·π·√({l}/9.8) = {result:.3f} с"
+      - id: l_from_T
+        target: l
+        label: "Длину нити l"
+        requires: [T]
+        formula: "(T*sqrt(9.8)/(2*pi))**2"
+        steps:
+          - "Из T = 2π·√(l/g): l = g·T²/(4π²)"
+          - "l = 9.8·{T}²/(4·π²) = {result:.3f} м"
+    explanation: "Период математического маятника: T = 2π·√(l/g)."
+
+  - id: spring_pendulum
+    name: "Пружинный маятник"
+    category: "Колебания и волны"
+    icon: "🔩"
+    description: "T = 2π·√(m/k)"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      k: { label: "Жёсткость k", unit: "Н/м", type: float }
+      T: { label: "Период T", unit: "с", type: float }
+    solutions:
+      - id: T_from_mk
+        target: T
+        label: "Период T"
+        requires: [m, k]
+        formula: "2 * pi * sqrt(m/k)"
+        steps:
+          - "Формула: T = 2π·√(m/k)"
+          - "T = 2·π·√({m}/{k}) = {result:.3f} с"
+      - id: k_from_mT
+        target: k
+        label: "Жёсткость k"
+        requires: [m, T]
+        formula: "4 * pi**2 * m / T**2"
+        steps:
+          - "Из T = 2π·√(m/k): k = 4π²·m/T²"
+          - "k = 4·π²·{m}/{T}² = {result:.2f} Н/м"
+    explanation: "Период пружинного маятника: T = 2π·√(m/k)."

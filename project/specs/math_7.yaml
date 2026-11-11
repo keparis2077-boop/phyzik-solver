@@ -1,0 +1,130 @@
+# ============================================================
+# МАТЕМАТИКА — 7 КЛАСС
+# Линейные уравнения, площади, углы, степени
+# ============================================================
+
+templates:
+  - id: linear_eq_7
+    name: "Линейное уравнение"
+    category: "Алгебра"
+    icon: "📈"
+    description: "ax + b = 0"
+    variables:
+      a: { label: "Коэффициент a", unit: "", type: float }
+      b: { label: "Свободный член b", unit: "", type: float }
+      x: { label: "Корень x", unit: "", type: float }
+    solutions:
+      - id: x_from_ab
+        target: x
+        label: "Корень x"
+        requires: [a, b]
+        formula: "-b / a"
+        steps:
+          - "Уравнение: ax + b = 0"
+          - "x = -b/a = -{b}/{a} = {result:.3f}"
+    explanation: "Линейное уравнение: x = -b/a."
+
+  - id: area_rectangle
+    name: "Площадь прямоугольника"
+    category: "Геометрия"
+    icon: "📏"
+    description: "S = a·b"
+    variables:
+      a: { label: "Сторона a", unit: "", type: float }
+      b: { label: "Сторона b", unit: "", type: float }
+      S: { label: "Площадь S", unit: "", type: float }
+      P: { label: "Периметр P", unit: "", type: float }
+    solutions:
+      - id: S_from_ab
+        target: S
+        label: "Площадь S"
+        requires: [a, b]
+        formula: "a * b"
+        steps:
+          - "Формула: S = a·b"
+          - "S = {a}·{b} = {result:.2f}"
+      - id: P_from_ab
+        target: P
+        label: "Периметр P"
+        requires: [a, b]
+        formula: "2 * (a + b)"
+        steps:
+          - "Формула: P = 2(a + b)"
+          - "P = 2·({a} + {b}) = {result:.2f}"
+      - id: a_from_Sb
+        target: a
+        label: "Сторону a"
+        requires: [S, b]
+        formula: "S / b"
+        steps:
+          - "Из S = a·b: a = S/b"
+          - "a = {S}/{b} = {result:.3f}"
+    explanation: "Площадь прямоугольника: S = a·b."
+
+  - id: area_triangle_7
+    name: "Площадь треугольника"
+    category: "Геометрия"
+    icon: "🔺"
+    description: "S = ½·a·h"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      h: { label: "Высота h", unit: "", type: float }
+      S: { label: "Площадь S", unit: "", type: float }
+    solutions:
+      - id: S_from_ah
+        target: S
+        label: "Площадь S"
+        requires: [a, h]
+        formula: "0.5 * a * h"
+        steps:
+          - "Формула: S = ½·a·h"
+          - "S = 0.5·{a}·{h} = {result:.2f}"
+      - id: a_from_Sh
+        target: a
+        label: "Основание a"
+        requires: [S, h]
+        formula: "2 * S / h"
+        steps:
+          - "Из S = ½·a·h: a = 2S/h"
+          - "a = 2·{S}/{h} = {result:.3f}"
+    explanation: "Площадь треугольника: S = ½·a·h."
+
+  - id: angles_sum
+    name: "Сумма углов треугольника"
+    category: "Геометрия"
+    icon: "📐"
+    description: "α + β + γ = 180°"
+    variables:
+      alpha: { label: "Угол α", unit: "°", type: float }
+      beta: { label: "Угол β", unit: "°", type: float }
+      gamma: { label: "Угол γ", unit: "°", type: float }
+    solutions:
+      - id: gamma_from_alpha_beta
+        target: gamma
+        label: "Угол γ"
+        requires: [alpha, beta]
+        formula: "180 - alpha - beta"
+        steps:
+          - "Сумма углов: α + β + γ = 180°"
+          - "γ = 180° - {alpha}° - {beta}° = {result:.1f}°"
+    explanation: "Сумма внутренних углов треугольника равна 180°."
+
+  - id: powers_7
+    name: "Степени"
+    category: "Алгебра"
+    icon: "🔢"
+    description: "aⁿ = a·a·...·a"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      n: { label: "Показатель n", unit: "", type: float }
+      result_pow: { label: "Результат aⁿ", unit: "", type: float }
+    solutions:
+      - id: pow_from_an
+        target: result_pow
+        label: "Значение aⁿ"
+        requires: [a, n]
+        formula: "a ** n"
+        steps:
+          - "Формула: aⁿ"
+          - "{a}^{n} = {result:.2f}"
+    explanation: "Степень: aⁿ = a·a·...·a (n раз)."

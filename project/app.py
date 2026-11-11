@@ -1,6 +1,6 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from loader import TASKS, group_by_category
+from loader import TASKS, group_by_category, get_math_tasks_by_category
 from reference import CONSTANTS, FORMULAS
 from models import (
     init_db, register_user, login_user, get_user_by_id,
@@ -91,8 +91,15 @@ def logout():
 def index():
     user = get_current_user()
     records = get_history(user['id']) if user else []
+    
+    # Исключаем математические категории из раздела Физика
+    math_categories = {'Алгебра', 'Геометрия', 'Тригонометрия', 'Анализ', 'Векторы', 'Теория вероятностей'}
+    groups = group_by_category()
+    physics_groups = {k: v for k, v in groups.items() if k not in math_categories}
+    
     return render_template('index.html',
-                           groups=group_by_category(),
+                           user=user,
+                           groups=physics_groups,
                            total=len(TASKS),
                            records=records)
 
@@ -213,7 +220,8 @@ def history_clear():
 
 @app.route('/reference')
 def reference():
-    return render_template('reference.html', constants=CONSTANTS, formulas=FORMULAS)
+    user = get_current_user()
+    return render_template('reference.html', user=user, constants=CONSTANTS, formulas=FORMULAS)
 
 
 # ==================== МАТЕМАТИКА ====================
@@ -228,11 +236,18 @@ def math():
     algebra_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Алгебра']
     geometry_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Геометрия']
     trigonometry_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Тригонометрия']
+    analysis_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Анализ']
+    vectors_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Векторы']
+    probability_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Теория вероятностей']
     
     return render_template('math.html',
+                           user=user,
                            algebra_tasks=algebra_tasks,
                            geometry_tasks=geometry_tasks,
-                           trigonometry_tasks=trigonometry_tasks)
+                           trigonometry_tasks=trigonometry_tasks,
+                           analysis_tasks=analysis_tasks,
+                           vectors_tasks=vectors_tasks,
+                           probability_tasks=probability_tasks)
 
 
 @app.route('/math/task/<task_id>')
@@ -294,155 +309,371 @@ def builder_solve():
         flash('Войдите в аккаунт', 'warning')
         return redirect(url_for('login'))
     
+    category = request.form.get('category', 'physics')
     task_type = request.form.get('task_type', 'thermal_balance')
     unknown = request.form.get('unknown', 't_eq')
     
-    bodies = []
-    body_num = 1
-    while True:
-        c = request.form.get(f'body_{body_num}_c')
-        if not c:
-            break
-        try:
-            mass_str = request.form.get(f'body_{body_num}_mass')
-            temp_str = request.form.get(f'body_{body_num}_temp')
-            
-            body = {
-                'c': float(c),
-                'mass': float(mass_str) if mass_str else None,
-                'temp': float(temp_str) if temp_str else None,
-                'material': request.form.get(f'body_{body_num}_material', 'water'),
-                'num': body_num
-            }
-            bodies.append(body)
-            body_num += 1
-        except (ValueError, TypeError):
-            body_num += 1
-    
-    if len(bodies) < 2:
-        return render_template(
-            'result_builder.html',
-            error="Нужно минимум 2 тела для задачи",
-            task_type_name="",
-            bodies_info=[],
-            steps=[],
-            explanation="",
-            answer_label="",
-            answer_value="",
-            graph_svg=None
-        )
-    
-    material_names = {
-        'water': 'Вода', 'ice': 'Лёд', 'aluminum': 'Алюминий',
-        'iron': 'Железо', 'copper': 'Медь', 'lead': 'Свинец',
-        'custom': 'Пользовательский'
-    }
+    import math
     
     steps = []
     explanation = ""
     answer_label = ""
     answer_value = ""
+    task_type_name = ""
+    bodies_info = []
     
     try:
-        if unknown == 't_eq':
-            numerator = sum(b['c'] * b['mass'] * b['temp'] for b in bodies)
-            denominator = sum(b['c'] * b['mass'] for b in bodies)
+        # ==================== ФИЗИКА ====================
+        if category == 'physics':
+            if task_type == 'thermal_balance':
+                # Тепловые задачи с телами
+                bodies = []
+                body_num = 1
+                while True:
+                    c = request.form.get(f'body_{body_num}_c')
+                    if not c:
+                        break
+                    try:
+                        mass_str = request.form.get(f'body_{body_num}_mass')
+                        temp_str = request.form.get(f'body_{body_num}_temp')
+                        body = {
+                            'c': float(c),
+                            'mass': float(mass_str) if mass_str else None,
+                            'temp': float(temp_str) if temp_str else None,
+                            'material': request.form.get(f'body_{body_num}_material', 'water'),
+                            'num': body_num
+                        }
+                        bodies.append(body)
+                        body_num += 1
+                    except (ValueError, TypeError):
+                        body_num += 1
+                
+                if len(bodies) < 2:
+                    return render_template(
+                        'result_builder.html',
+                        error="Нужно минимум 2 тела для задачи",
+                        task_type_name="", bodies_info=[],
+                        steps=[], explanation="",
+                        answer_label="", answer_value="", graph_svg=None
+                    )
+                
+                material_names = {
+                    'water': 'Вода', 'ice': 'Лёд', 'aluminum': 'Алюминий',
+                    'iron': 'Железо', 'copper': 'Медь', 'lead': 'Свинец',
+                    'custom': 'Пользовательский'
+                }
+                
+                task_type_name = 'Тепловое равновесие'
+                
+                if unknown == 't_eq':
+                    numerator = sum(b['c'] * b['mass'] * b['temp'] for b in bodies)
+                    denominator = sum(b['c'] * b['mass'] for b in bodies)
+                    if denominator == 0:
+                        raise ValueError("Сумма теплоёмкостей равна нулю")
+                    t_eq = numerator / denominator
+                    steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
+                    steps.append("Σ(c_i · m_i · t_i) / Σ(c_i · m_i) = t_равн")
+                    steps.append(f"t_равн = {t_eq:.2f} °C")
+                    answer_label = "Конечная температура"
+                    answer_value = f"{t_eq:.2f} °C"
+                    explanation = "При контакте тел тепло переходит от горячих к холодным."
+                    
+                elif unknown == 'mass':
+                    target_body = bodies[-1]
+                    other_bodies = bodies[:-1]
+                    t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                    numerator = sum(b['c'] * b['mass'] * (t_eq - b['temp']) for b in other_bodies)
+                    denominator = target_body['c'] * (target_body['temp'] - t_eq)
+                    if denominator == 0:
+                        raise ValueError("Деление на ноль")
+                    m_target = numerator / denominator
+                    steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
+                    steps.append(f"t_равн = {t_eq:.2f} °C")
+                    steps.append(f"m_{target_body['num']} = {m_target:.3f} кг")
+                    answer_label = f"Масса {target_body['num']}-го тела"
+                    answer_value = f"{m_target:.3f} кг"
+                    explanation = "При тепловом равновесии Q_отданное = Q_полученное."
+                    
+                elif unknown == 'temperature':
+                    target_body = bodies[-1]
+                    other_bodies = bodies[:-1]
+                    t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                    numerator = sum(b['c'] * b['mass'] * (b['temp'] - t_eq) for b in other_bodies)
+                    denominator = target_body['c'] * target_body['mass']
+                    if denominator == 0:
+                        raise ValueError("Деление на ноль")
+                    t_target = t_eq - numerator / denominator
+                    steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
+                    steps.append(f"t_равн = {t_eq:.2f} °C")
+                    steps.append(f"t_{target_body['num']} = {t_target:.2f} °C")
+                    answer_label = f"Температура {target_body['num']}-го тела"
+                    answer_value = f"{t_target:.2f} °C"
+                    explanation = "При тепловом равновесии все тела имеют одинаковую температуру."
+                
+                unknown_labels = {
+                    't_eq': 'Конечная температура',
+                    'mass': f"Масса {target_body['num']}-го тела",
+                    'temperature': f"Температура {target_body['num']}-го тела"
+                }
+                
+                for b in bodies:
+                    bodies_info.append({
+                        'name': f"Тело #{b['num']}",
+                        'material': b['material'],
+                        'material_name': material_names.get(b['material'], 'Пользовательский'),
+                        'c': b['c'],
+                        'mass': b['mass'],
+                        'temp': b['temp']
+                    })
             
-            if denominator == 0:
-                raise ValueError("Сумма теплоёмкостей равна нулю")
+            elif task_type == 'kinematics':
+                task_type_name = 'Кинематика'
+                v0 = request.form.get('v0', '').strip()
+                a = request.form.get('a', '').strip()
+                t = request.form.get('t', '').strip()
+                S = request.form.get('S', '').strip()
+                
+                v0 = float(v0) if v0 else None
+                a = float(a) if a else None
+                t = float(t) if t else None
+                S = float(S) if S else None
+                
+                filled = sum(1 for v in [v0, a, t, S] if v is not None)
+                
+                if filled < 2:
+                    raise ValueError("Заполните минимум 2 поля")
+                
+                if v0 is None and a is not None and t is not None and S is not None:
+                    v0 = (S - 0.5 * a * t**2) / t
+                    steps.append(f"Находим v₀: S = v₀t + at²/2 → v₀ = (S - at²/2) / t")
+                    steps.append(f"v₀ = ({S} - {a}·{t}²/2) / {t} = {v0:.2f} м/с")
+                elif a is None and v0 is not None and t is not None and S is not None:
+                    a = 2 * (S - v0 * t) / t**2
+                    steps.append(f"Находим a: S = v₀t + at²/2 → a = 2(S - v₀t) / t²")
+                    steps.append(f"a = 2({S} - {v0}·{t}) / {t}² = {a:.2f} м/с²")
+                elif t is None and v0 is not None and a is not None and S is not None:
+                    if a == 0:
+                        t = S / v0 if v0 != 0 else 0
+                    else:
+                        D = v0**2 + 2*a*S
+                        if D < 0:
+                            raise ValueError("Дискриминант отрицательный")
+                        t = (v0 + D**0.5) / a
+                    steps.append(f"Находим t: S = v₀t + at²/2")
+                    steps.append(f"t = {t:.2f} с")
+                elif S is None and v0 is not None and a is not None and t is not None:
+                    S = v0 * t + 0.5 * a * t**2
+                    steps.append(f"Находим S: S = v₀t + at²/2")
+                    steps.append(f"S = {v0}·{t} + 0.5·{a}·{t}² = {S:.2f} м")
+                
+                v = v0 + a * t if v0 is not None and a is not None and t is not None else None
+                if v is not None:
+                    steps.append(f"v = v₀ + at = {v0} + {a}·{t} = {v:.2f} м/с")
+                
+                answer_label = "Путь S"
+                answer_value = f"{S:.2f} м"
+                explanation = "Равноускоренное движение: S = v₀t + at²/2, v = v₀ + at"
             
-            t_eq = numerator / denominator
+            elif task_type == 'electricity':
+                task_type_name = 'Закон Ома'
+                I = request.form.get('I', '').strip()
+                U = request.form.get('U', '').strip()
+                R = request.form.get('R', '').strip()
+                
+                I = float(I) if I else None
+                U = float(U) if U else None
+                R = float(R) if R else None
+                
+                if I is None and U is not None and R is not None:
+                    I = U / R
+                    steps.append(f"Находим I: I = U / R = {U} / {R} = {I:.2f} А")
+                elif U is None and I is not None and R is not None:
+                    U = I * R
+                    steps.append(f"Находим U: U = I · R = {I} · {R} = {U:.2f} В")
+                elif R is None and I is not None and U is not None:
+                    R = U / I
+                    steps.append(f"Находим R: R = U / I = {U} / {I} = {R:.2f} Ом")
+                
+                P = U * I if U is not None and I is not None else None
+                if P is not None:
+                    steps.append(f"Мощность: P = U·I = {U}·{I} = {P:.2f} Вт")
+                
+                answer_label = "Мощность P"
+                answer_value = f"{P:.2f} Вт" if P else ""
+                explanation = "Закон Ома: U = I·R, мощность P = U·I"
             
-            steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
-            steps.append("Σ(c_i · m_i · t_i) / Σ(c_i · m_i) = t_равн")
-            steps.append(f"t_равн = {t_eq:.2f} °C")
-            answer_label = "Конечная температура"
-            answer_value = f"{t_eq:.2f} °C"
-            explanation = "При контакте тел тепло переходит от горячих к холодным."
-            
-        elif unknown == 'mass':
-            target_body = bodies[-1]
-            other_bodies = bodies[:-1]
-            
-            t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
-            
-            numerator = sum(b['c'] * b['mass'] * (t_eq - b['temp']) for b in other_bodies)
-            denominator = target_body['c'] * (target_body['temp'] - t_eq)
-            
-            if denominator == 0:
-                raise ValueError("Деление на ноль")
-            
-            m_target = numerator / denominator
-            
-            steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
-            steps.append(f"t_равн = {t_eq:.2f} °C")
-            steps.append(f"m_{target_body['num']} = {m_target:.3f} кг")
-            answer_label = f"Масса {target_body['num']}-го тела"
-            answer_value = f"{m_target:.3f} кг"
-            explanation = "При тепловом равновесии Q_отданное = Q_полученное."
-            
-        elif unknown == 'temperature':
-            target_body = bodies[-1]
-            other_bodies = bodies[:-1]
-            
-            t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
-            
-            numerator = sum(b['c'] * b['mass'] * (b['temp'] - t_eq) for b in other_bodies)
-            denominator = target_body['c'] * target_body['mass']
-            
-            if denominator == 0:
-                raise ValueError("Деление на ноль")
-            
-            t_target = t_eq - numerator / denominator
-            
-            steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
-            steps.append(f"t_равн = {t_eq:.2f} °C")
-            steps.append(f"t_{target_body['num']} = {t_target:.2f} °C")
-            answer_label = f"Температура {target_body['num']}-го тела"
-            answer_value = f"{t_target:.2f} °C"
-            explanation = "При тепловом равновесии все тела имеют одинаковую температуру."
+            elif task_type == 'optics':
+                task_type_name = 'Оптика — линза'
+                d = request.form.get('d', '').strip()
+                f = request.form.get('f', '').strip()
+                
+                d = float(d) if d else None
+                f = float(f) if f else None
+                
+                if d is None and f is not None:
+                    raise ValueError("Нужно ввести расстояние до предмета")
+                if f is None and d is not None:
+                    raise ValueError("Нужно ввести расстояние до изображения")
+                
+                F = 1 / (1/d + 1/f)
+                steps.append(f"Формула тонкой линзы: 1/F = 1/d + 1/f")
+                steps.append(f"1/F = 1/{d} + 1/{f} = {1/d:.4f} + {1/f:.4f} = {1/d + 1/f:.4f}")
+                steps.append(f"F = {F:.2f}")
+                
+                D = 1 / F if F != 0 else 0
+                steps.append(f"Оптическая сила: D = 1/F = {D:.2f} дптр")
+                
+                answer_label = "Фокусное расстояние"
+                answer_value = f"{F:.2f}"
+                explanation = "Формула тонкой линзы: 1/F = 1/d + 1/f"
         
-        task_type_names = {
-            'thermal_balance': 'Тепловое равновесие',
-            'mixing': 'Смешивание жидкостей',
-            'ice_melting': 'Плавление льда'
-        }
+        # ==================== МАТЕМАТИКА ====================
+        elif category == 'math':
+            if task_type == 'quadratic':
+                task_type_name = 'Квадратное уравнение'
+                a = float(request.form.get('a', '0') or '0')
+                b = float(request.form.get('b', '0') or '0')
+                c = float(request.form.get('c', '0') or '0')
+                
+                if a == 0:
+                    raise ValueError("a не может быть 0 для квадратного уравнения")
+                
+                D = b**2 - 4*a*c
+                steps.append(f"Дано: a={a}, b={b}, c={c}")
+                steps.append(f"D = b² - 4ac = {b}² - 4·{a}·{c} = {D}")
+                
+                if D < 0:
+                    steps.append("D < 0: корней нет")
+                    answer_label = "Дискриминант"
+                    answer_value = "Корней нет (D < 0)"
+                    explanation = "Квадратное уравнение не имеет действительных корней"
+                elif D == 0:
+                    x = -b / (2*a)
+                    steps.append(f"D = 0: x = -b/(2a) = {x:.2f}")
+                    answer_label = "Корень"
+                    answer_value = f"x = {x:.2f}"
+                    explanation = "Квадратное уравнение имеет один корень"
+                else:
+                    x1 = (-b + D**0.5) / (2*a)
+                    x2 = (-b - D**0.5) / (2*a)
+                    steps.append(f"D > 0: два корня")
+                    steps.append(f"x₁ = (-b + √D) / 2a = {x1:.2f}")
+                    steps.append(f"x₂ = (-b - √D) / 2a = {x2:.2f}")
+                    answer_label = "Корни"
+                    answer_value = f"x₁ = {x1:.2f}, x₂ = {x2:.2f}"
+                    explanation = "Квадратное уравнение имеет два корня"
+            
+            elif task_type == 'triangle_area':
+                task_type_name = 'Площадь треугольника'
+                a = float(request.form.get('a', '0') or '0')
+                h = float(request.form.get('h', '0') or '0')
+                S = 0.5 * a * h
+                steps.append(f"Дано: a = {a}, h = {h}")
+                steps.append(f"S = ½ · a · h = 0.5 · {a} · {h} = {S:.2f}")
+                answer_label = "Площадь"
+                answer_value = f"{S:.2f}"
+                explanation = "Площадь треугольника: S = ½ah"
+            
+            elif task_type == 'trig':
+                task_type_name = 'Тригонометрические функции'
+                angle = float(request.form.get('angle', '0') or '0')
+                angle_rad = math.radians(angle)
+                sin_val = math.sin(angle_rad)
+                cos_val = math.cos(angle_rad)
+                tan_val = math.tan(angle_rad) if abs(math.cos(angle_rad)) > 1e-10 else None
+                
+                steps.append(f"Угол: {angle}° = {angle_rad:.4f} рад")
+                steps.append(f"sin({angle}°) = {sin_val:.4f}")
+                steps.append(f"cos({angle}°) = {cos_val:.4f}")
+                if tan_val is not None:
+                    steps.append(f"tan({angle}°) = {tan_val:.4f}")
+                
+                answer_label = "sin, cos, tan"
+                answer_value = f"sin={sin_val:.4f}, cos={cos_val:.4f}"
+                explanation = "Тригонометрические функции вычисляются по единичной окружности"
+            
+            elif task_type == 'derivative':
+                task_type_name = 'Производная степени'
+                n = float(request.form.get('n', '0') or '0')
+                x = float(request.form.get('x', '0') or '0')
+                
+                if x == 0 and n - 1 < 0:
+                    raise ValueError("Производная не определена в точке x = 0")
+                
+                deriv = n * (x ** (n - 1))
+                steps.append(f"Дано: f(x) = x^{n}")
+                steps.append(f"f'(x) = n · xⁿ⁻¹ = {n} · x^{n-1}")
+                steps.append(f"f'({x}) = {n} · ({x})^{n-1} = {deriv:.4f}")
+                answer_label = "f'(x)"
+                answer_value = f"{deriv:.4f}"
+                explanation = "Производная степени: d/dx(xⁿ) = n·xⁿ⁻¹"
+            
+            elif task_type == 'vector_add':
+                task_type_name = 'Сложение векторов'
+                va = float(request.form.get('va', '0') or '0')
+                vb = float(request.form.get('vb', '0') or '0')
+                vangle = float(request.form.get('vangle', '0') or '0')
+                angle_rad = math.radians(vangle)
+                
+                result = (va**2 + vb**2 + 2*va*vb*math.cos(angle_rad))**0.5
+                denominator = va + vb * math.cos(angle_rad)
+                alpha = math.degrees(math.atan2(vb * math.sin(angle_rad), denominator)) if abs(denominator) > 1e-10 else 90.0
+                
+                steps.append(f"Дано: |a| = {va}, |b| = {vb}, γ = {vangle}°")
+                steps.append(f"|a+b| = √(a²+b²+2ab·cos(γ))")
+                steps.append(f"|a+b| = √{va**2 + vb**2 + 2*va*vb*math.cos(angle_rad):.4f} = {result:.2f}")
+                steps.append(f"Угол α = {alpha:.2f}°")
+                answer_label = "|a+b|"
+                answer_value = f"{result:.2f}"
+                explanation = "Сложение векторов по теореме косинусов"
+            
+            elif task_type == 'probability':
+                task_type_name = 'Классическая вероятность'
+                pm = int(float(request.form.get('pm', '0') or '0'))
+                pn = int(float(request.form.get('pn', '1') or '1'))
+                
+                if pn == 0:
+                    raise ValueError("n не может быть 0")
+                if pm < 0 or pm > pn:
+                    raise ValueError("m должно быть в диапазоне [0, n]")
+                
+                P = pm / pn
+                percentage = P * 100
+                steps.append(f"Дано: m = {pm}, n = {pn}")
+                steps.append(f"P = m/n = {pm}/{pn} = {P:.4f}")
+                steps.append(f"P = {percentage:.2f}%")
+                answer_label = "Вероятность P"
+                answer_value = f"{P:.4f} ({percentage:.2f}%)"
+                explanation = "Классическая вероятность: P = m/n"
         
-        unknown_labels = {
-            't_eq': 'Конечная температура',
-            'mass': f"Масса {target_body['num']}-го тела",
-            'temperature': f"Температура {target_body['num']}-го тела"
-        }
+        # ==================== СОХРАНЕНИЕ ====================
+        if not answer_value:
+            answer_value = "Решение выполнено"
         
-        bodies_info = []
-        for b in bodies:
-            bodies_info.append({
-                'name': f"Тело #{b['num']}",
-                'material': b['material'],
-                'material_name': material_names.get(b['material'], 'Пользовательский'),
-                'c': b['c'],
-                'mass': b['mass'],
-                'temp': b['temp']
-            })
+        inputs_str = ', '.join(f"{k}={request.form[k]}" for k in request.form if k not in ['category', 'task_type', 'unknown'])
+        results_str = f"{answer_label}={answer_value}"
+        save_solution(user['id'], f'builder_{task_type}', task_type_name, inputs_str, results_str)
+        add_xp(user['id'], 15)
+        add_coins(user['id'], 10)
         
         return render_template(
             'result_builder.html',
-            task_type_name=task_type_names.get(task_type, 'Конструктор'),
+            task_type_name=task_type_name,
             bodies_info=bodies_info,
             steps=steps,
             explanation=explanation,
             answer_label=answer_label,
             answer_value=answer_value,
-            unknown_label=unknown_labels.get(unknown, 'Неизвестная величина'),
+            unknown_label=unknown,
             graph_svg=None
         )
-        
+    
     except Exception as e:
         return render_template(
             'result_builder.html',
             error=f"Ошибка расчёта: {str(e)}",
             task_type_name="",
-            bodies_info=bodies,
+            bodies_info=[],
             steps=[],
             explanation="",
             answer_label="",

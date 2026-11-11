@@ -4,45 +4,31 @@
 
 <!-- Заголовок -->
 <div class="page-header">
-    <h1>Мои занятия</h1>
-    <p class="subtitle">Выберите тему для решения задач</p>
-</div>
-
-<!-- Фильтры по классам -->
-<div class="class-filters">
-    <button class="filter-btn active" data-filter="all">Все классы</button>
-    <button class="filter-btn" data-filter="7">7 класс</button>
-    <button class="filter-btn" data-filter="8">8 класс</button>
-    <button class="filter-btn" data-filter="9">9 класс</button>
-    <button class="filter-btn" data-filter="10">10 класс</button>
-    <button class="filter-btn" data-filter="11">11 класс</button>
+    <div class="task-icon">⚛️</div>
+    <h1>Физика</h1>
+    <p class="subtitle">Решайте задачи с пошаговым решением</p>
 </div>
 
 <!-- Категории задач -->
 {% for category, items in groups.items() %}
-<section class="category-section" data-category="{{ category }}">
+<section class="category-section">
     <div class="category-header">
         <h2>{{ category }}</h2>
-        <span class="category-count">{{ items|length }} задач{{ 'а' if items|length == 2 else 'и' if items|length < 5 else '' }}</span>
+        <span class="category-count">{{ items|length }} задач</span>
     </div>
 
     <div class="cards-grid">
         {% for tid, t in items %}
-        <a href="{{ url_for('task', task_id=tid) }}" class="lesson-card" data-class="7">
+        <a href="{{ url_for('task', task_id=tid) }}" class="lesson-card">
             <div class="card-cover" style="background: {{ t.color|default('linear-gradient(135deg, #667eea 0%, #764ba2 100%)') }};">
                 <span class="card-emoji">{{ t.icon }}</span>
             </div>
             <div class="card-body">
                 <h3>{{ t.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ t.condition[:80] }}...</p>
                 <div class="card-meta">
                     <span class="card-tag">{{ t.category }}</span>
-                    <span class="card-unknowns">
-                        {% if t.quantities is defined %}
-                            {{ t.targets|length }} величин{{ 'а' if t.targets|length == 2 else '' }}
-                        {% else %}
-                            {{ t.outputs|length if t.outputs else 0 }} величин{{ 'а' if (t.outputs|length if t.outputs else 0) == 2 else '' }}
-                        {% endif %}
-                    </span>
+                    <span class="card-unknowns">{{ t.difficulty }} класс</span>
                 </div>
             </div>
         </a>

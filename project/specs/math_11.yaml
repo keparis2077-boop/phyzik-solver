@@ -1,0 +1,150 @@
+# ============================================================
+# МАТЕМАТИКА — 11 КЛАСС
+# Производные, интегралы, векторы, вероятность
+# ============================================================
+
+templates:
+  - id: derivative_power
+    name: "Производная степени"
+    category: "Анализ"
+    icon: "📈"
+    description: "(xⁿ)' = n·xⁿ⁻¹"
+    variables:
+      n: { label: "Степень n", unit: "", type: float }
+      x: { label: "Точка x", unit: "", type: float }
+      f_x: { label: "f(x) = xⁿ", unit: "", type: float }
+      f_prime: { label: "f'(x)", unit: "", type: float }
+    solutions:
+      - id: derivative_from_nx
+        target: f_prime
+        label: "Производную f'(x)"
+        requires: [n, x]
+        formula: "n * x**(n - 1)"
+        steps:
+          - "Функция: f(x) = x^{n}"
+          - "Производная: f'(x) = n·x^{n-1}"
+          - "f'({x}) = {n}·{x}^{n-1} = {result:.4f}"
+    explanation: "Производная степени: (xⁿ)' = n·xⁿ⁻¹."
+
+  - id: derivative_trig
+    name: "Производная тригонометрических функций"
+    category: "Анализ"
+    icon: "📐"
+    description: "(sin x)' = cos x, (cos x)' = -sin x"
+    variables:
+      x: { label: "Точка x", unit: "рад", type: float }
+      func_type: { label: "Тип функции", unit: "", type: str }
+      f_prime: { label: "f'(x)", unit: "", type: float }
+    solutions:
+      - id: deriv_sin
+        target: f_prime
+        label: "Производную (sin x)'"
+        requires: [x]
+        formula: "math.cos(x)"
+        steps:
+          - "f(x) = sin x"
+          - "f'(x) = cos x"
+          - "f'({x}) = cos({x}) = {result:.4f}"
+      - id: deriv_cos
+        target: f_prime
+        label: "Производную (cos x)'"
+        requires: [x]
+        formula: "-math.sin(x)"
+        steps:
+          - "f(x) = cos x"
+          - "f'(x) = -sin x"
+          - "f'({x}) = -sin({x}) = {result:.4f}"
+    explanation: "(sin x)' = cos x, (cos x)' = -sin x."
+
+  - id: definite_integral
+    name: "Определённый интеграл"
+    category: "Анализ"
+    icon: "∫"
+    description: "∫[a,b] f(x)dx = F(b) - F(a)"
+    variables:
+      a: { label: "Нижний предел a", unit: "", type: float }
+      b: { label: "Верхний предел b", unit: "", type: float }
+      n: { label: "Степень n (для xⁿ)", unit: "", type: float }
+      integral: { label: "Значение интеграла", unit: "", type: float }
+    solutions:
+      - id: integral_xn
+        target: integral
+        label: "Значение интеграла"
+        requires: [a, b, n]
+        formula: "(b**(n+1) - a**(n+1)) / (n + 1)"
+        steps:
+          - "Интеграл: ∫xⁿdx = xⁿ⁺¹/(n+1)"
+          - "∫[{a},{b}] x^{n}dx = [x^{n+1}/(n+1)]_{a}^{b}"
+          - "= ({b}^{n+1} - {a}^{n+1})/(n+1) = {result:.4f}"
+    explanation: "Определённый интеграл: ∫[a,b] f(x)dx = F(b) - F(a)."
+
+  - id: vector_magnitude
+    name: "Длина вектора"
+    category: "Векторы"
+    icon: "➡️"
+    description: "|a| = √(x² + y² + z²)"
+    variables:
+      x: { label: "Координата x", unit: "", type: float }
+      y: { label: "Координата y", unit: "", type: float }
+      z: { label: "Координата z", unit: "", type: float }
+      length: { label: "Длина |a|", unit: "", type: float }
+    solutions:
+      - id: length_from_xyz
+        target: length
+        label: "Длину |a|"
+        requires: [x, y, z]
+        formula: "(x**2 + y**2 + z**2)**0.5"
+        steps:
+          - "Формула: |a| = √(x² + y² + z²)"
+          - "|a| = √({x}² + {y}² + {z}²) = {result:.4f}"
+      - id: length_2d
+        target: length
+        label: "Длину |a|"
+        requires: [x, y]
+        formula: "(x**2 + y**2)**0.5"
+        steps:
+          - "Формула: |a| = √(x² + y²)"
+          - "|a| = √({x}² + {y}²) = {result:.4f}"
+    explanation: "Длина вектора: |a| = √(x² + y² + z²)."
+
+  - id: scalar_product
+    name: "Скалярное произведение"
+    category: "Векторы"
+    icon: "⊙"
+    description: "a·b = |a|·|b|·cos(α)"
+    variables:
+      x1: { label: "x₁", unit: "", type: float }
+      y1: { label: "y₁", unit: "", type: float }
+      x2: { label: "x₂", unit: "", type: float }
+      y2: { label: "y₂", unit: "", type: float }
+      scalar: { label: "a·b", unit: "", type: float }
+    solutions:
+      - id: scalar_from_coords
+        target: scalar
+        label: "Скалярное произведение"
+        requires: [x1, y1, x2, y2]
+        formula: "x1*x2 + y1*y2"
+        steps:
+          - "Формула: a·b = x₁x₂ + y₁y₂"
+          - "a·b = {x1}·{x2} + {y1}·{y2} = {result:.2f}"
+    explanation: "Скалярное произведение: a·b = |a|·|b|·cos(α)."
+
+  - id: probability
+    name: "Вероятность"
+    category: "Теория вероятностей"
+    icon: "🎲"
+    description: "P(A) = m/n"
+    variables:
+      m: { label: "Благоприятные исходы m", unit: "", type: float }
+      n: { label: "Все исходы n", unit: "", type: float }
+      P: { label: "Вероятность P", unit: "", type: float }
+    solutions:
+      - id: P_from_mn
+        target: P
+        label: "Вероятность P"
+        requires: [m, n]
+        formula: "m / n"
+        steps:
+          - "Формула: P(A) = m/n"
+          - "P = {m}/{n} = {result:.4f}"
+    explanation: "Классическая вероятность: P(A) = m/n."

@@ -1,0 +1,144 @@
+# ============================================================
+# МАТЕМАТИКА — 9 КЛАСС
+# Неравенства, прогрессии, тригонометрия, системы уравнений
+# ============================================================
+
+templates:
+  - id: quadratic_inequality
+    name: "Квадратное неравенство"
+    category: "Алгебра"
+    icon: "📉"
+    description: "ax² + bx + c > 0"
+    variables:
+      a: { label: "Коэффициент a", unit: "", type: float }
+      b: { label: "Коэффициент b", unit: "", type: float }
+      c: { label: "Свободный член c", unit: "", type: float }
+      x1: { label: "Корень x₁", unit: "", type: float }
+      x2: { label: "Корень x₂", unit: "", type: float }
+    solutions:
+      - id: roots_from_abc
+        target: x1
+        label: "Корни x₁, x₂"
+        requires: [a, b, c]
+        formula: "complex"
+        steps:
+          - "Дискриминант: D = b² - 4ac"
+          - "D = {b}² - 4·{a}·{c} = {b**2 - 4*a*c:.2f}"
+          - "x₁,₂ = (-b ± √D)/(2a)"
+    explanation: "Квадратное неравенство решается через корни квадратного уравнения."
+
+  - id: arithmetic_progression
+    name: "Арифметическая прогрессия"
+    category: "Алгебра"
+    icon: "📊"
+    description: "aₙ = a₁ + (n-1)·d, Sₙ = n(a₁+aₙ)/2"
+    variables:
+      a1: { label: "Первый член a₁", unit: "", type: float }
+      d: { label: "Разность d", unit: "", type: float }
+      n: { label: "Номер n", unit: "", type: float }
+      an: { label: "n-й член aₙ", unit: "", type: float }
+      S: { label: "Сумма Sₙ", unit: "", type: float }
+    solutions:
+      - id: an_from_a1dn
+        target: an
+        label: "n-й член aₙ"
+        requires: [a1, d, n]
+        formula: "a1 + (n - 1) * d"
+        steps:
+          - "Формула: aₙ = a₁ + (n-1)·d"
+          - "aₙ = {a1} + ({n}-1)·{d} = {result:.2f}"
+      - id: S_from_a1dn
+        target: S
+        label: "Сумму Sₙ"
+        requires: [a1, d, n]
+        formula: "n * (2*a1 + (n-1)*d) / 2"
+        steps:
+          - "Формула: Sₙ = n(2a₁ + (n-1)d)/2"
+          - "Sₙ = {n}·(2·{a1} + ({n}-1)·{d})/2 = {result:.2f}"
+    explanation: "Арифметическая прогрессия: aₙ = a₁ + (n-1)·d."
+
+  - id: geometric_progression
+    name: "Геометрическая прогрессия"
+    category: "Алгебра"
+    icon: "📈"
+    description: "bₙ = b₁·q^(n-1), Sₙ = b₁(qⁿ-1)/(q-1)"
+    variables:
+      b1: { label: "Первый член b₁", unit: "", type: float }
+      q: { label: "Знаменатель q", unit: "", type: float }
+      n: { label: "Номер n", unit: "", type: float }
+      bn: { label: "n-й член bₙ", unit: "", type: float }
+      S: { label: "Сумма Sₙ", unit: "", type: float }
+    solutions:
+      - id: bn_from_b1qn
+        target: bn
+        label: "n-й член bₙ"
+        requires: [b1, q, n]
+        formula: "b1 * q**(n - 1)"
+        steps:
+          - "Формула: bₙ = b₁·q^(n-1)"
+          - "bₙ = {b1}·{q}^{n-1} = {result:.2f}"
+      - id: S_from_b1qn
+        target: S
+        label: "Сумму Sₙ"
+        requires: [b1, q, n]
+        formula: "b1 * (q**n - 1) / (q - 1)"
+        steps:
+          - "Формула: Sₙ = b₁(qⁿ-1)/(q-1)"
+          - "Sₙ = {b1}·({q}^{n}-1)/({q}-1) = {result:.2f}"
+    explanation: "Геометрическая прогрессия: bₙ = b₁·q^(n-1)."
+
+  - id: trig_functions_9
+    name: "Основные тригонометрические тождества"
+    category: "Тригонометрия"
+    icon: "📐"
+    description: "sin²α + cos²α = 1, tgα = sinα/cosα"
+    variables:
+      alpha: { label: "Угол α", unit: "°", type: float }
+      sin_a: { label: "sin α", unit: "", type: float }
+      cos_a: { label: "cos α", unit: "", type: float }
+      tg_a: { label: "tg α", unit: "", type: float }
+    solutions:
+      - id: sin_from_cos
+        target: sin_a
+        label: "sin α"
+        requires: [cos_a, alpha]
+        formula: "(1 - cos_a**2)**0.5"
+        steps:
+          - "Из sin²α + cos²α = 1: sinα = √(1-cos²α)"
+          - "sinα = √(1-{cos_a}²) = {result:.4f}"
+      - id: tg_from_sin_cos
+        target: tg_a
+        label: "tg α"
+        requires: [sin_a, cos_a]
+        formula: "sin_a / cos_a"
+        steps:
+          - "Формула: tgα = sinα/cosα"
+          - "tgα = {sin_a:.4f}/{cos_a:.4f} = {result:.4f}"
+    explanation: "Основное тождество: sin²α + cos²α = 1."
+
+  - id: system_linear
+    name: "Система линейных уравнений"
+    category: "Алгебра"
+    icon: "📋"
+    description: "a₁x + b₁y = c₁, a₂x + b₂y = c₂"
+    variables:
+      a1: { label: "a₁", unit: "", type: float }
+      b1: { label: "b₁", unit: "", type: float }
+      c1: { label: "c₁", unit: "", type: float }
+      a2: { label: "a₂", unit: "", type: float }
+      b2: { label: "b₂", unit: "", type: float }
+      c2: { label: "c₂", unit: "", type: float }
+      x: { label: "x", unit: "", type: float }
+      y: { label: "y", unit: "", type: float }
+    solutions:
+      - id: solve_system
+        target: x
+        label: "Решение x, y"
+        requires: [a1, b1, c1, a2, b2, c2]
+        formula: "complex"
+        steps:
+          - "Определитель: D = a₁b₂ - a₂b₁"
+          - "D = {a1}·{b2} - {a2}·{b1} = {a1*b2 - a2*b1:.2f}"
+          - "Dx = c₁b₂ - c₂b₁"
+          - "Dy = a₁c₂ - a₂c₁"
+    explanation: "Система решается методом Крамера или подстановки."

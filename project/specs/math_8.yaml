@@ -1,0 +1,126 @@
+# ============================================================
+# МАТЕМАТИКА — 8 КЛАСС
+# Квадратные корни, квадратные уравнения, четырёхугольники
+# ============================================================
+
+templates:
+  - id: square_root
+    name: "Квадратный корень"
+    category: "Алгебра"
+    icon: "√"
+    description: "√a² = |a|"
+    variables:
+      a: { label: "Число a", unit: "", type: float }
+      root: { label: "Корень √a", unit: "", type: float }
+    solutions:
+      - id: root_from_a
+        target: root
+        label: "Корень √a"
+        requires: [a]
+        formula: "a ** 0.5"
+        steps:
+          - "Формула: √a"
+          - "√{a} = {result:.4f}"
+    explanation: "Квадратный корень: √a = a^(1/2)."
+
+  - id: quadratic_formula
+    name: "Квадратное уравнение"
+    category: "Алгебра"
+    icon: "📊"
+    description: "ax² + bx + c = 0"
+    variables:
+      a: { label: "Коэффициент a", unit: "", type: float }
+      b: { label: "Коэффициент b", unit: "", type: float }
+      c: { label: "Свободный член c", unit: "", type: float }
+      x1: { label: "Корень x₁", unit: "", type: float }
+      x2: { label: "Корень x₂", unit: "", type: float }
+    solutions:
+      - id: roots_from_abc
+        target: x1
+        label: "Корни x₁, x₂"
+        requires: [a, b, c]
+        formula: "complex"
+        steps:
+          - "Дискриминант: D = b² - 4ac"
+          - "D = {b}² - 4·{a}·{c} = {b**2 - 4*a*c:.2f}"
+          - "Если D < 0: корней нет"
+          - "Если D = 0: x = -b/(2a)"
+          - "Если D > 0: x₁,₂ = (-b ± √D)/(2a)"
+    explanation: "Квадратное уравнение решается через дискриминант."
+
+  - id: area_trapezoid
+    name: "Площадь трапеции"
+    category: "Геометрия"
+    icon: "🔷"
+    description: "S = ½·(a+b)·h"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      b: { label: "Основание b", unit: "", type: float }
+      h: { label: "Высота h", unit: "", type: float }
+      S: { label: "Площадь S", unit: "", type: float }
+    solutions:
+      - id: S_from_abh
+        target: S
+        label: "Площадь S"
+        requires: [a, b, h]
+        formula: "0.5 * (a + b) * h"
+        steps:
+          - "Формула: S = ½·(a + b)·h"
+          - "S = 0.5·({a} + {b})·{h} = {result:.2f}"
+      - id: h_from_Sab
+        target: h
+        label: "Высоту h"
+        requires: [S, a, b]
+        formula: "2 * S / (a + b)"
+        steps:
+          - "Из S = ½·(a+b)·h: h = 2S/(a+b)"
+          - "h = 2·{S}/({a}+{b}) = {result:.3f}"
+    explanation: "Площадь трапеции: S = ½·(a+b)·h."
+
+  - id: parallelogram_area
+    name: "Площадь параллелограмма"
+    category: "Геометрия"
+    icon: "▱"
+    description: "S = a·h"
+    variables:
+      a: { label: "Основание a", unit: "", type: float }
+      h: { label: "Высота h", unit: "", type: float }
+      S: { label: "Площадь S", unit: "", type: float }
+    solutions:
+      - id: S_from_ah
+        target: S
+        label: "Площадь S"
+        requires: [a, h]
+        formula: "a * h"
+        steps:
+          - "Формула: S = a·h"
+          - "S = {a}·{h} = {result:.2f}"
+    explanation: "Площадь параллелограмма: S = a·h."
+
+  - id: circle_area_8
+    name: "Площадь круга"
+    category: "Геометрия"
+    icon: "⭕"
+    description: "S = π·r²"
+    variables:
+      r: { label: "Радиус r", unit: "", type: float }
+      S: { label: "Площадь S", unit: "", type: float }
+      L: { label: "Длина окружности L", unit: "", type: float }
+    solutions:
+      - id: S_from_r
+        target: S
+        label: "Площадь S"
+        requires: [r]
+        formula: "pi * r**2"
+        steps:
+          - "Формула: S = π·r²"
+          - "S = π·{r}² = {result:.2f}"
+      - id: L_from_r
+        target: L
+        label: "Длину окружности L"
+        requires: [r]
+        formula: "2 * pi * r"
+        steps:
+          - "Формула: L = 2πr"
+          - "L = 2·π·{r} = {result:.2f}"
+    explanation: "Площадь круга: S = π·r²."

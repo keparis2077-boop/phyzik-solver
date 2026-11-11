@@ -1,0 +1,124 @@
+# ============================================================
+# ЭЛЕКТРОМАГНЕТИЗМ — 10-11 КЛАСС
+# Сила Лоренца, индуктивность, электромагнитные волны
+# ============================================================
+
+templates:
+  - id: lorentz_force
+    name: "Сила Лоренца"
+    category: "Электромагнетизм"
+    icon: "🧲"
+    description: "F = q·v·B·sin(α)"
+    variables:
+      q: { label: "Заряд q", unit: "Кл", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      B: { label: "Индукция поля B", unit: "Тл", type: float }
+      alpha: { label: "Угол α", unit: "градусы", type: float }
+      F: { label: "Сила F", unit: "Н", type: float }
+    solutions:
+      - id: F_from_qvB
+        target: F
+        label: "Силу F"
+        requires: [q, v, B, alpha]
+        formula: "abs(q) * v * B * sin(radians(alpha))"
+        steps:
+          - "Формула: F = |q|·v·B·sin(α)"
+          - "F = {abs(q):.2e}·{v}·{B}·sin({alpha}°) = {result:.3e} Н"
+      - id: v_from_FqB
+        target: v
+        label: "Скорость v"
+        requires: [F, q, B, alpha]
+        formula: "F / (abs(q) * B * sin(radians(alpha)))"
+        steps:
+          - "Из F = |q|·v·B·sin(α): v = F/(|q|·B·sin(α))"
+          - "v = {F:.3e}/({abs(q):.2e}·{B}·sin({alpha}°)) = {result:.3e} м/с"
+    explanation: "Сила Лоренца: F = q·v·B·sin(α)."
+
+  - id: ampere_force
+    name: "Сила Ампера"
+    category: "Электромагнетизм"
+    icon: "⚡"
+    description: "F = I·B·L·sin(α)"
+    variables:
+      I: { label: "Сила тока I", unit: "А", type: float }
+      B: { label: "Индукция поля B", unit: "Тл", type: float }
+      L: { label: "Длина проводника L", unit: "м", type: float }
+      alpha: { label: "Угол α", unit: "градусы", type: float }
+      F: { label: "Сила F", unit: "Н", type: float }
+    solutions:
+      - id: F_from_IBL
+        target: F
+        label: "Силу F"
+        requires: [I, B, L, alpha]
+        formula: "I * B * L * sin(radians(alpha))"
+        steps:
+          - "Формула: F = I·B·L·sin(α)"
+          - "F = {I}·{B}·{L}·sin({alpha}°) = {result:.3f} Н"
+      - id: B_from_FIL
+        target: B
+        label: "Индукцию B"
+        requires: [F, I, L, alpha]
+        formula: "F / (I * L * sin(radians(alpha)))"
+        steps:
+          - "Из F = I·B·L·sin(α): B = F/(I·L·sin(α))"
+          - "B = {F}/({I}·{L}·sin({alpha}°)) = {result:.3f} Тл"
+    explanation: "Сила Ампера: F = I·B·L·sin(α)."
+
+  - id: electromagnetic_wave
+    name: "Электромагнитная волна"
+    category: "Электромагнетизм"
+    icon: "📡"
+    description: "c = λ·ν, T = 1/ν"
+    variables:
+      lam: { label: "Длина волны λ", unit: "м", type: float }
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      T: { label: "Период T", unit: "с", type: float }
+    solutions:
+      - id: nu_from_lam
+        target: nu
+        label: "Частоту ν"
+        requires: [lam]
+        formula: "3e8 / lam"
+        steps:
+          - "Формула: ν = c/λ"
+          - "ν = 3·10⁸/{lam:.2e} = {result:.3e} Гц"
+      - id: T_from_nu
+        target: T
+        label: "Период T"
+        requires: [nu]
+        formula: "1 / nu"
+        steps:
+          - "Формула: T = 1/ν"
+          - "T = 1/{nu:.3e} = {result:.3e} с"
+    explanation: "Электромагнитная волна: c = λ·ν."
+
+  - id: inductance
+    name: "Индуктивность"
+    category: "Электромагнетизм"
+    icon: "🔌"
+    description: "Φ = L·I, E = -L·ΔI/Δt"
+    variables:
+      L: { label: "Индуктивность L", unit: "Гн", type: float }
+      I: { label: "Сила тока I", unit: "А", type: float }
+      Phi: { label: "Магнитный поток Φ", unit: "Вб", type: float }
+      E: { label: "ЭДС самоиндукции E", unit: "В", type: float }
+      dI: { label: "Изменение тока ΔI", unit: "А", type: float }
+      dt: { label: "Время Δt", unit: "с", type: float }
+    solutions:
+      - id: Phi_from_LI
+        target: Phi
+        label: "Магнитный поток Φ"
+        requires: [L, I]
+        formula: "L * I"
+        steps:
+          - "Формула: Φ = L·I"
+          - "Φ = {L}·{I} = {result:.3f} Вб"
+      - id: E_from_LdI
+        target: E
+        label: "ЭДС самоиндукции E"
+        requires: [L, dI, dt]
+        formula: "L * dI / dt"
+        steps:
+          - "Формула: E = L·ΔI/Δt"
+          - "E = {L}·{dI}/{dt} = {result:.3f} В"
+    explanation: "Индуктивность: Φ = L·I, E = -L·ΔI/Δt."

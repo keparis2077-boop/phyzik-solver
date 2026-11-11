@@ -43,7 +43,15 @@ def _eval_expression(expr: str, known: dict) -> float:
         "tan": math.tan,
         "sqrt": math.sqrt,
         "radians": math.radians,
+        "degrees": math.degrees,
         "pi": math.pi,
+        "asin": math.asin,
+        "acos": math.acos,
+        "atan": math.atan,
+        "log": math.log,
+        "log2": math.log2,
+        "exp": math.exp,
+        "e": math.e,
     })
 
     # Добавляем константы

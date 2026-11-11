@@ -1,0 +1,92 @@
+# ============================================================
+# ЯДЕРНАЯ ФИЗИКА — 11 КЛАСС
+# Масса, энергия связи, дефект массы, радиоактивность
+# ============================================================
+
+templates:
+  - id: mass_energy
+    name: "Энергия покоя (E=mc²)"
+    category: "Ядерная физика"
+    icon: "☢️"
+    description: "E = m·c²"
+    variables:
+      m: { label: "Масса m", unit: "кг", type: float }
+      E: { label: "Энергия E", unit: "Дж", type: float }
+    solutions:
+      - id: E_from_m
+        target: E
+        label: "Энергию E"
+        requires: [m]
+        formula: "m * 9e16"
+        steps:
+          - "Формула: E = m·c²"
+          - "E = {m}·(3·10⁸)² = {result:.3e} Дж"
+      - id: m_from_E
+        target: m
+        label: "Массу m"
+        requires: [E]
+        formula: "E / 9e16"
+        steps:
+          - "Из E = m·c²: m = E/c²"
+          - "m = {E:.3e}/(3·10⁸)² = {result:.3e} кг"
+    explanation: "Энергия покоя: E = m·c²."
+
+  - id: binding_energy
+    name: "Энергия связи ядра"
+    category: "Ядерная физика"
+    icon: "⚛️"
+    description: "ΔE = Δm·c², Δm = Z·mp + N·mn - M"
+    variables:
+      Z: { label: "Число протонов Z", unit: "", type: float }
+      N: { label: "Число нейтронов N", unit: "", type: float }
+      M: { label: "Масса ядра M", unit: "кг", type: float }
+      Delta_m: { label: "Дефект массы Δm", unit: "кг", type: float }
+      Delta_E: { label: "Энергия связи ΔE", unit: "Дж", type: float }
+    solutions:
+      - id: delta_m_from_ZNM
+        target: Delta_m
+        label: "Дефект массы Δm"
+        requires: [Z, N, M]
+        formula: "Z*1.6726e-27 + N*1.6749e-27 - M"
+        steps:
+          - "Формула: Δm = Z·mp + N·mn - M"
+          - "Δm = {Z}·1.6726·10⁻²⁷ + {N}·1.6749·10⁻²⁷ - {M:.3e}"
+          - "Δm = {result:.3e} кг"
+      - id: Delta_E_from_delta_m
+        target: Delta_E
+        label: "Энергию связи ΔE"
+        requires: [Delta_m]
+        formula: "Delta_m * 9e16"
+        steps:
+          - "Формула: ΔE = Δm·c²"
+          - "ΔE = {Delta_m:.3e}·(3·10⁸)² = {result:.3e} Дж"
+    explanation: "Энергия связи ядра: ΔE = Δm·c²."
+
+  - id: radioactivity
+    name: "Закон радиоактивного распада"
+    category: "Ядерная физика"
+    icon: "📉"
+    description: "N = N₀·2^(-t/T)"
+    variables:
+      N0: { label: "Начальное число N₀", unit: "", type: float }
+      T: { label: "Период полураспада T", unit: "с", type: float }
+      t: { label: "Время t", unit: "с", type: float }
+      N: { label: "Оставшееся число N", unit: "", type: float }
+    solutions:
+      - id: N_from_N0Tt
+        target: N
+        label: "Оставшееся число N"
+        requires: [N0, T, t]
+        formula: "N0 * 2**(-t/T)"
+        steps:
+          - "Формула: N = N₀·2^(-t/T)"
+          - "N = {N0}·2^(-{t}/{T}) = {result:.2f}"
+      - id: t_from_NN0
+        target: t
+        label: "Время t"
+        requires: [N0, N, T]
+        formula: "T * (-log2(N/N0))"
+        steps:
+          - "Из N = N₀·2^(-t/T): t = -T·log₂(N/N₀)"
+          - "t = -{T}·log₂({N}/{N0}) = {result:.2f} с"
+    explanation: "Закон радиоактивного распада: N = N₀·2^(-t/T)."

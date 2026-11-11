@@ -2,7 +2,7 @@
 // ФИЗИК — Интерактивный решебник
 // ============================================
 
-// ---------- Тёмная/светлая тема ----------
+// ---------- Тёмная/светлая тема с плавным переходом ----------
 (function () {
     const root = document.documentElement;
     const btn  = document.getElementById('theme-toggle');
@@ -62,3 +62,56 @@ document.addEventListener('DOMContentLoaded', () => {
         window.MathJax.typesetPromise();
     }
 });
+
+// ---------- Горячие клавиши ----------
+(function () {
+    // Ctrl+Enter для отправки форм
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const form = document.activeElement.closest('form');
+            if (form) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.click();
+            }
+        }
+    });
+    
+    // Escape для закрытия модалок (если будут)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) modal.style.display = 'none';
+        }
+    });
+})();
+
+// ---------- Подсветка активного поля при фокусе ----------
+(function () {
+    document.querySelectorAll('.form-group input, .form-group select').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.closest('.form-group').style.borderColor = 'var(--primary)';
+        });
+        input.addEventListener('blur', function() {
+            this.closest('.form-group').style.borderColor = '';
+        });
+    });
+})();
+
+// ---------- Анимация появления элементов ----------
+(function () {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.lesson-card, .task-panel, .reference-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(el);
+    });
+})();
