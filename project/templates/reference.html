@@ -44,16 +44,30 @@
     </div>
     <div class="reference-grid">
         {% for f in items %}
-        <div class="reference-card" data-search-item>
+        <div class="reference-card formula-card" data-search-item data-category="{{ category }}" data-name="{{ f.name }}" data-formula="{{ f.formula }}" onclick="openModal(this)">
             <h3>{{ f.name }}</h3>
             <div style="font-size: 20px; font-weight: 700; color: var(--primary); font-family: 'Times New Roman', serif; font-style: italic; padding: 12px 0;">
                 {{ f.formula }}
             </div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; text-align: right;">🔍 Нажмите для увеличения</div>
         </div>
         {% endfor %}
     </div>
 </section>
 {% endfor %}
+
+<!-- Модальное окно для формул -->
+<div id="formula-modal" class="formula-modal">
+    <div class="formula-modal-overlay" onclick="closeModal()"></div>
+    <div class="formula-modal-content">
+        <button class="formula-modal-close" onclick="closeModal()">✕</button>
+        <div class="formula-modal-body">
+            <div class="formula-modal-category" id="modal-category"></div>
+            <h2 id="modal-name"></h2>
+            <div class="formula-modal-formula" id="modal-formula"></div>
+        </div>
+    </div>
+</div>
 
 <!-- Кнопка наверх -->
 <button id="back-to-top" style="position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 20px; cursor: pointer; box-shadow: var(--shadow-md); display: none; z-index: 99;">
@@ -64,6 +78,32 @@
 
 {% block scripts %}
 <script>
+// ---------- Модальное окно формул ----------
+function openModal(card) {
+    const modal = document.getElementById('formula-modal');
+    const category = card.dataset.category;
+    const name = card.dataset.name;
+    const formula = card.dataset.formula;
+    
+    document.getElementById('modal-category').textContent = category;
+    document.getElementById('modal-name').textContent = name;
+    document.getElementById('modal-formula').textContent = formula;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('formula-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Закрытие по Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+});
+
 // ---------- Поиск по справочнику ----------
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');

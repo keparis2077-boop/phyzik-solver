@@ -320,6 +320,7 @@ def builder_solve():
     answer_label = ""
     answer_value = ""
     task_type_name = ""
+    unknown_label = ""
     bodies_info = []
     
     try:
@@ -381,14 +382,22 @@ def builder_solve():
                 elif unknown == 'mass':
                     target_body = bodies[-1]
                     other_bodies = bodies[:-1]
-                    t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                    
+                    # Используем заданную t_eq или вычисляем
+                    t_eq_raw = request.form.get('t_eq', '').strip()
+                    if t_eq_raw:
+                        t_eq = float(t_eq_raw)
+                        steps.append(f"Дано: t_равн = {t_eq:.2f} °C (задано)")
+                    else:
+                        t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                        steps.append(f"Находим t_равн: Σ(cᵢ·mᵢ·tᵢ) / Σ(cᵢ·mᵢ) = {t_eq:.2f} °C")
+                    
                     numerator = sum(b['c'] * b['mass'] * (t_eq - b['temp']) for b in other_bodies)
                     denominator = target_body['c'] * (target_body['temp'] - t_eq)
                     if denominator == 0:
                         raise ValueError("Деление на ноль")
                     m_target = numerator / denominator
                     steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
-                    steps.append(f"t_равн = {t_eq:.2f} °C")
                     steps.append(f"m_{target_body['num']} = {m_target:.3f} кг")
                     answer_label = f"Масса {target_body['num']}-го тела"
                     answer_value = f"{m_target:.3f} кг"
@@ -397,24 +406,34 @@ def builder_solve():
                 elif unknown == 'temperature':
                     target_body = bodies[-1]
                     other_bodies = bodies[:-1]
-                    t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                    
+                    # Используем заданную t_eq или вычисляем
+                    t_eq_raw = request.form.get('t_eq', '').strip()
+                    if t_eq_raw:
+                        t_eq = float(t_eq_raw)
+                        steps.append(f"Дано: t_равн = {t_eq:.2f} °C (задано)")
+                    else:
+                        t_eq = sum(b['c'] * b['mass'] * b['temp'] for b in other_bodies) / sum(b['c'] * b['mass'] for b in other_bodies)
+                        steps.append(f"Находим t_равн: Σ(cᵢ·mᵢ·tᵢ) / Σ(cᵢ·mᵢ) = {t_eq:.2f} °C")
+                    
                     numerator = sum(b['c'] * b['mass'] * (b['temp'] - t_eq) for b in other_bodies)
                     denominator = target_body['c'] * target_body['mass']
                     if denominator == 0:
                         raise ValueError("Деление на ноль")
                     t_target = t_eq - numerator / denominator
                     steps.append("Уравнение теплового баланса: Q_отданное = Q_полученное")
-                    steps.append(f"t_равн = {t_eq:.2f} °C")
                     steps.append(f"t_{target_body['num']} = {t_target:.2f} °C")
                     answer_label = f"Температура {target_body['num']}-го тела"
                     answer_value = f"{t_target:.2f} °C"
                     explanation = "При тепловом равновесии все тела имеют одинаковую температуру."
                 
-                unknown_labels = {
-                    't_eq': 'Конечная температура',
-                    'mass': f"Масса {target_body['num']}-го тела",
-                    'temperature': f"Температура {target_body['num']}-го тела"
-                }
+                # unknown_label определяется по выбранной неизвестной
+                if unknown == 't_eq':
+                    unknown_label = 'Конечная температура'
+                elif unknown == 'mass':
+                    unknown_label = f"Масса {target_body['num']}-го тела"
+                else:
+                    unknown_label = f"Температура {target_body['num']}-го тела"
                 
                 for b in bodies:
                     bodies_info.append({
@@ -664,7 +683,7 @@ def builder_solve():
             explanation=explanation,
             answer_label=answer_label,
             answer_value=answer_value,
-            unknown_label=unknown,
+            unknown_label=unknown_label,
             graph_svg=None
         )
     
@@ -678,6 +697,7 @@ def builder_solve():
             explanation="",
             answer_label="",
             answer_value="",
+            unknown_label="",
             graph_svg=None
         )
 
