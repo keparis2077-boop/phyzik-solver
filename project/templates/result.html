@@ -99,22 +99,20 @@ setTimeout(() => {
                     {% endif %}
                 </div>
             </div>
-            <table class="answer-table" id="answer-table">
+            <div class="answer-display" id="answer-display">
                 {% for k, v in results.items() %}
-                <tr data-decimal="{{ v }}">
-                    <td>
+                    <span class="answer-item" data-decimal="{{ v }}">
                         {% if task.quantities is defined %}
-                            {{ task.quantities[k][0] }}
+                            {{ task.quantities[k][0] }} = {{ v }}
                         {% elif task.outputs is defined %}
-                            {{ task.outputs[k] }}
+                            {{ task.outputs[k] }} = {{ v }}
                         {% else %}
-                            {{ k }}
+                            {{ k }} = {{ v }}
                         {% endif %}
-                    </td>
-                    <td class="answer-value-cell">{{ v }}</td>
-                </tr>
+                    </span>
+                    {% if not loop.last %}<span class="answer-sep"> | </span>{% endif %}
                 {% endfor %}
-            </table>
+            </div>
         </div>
 
         <h2 style="margin-top: 20px;">💡 Пояснение</h2>
@@ -147,9 +145,9 @@ let originalAnswerHTML = '';
 let currentFormat = 'decimal';
 
 document.addEventListener('DOMContentLoaded', function() {
-    const table = document.getElementById('answer-table');
-    if (table) {
-        originalAnswerHTML = table.innerHTML;
+    const display = document.getElementById('answer-display');
+    if (display) {
+        originalAnswerHTML = display.innerHTML;
         setFormat('decimal');
     }
 });
@@ -254,32 +252,41 @@ function formatNumber(decimal) {
 
 function setFormat(format) {
     currentFormat = format;
-    const table = document.getElementById('answer-table');
+    const display = document.getElementById('answer-display');
     const buttons = document.querySelectorAll('.format-btn');
     
     buttons.forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.format-btn[data-format="${format}"]`).classList.add('active');
     
-    const rows = table.querySelectorAll('tr');
-    rows.forEach(row => {
-        const decimal = row.dataset.decimal;
-        const cell = row.querySelector('.answer-value-cell');
-        if (decimal) {
-            const num = parseFloat(decimal);
+    const items = display.querySelectorAll('.answer-item');
+    items.forEach(item => {
+        const decimal = item.dataset.decimal;
+        const num = parseFloat(decimal);
+        
+        if (!isNaN(num) && isFinite(num)) {
+            let formatted = '';
             if (format === 'decimal') {
-                cell.innerHTML = formatLargeNumber(num);
+                formatted = formatLargeNumber(num);
             } else if (format === 'fraction') {
                 const frac = toFraction(num);
                 if (frac.den === 1) {
-                    cell.innerHTML = frac.num.toString();
+                    formatted = frac.num.toString();
                 } else {
                     const sign = frac.num < 0 ? '-' : '';
                     const absNum = Math.abs(frac.num);
-                    cell.innerHTML = `<span class="fraction"><span class="fraction-num">${sign}${absNum}</span><span class="fraction-bar">—</span><span class="fraction-den">${frac.den}</span></span>`;
+                    formatted = `<span class="fraction"><span class="fraction-num">${sign}${absNum}</span><span class="fraction-bar">—</span><span class="fraction-den">${frac.den}</span></span>`;
                 }
             } else if (format === 'root') {
                 const sqrtResult = simplifySquareRoot(Math.abs(num));
-                cell.innerHTML = sqrtResult && Math.abs(num) > 1 ? (num < 0 ? `-(${sqrtResult})` : sqrtResult) : formatLargeNumber(num);
+                formatted = sqrtResult && Math.abs(num) > 1 ? (num < 0 ? `-(${sqrtResult})` : sqrtResult) : formatLargeNumber(num);
+            }
+            
+            // Сохраняем label и заменяем только значение
+            const parts = item.textContent.split(' = ');
+            if (parts.length > 1) {
+                item.innerHTML = `${parts[0]} = ${formatted}`;
+            } else {
+                item.innerHTML = formatted;
             }
         }
     });
