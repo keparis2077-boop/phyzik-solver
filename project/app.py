@@ -160,11 +160,14 @@ def solve(task_id):
             results, steps, explanation, graph_svg = {}, [], '', None
             error = str(e)
 
+        has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
+        has_fraction = any('/' in s for s in steps)
+
         return render_template(
             'result.html',
             task_id=task_id, task=t,
             results=results, steps=steps, explanation=explanation,
-            error=error, form=request.form, graph_svg=graph_svg,
+            error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
         )
 
     selected = request.form.getlist('outputs') or list(t.get('outputs', {}).keys())
@@ -190,11 +193,14 @@ def solve(task_id):
         results, steps, explanation, graph_svg = {}, [], '', None
         error = f"Ошибка ввода: {e}"
 
+    has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
+    has_fraction = any('/' in s for s in steps)
+
     return render_template(
         'result.html',
         task_id=task_id, task=t,
         results=results, steps=steps, explanation=explanation,
-        error=error, form=request.form, graph_svg=graph_svg,
+        error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
     )
 
 
@@ -285,10 +291,13 @@ def math_solve(task_id):
         results, steps, explanation = {}, [], ''
         error = str(e)
     
+    has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
+    has_fraction = any('/' in s for s in steps)
+    
     return render_template('math_task.html',
                            task=task, task_id=task_id,
                            results=results, steps=steps, explanation=explanation,
-                           error=error)
+                           error=error, has_root=has_root, has_fraction=has_fraction)
 
 
 # ==================== КОНСТРУКТОР ====================
@@ -675,6 +684,9 @@ def builder_solve():
         add_xp(user['id'], 15)
         add_coins(user['id'], 10)
         
+        has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
+        has_fraction = any('/' in s for s in steps)
+        
         return render_template(
             'result_builder.html',
             task_type_name=task_type_name,
@@ -684,7 +696,9 @@ def builder_solve():
             answer_label=answer_label,
             answer_value=answer_value,
             unknown_label=unknown_label,
-            graph_svg=None
+            graph_svg=None,
+            has_root=has_root,
+            has_fraction=has_fraction
         )
     
     except Exception as e:

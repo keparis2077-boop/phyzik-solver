@@ -7,9 +7,11 @@
     <p class="subtitle">Формулы и физические постоянные</p>
     
     <!-- Поиск -->
-    <div style="margin-top: 16px; position: relative;">
-        <input type="text" id="search-input" placeholder="🔍 Поиск по справочнику..." 
-               style="width: 100%; max-width: 500px; padding: 12px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; background: var(--panel); color: var(--text);">
+    <div class="reference-search">
+        <span class="reference-search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Поиск по формулам и константам..." 
+               class="reference-search-input">
+        <button class="reference-search-clear" id="search-clear" style="display: none;">✕</button>
     </div>
 </div>
 
@@ -70,9 +72,7 @@
 </div>
 
 <!-- Кнопка наверх -->
-<button id="back-to-top" style="position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 20px; cursor: pointer; box-shadow: var(--shadow-md); display: none; z-index: 99;">
-    ↑
-</button>
+<button id="back-to-top" class="back-to-top-btn">↑</button>
 
 {% endblock %}
 
@@ -155,6 +155,109 @@ document.addEventListener('DOMContentLoaded', function() {
     backToTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+    
+    // Кнопка очистки поиска
+    const searchClear = document.getElementById('search-clear');
+    if (searchClear) {
+        searchClear.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        });
+    }
 });
 </script>
+
+<style>
+.reference-search {
+    position: relative;
+    margin-top: 20px;
+    max-width: 600px;
+}
+
+.reference-search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.reference-search-input {
+    width: 100%;
+    padding: 14px 44px 14px 48px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 16px;
+    background: var(--panel);
+    color: var(--text);
+    transition: all 0.25s ease;
+    font-weight: 500;
+}
+
+.reference-search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.reference-search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--border);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.reference-search-clear:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.back-to-top-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 99;
+}
+
+.back-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top-btn:hover {
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
+}
+</style>
 {% endblock %}

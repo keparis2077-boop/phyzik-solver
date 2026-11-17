@@ -15,24 +15,27 @@
 {% else %}
 
 <!-- Уведомление об успехе -->
-<div class="toast toast-success" style="display: flex; align-items: center; gap: 12px;">
-    <span style="font-size: 24px;">✅</span>
-    <div>
-        <div style="font-weight: 700; margin-bottom: 4px;">Задача решена!</div>
-        <div style="font-size: 13px; color: var(--text-secondary);">+10 XP, +5 монет</div>
+<div class="toast-success-enhanced">
+    <div class="toast-success-icon">✅</div>
+    <div class="toast-success-content">
+        <div class="toast-success-title">Задача решена!</div>
+        <div class="toast-success-subtitle">+10 XP, +5 монет</div>
+    </div>
+    <div class="toast-success-progress">
+        <div class="toast-success-progress-bar"></div>
     </div>
 </div>
 
 <script>
 setTimeout(() => {
-    const toast = document.querySelector('.toast');
+    const toast = document.querySelector('.toast-success-enhanced');
     if (toast) {
         toast.style.transition = 'opacity 0.3s, transform 0.3s';
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
+        toast.style.transform = 'translateY(-20px)';
         setTimeout(() => toast.remove(), 300);
     }
-}, 3000);
+}, 4000);
 </script>
 
 <!-- Заголовок решения -->
@@ -84,10 +87,21 @@ setTimeout(() => {
         </ol>
 
         <div class="answer-box">
-            <h2>✅ Ответ</h2>
-            <table class="answer-table">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                <h2 style="margin: 0;">✅ Ответ</h2>
+                <div class="format-buttons">
+                    <button class="format-btn active" data-format="decimal" onclick="setFormat('decimal')">Десятичная</button>
+                    {% if has_fraction %}
+                    <button class="format-btn" data-format="fraction" onclick="setFormat('fraction')">Дробь</button>
+                    {% endif %}
+                    {% if has_root %}
+                    <button class="format-btn" data-format="root" onclick="setFormat('root')">Корень</button>
+                    {% endif %}
+                </div>
+            </div>
+            <table class="answer-table" id="answer-table">
                 {% for k, v in results.items() %}
-                <tr>
+                <tr data-decimal="{{ v }}">
                     <td>
                         {% if task.quantities is defined %}
                             {{ task.quantities[k][0] }}
@@ -97,7 +111,7 @@ setTimeout(() => {
                             {{ k }}
                         {% endif %}
                     </td>
-                    <td>{{ v }}</td>
+                    <td class="answer-value-cell">{{ v }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -124,4 +138,235 @@ setTimeout(() => {
 {% endif %}
 
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ===== Форматирование ответов =====
+let originalAnswerHTML = '';
+let currentFormat = 'decimal';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('answer-table');
+    if (table) {
+        originalAnswerHTML = table.innerHTML;
+        setFormat('decimal');
+    }
+});
+
+function gcd(a, b) {
+    a = Math.abs(Math.round(a));
+    b = Math.abs(Math.round(b));
+    while (b) {
+        [a, b] = [b, a % b];
+    }
+    return a;
+}
+
+function toFraction(decimal, maxDenominator = 1000) {
+    if (isNaN(decimal) || !isFinite(decimal)) return {num: 0, den: 1};
+    
+    const sign = decimal < 0 ? -1 : 1;
+    const absDec = Math.abs(decimal);
+    
+    // Проверка на целое число
+    if (Math.abs(decimal - Math.round(decimal)) < 0.0001) {
+        return {num: sign * Math.round(decimal), den: 1};
+    }
+    
+    // Проверка на простую дробь
+    for (let den = maxDenominator; den >= 1; den--) {
+        const num = Math.round(decimal * den);
+        if (Math.abs(num / den - decimal) < 0.001) {
+            const common = gcd(Math.abs(num), den);
+            const numR = (sign * num) / common;
+            const denR = den / common;
+            if (denR === 1) return {num: numR, den: 1};
+            return {num: numR, den: denR};
+        }
+    }
+    
+    return {num: Math.round(decimal * maxDenominator), den: maxDenominator};
+}
+
+function simplifySquareRoot(num) {
+    if (num <= 0 || !Number.isFinite(num)) return null;
+    
+    let result = '';
+    let remaining = num;
+    let outside = 1;
+    
+    // Проверяем квадраты простых чисел
+    for (let i = 2; i * i <= remaining && i <= 100; i++) {
+        let count = 0;
+        while (remaining % (i * i) === 0 && remaining / (i * i) === Math.floor(remaining / (i * i))) {
+            remaining /= (i * i);
+            count++;
+        }
+        if (count >= 1) {
+            outside *= Math.pow(i, count);
+        }
+    }
+    
+    if (remaining === 1) {
+        return outside.toString();
+    } else if (outside === 1 && Number.isInteger(remaining)) {
+        return `√${remaining}`;
+    } else if (outside > 1 && Number.isInteger(remaining)) {
+        return `${outside}√${remaining}`;
+    }
+    
+    return null;
+}
+
+function formatLargeNumber(num) {
+    // Научная нотация для очень больших/маленьких чисел
+    if (Math.abs(num) >= 1e15 || (Math.abs(num) < 1e-3 && num !== 0)) {
+        const exponent = Math.floor(Math.log10(Math.abs(num)));
+        const mantissa = num / Math.pow(10, exponent);
+        const supExponents = {'0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹'};
+        const expStr = String(exponent).split('').map(d => supExponents[d] || d).join('');
+        const sign = num < 0 ? '−' : '';
+        return `${sign}${mantissa.toFixed(2)}·10${expStr}`;
+    }
+    
+    // Разделитель тысяч для больших чисел
+    if (Math.abs(num) >= 1000) {
+        return num.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    
+    return num.toFixed(2);
+}
+
+function formatNumber(decimal) {
+    const num = parseFloat(decimal);
+    if (isNaN(num)) return String(decimal);
+    
+    // Пробуем как корень
+    const sqrtResult = simplifySquareRoot(Math.abs(num));
+    if (sqrtResult && Math.abs(num) > 1) {
+        return num < 0 ? `-(${sqrtResult})` : sqrtResult;
+    }
+    
+    // Пробуем как дробь
+    return toFraction(num);
+}
+
+function setFormat(format) {
+    currentFormat = format;
+    const table = document.getElementById('answer-table');
+    const buttons = document.querySelectorAll('.format-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.format-btn[data-format="${format}"]`).classList.add('active');
+    
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+        const decimal = row.dataset.decimal;
+        const cell = row.querySelector('.answer-value-cell');
+        if (decimal) {
+            const num = parseFloat(decimal);
+            if (format === 'decimal') {
+                cell.innerHTML = formatLargeNumber(num);
+            } else if (format === 'fraction') {
+                const frac = toFraction(num);
+                if (frac.den === 1) {
+                    cell.innerHTML = frac.num.toString();
+                } else {
+                    const sign = frac.num < 0 ? '-' : '';
+                    const absNum = Math.abs(frac.num);
+                    cell.innerHTML = `<span class="fraction"><span class="fraction-num">${sign}${absNum}</span><span class="fraction-bar">—</span><span class="fraction-den">${frac.den}</span></span>`;
+                }
+            } else if (format === 'root') {
+                const sqrtResult = simplifySquareRoot(Math.abs(num));
+                cell.innerHTML = sqrtResult && Math.abs(num) > 1 ? (num < 0 ? `-(${sqrtResult})` : sqrtResult) : formatLargeNumber(num);
+            }
+        }
+    });
+}
+</script>
+
+<style>
+.answer-table td:last-child {
+    font-family: 'Times New Roman', serif;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* ===== УЛУЧШЕННОЕ УВЕДОМЛЕНИЕ ===== */
+.toast-success-enhanced {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 4px solid var(--success);
+    max-width: 360px;
+    overflow: hidden;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.toast-success-content {
+    flex: 1;
+}
+
+.toast-success-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: var(--text);
+}
+
+.toast-success-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.toast-success-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--border);
+}
+
+.toast-success-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), #34d399);
+    border-radius: 0 0 0 4px;
+    animation: progressFill 4s linear;
+}
+
+@keyframes progressFill {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+@media (max-width: 768px) {
+    .toast-success-enhanced {
+        top: auto;
+        bottom: 80px;
+        right: 16px;
+        left: 16px;
+        max-width: none;
+    }
+}
+</style>
 {% endblock %}

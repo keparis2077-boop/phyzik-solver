@@ -115,3 +115,50 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(el);
     });
 })();
+
+// ===== УЛУЧШЕННАЯ МОБИЛЬНАЯ НАВИГАЦИЯ =====
+(function () {
+    const mobileItems = document.querySelectorAll('.topnav-mobile-item');
+    mobileItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Убираем active со всех
+            mobileItems.forEach(i => i.classList.remove('active'));
+            // Добавляем active на текущий
+            this.classList.add('active');
+        });
+    });
+})();
+
+// ===== УЛУЧШЕННЫЕ АНИМАЦИИ ДЛЯ КНОПОК =====
+(function () {
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
+    });
+})();
+
+// ===== ЛЕНИВАЯ ЗАГРУЗКА ИЗОБРАЖЕНИЙ =====
+(function () {
+    const images = document.querySelectorAll('img[data-src]');
+    if ('IntersectionObserver' in window) {
+        const imgObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        imgObserver.unobserve(img);
+                    }
+                }
+            });
+        });
+        
+        images.forEach(img => imgObserver.observe(img));
+    }
+})();

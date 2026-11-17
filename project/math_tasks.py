@@ -313,6 +313,8 @@ MATH_TASKS = {
 
 def solve_quadratic(data):
     """Решение квадратного уравнения"""
+    import math
+    
     def to_float(key):
         val = data.get(key, '0')
         if not val or val.strip() == '':
@@ -332,22 +334,52 @@ def solve_quadratic(data):
         f"Дискриминант: D = b² - 4ac = {b}² - 4·{a}·{c} = {D}",
     ]
     
+    # Точное выражение дискриминанта
+    D_str = str(int(D)) if D == int(D) else f"{D:.4f}".rstrip('0')
+    
     if D < 0:
         steps.append("D < 0: корней нет")
         return {}, steps, "Квадратное уравнение не имеет действительных корней"
     
     elif D == 0:
         x = -b / (2*a)
-        steps.append(f"D = 0: один корень x = -b/(2a) = {x:.2f}")
-        return {'x': f'{x:.2f}'}, steps, "Квадратное уравнение имеет один корень"
+        x_str = str(int(x)) if x == int(x) else f"{x:.4f}".rstrip('0')
+        steps.append(f"D = 0: один корень x = -b/(2a) = {x_str}")
+        return {
+            'x': f'{x:.2f}',
+            'x_exact': x_str
+        }, steps, "Квадратное уравнение имеет один корень"
     
     else:
-        x1 = (-b + D**0.5) / (2*a)
-        x2 = (-b - D**0.5) / (2*a)
+        sqrt_D = D**0.5
+        x1 = (-b + sqrt_D) / (2*a)
+        x2 = (-b - sqrt_D) / (2*a)
+        
+        # Строим точное выражение
+        b_str = str(int(b)) if b == int(b) else str(b)
+        a_str = str(int(a)) if a == int(a) else str(a)
+        
+        # x = (-b ± √D) / 2a
+        neg_b = -b
+        neg_b_str = str(int(neg_b)) if neg_b == int(neg_b) else str(neg_b)
+        
+        if D == int(D):
+            exact_expr1 = f"({neg_b_str}+√{int(D)})/{int(2*a)}"
+            exact_expr2 = f"({neg_b_str}-√{int(D)})/{int(2*a)}"
+        else:
+            exact_expr1 = f"({neg_b_str}+√{D_str})/{int(2*a)}"
+            exact_expr2 = f"({neg_b_str}-√{D_str})/{int(2*a)}"
+        
         steps.append(f"D > 0: два корня")
-        steps.append(f"x₁ = (-b + √D) / 2a = {x1:.2f}")
-        steps.append(f"x₂ = (-b - √D) / 2a = {x2:.2f}")
-        return {'x₁': f'{x1:.2f}', 'x₂': f'{x2:.2f}'}, steps, "Квадратное уравнение имеет два корня"
+        steps.append(f"x₁ = (-b + √D) / 2a = {exact_expr1} ≈ {x1:.2f}")
+        steps.append(f"x₂ = (-b - √D) / 2a = {exact_expr2} ≈ {x2:.2f}")
+        
+        return {
+            'x₁': f'{x1:.2f}',
+            'x₂': f'{x2:.2f}',
+            'x₁_exact': exact_expr1,
+            'x₂_exact': exact_expr2
+        }, steps, "Квадратное уравнение имеет два корня"
 
 
 def solve_linear(data):

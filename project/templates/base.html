@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Физик — Решебник{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=8">
 
     <!-- MathJax для формул -->
     <script>
@@ -125,5 +125,31 @@
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% block scripts %}{% endblock %}
+
+<!-- Мобильная навигация -->
+<div class="topnav-mobile">
+    <div class="topnav-mobile-inner">
+        <a href="{{ url_for('index') }}" class="topnav-mobile-item {% if request.endpoint == 'index' %}active{% endif %}">
+            <span class="topnav-mobile-icon">📚</span>
+            <span>Занятия</span>
+        </a>
+        <a href="{{ url_for('math') }}" class="topnav-mobile-item {% if request.endpoint == 'math' %}active{% endif %}">
+            <span class="topnav-mobile-icon">📐</span>
+            <span>Математика</span>
+        </a>
+        <a href="{{ url_for('reference') }}" class="topnav-mobile-item {% if request.endpoint == 'reference' %}active{% endif %}">
+            <span class="topnav-mobile-icon">📖</span>
+            <span>Справочник</span>
+        </a>
+        <a href="{{ url_for('builder') }}" class="topnav-mobile-item {% if request.endpoint == 'builder' %}active{% endif %}">
+            <span class="topnav-mobile-icon">🔧</span>
+            <span>Конструктор</span>
+        </a>
+        <a href="{{ url_for('history') }}" class="topnav-mobile-item {% if request.endpoint == 'history' %}active{% endif %}">
+            <span class="topnav-mobile-icon">📊</span>
+            <span>История</span>
+        </a>
+    </div>
+</div>
 </body>
 </html>

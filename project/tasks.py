@@ -72,6 +72,7 @@ def solve_kinematics(known, target):
 
 TASKS['kinematics'] = {
     "name": "Равноускоренное движение",
+    "description": "Решите задачи с равноускоренным движением: найдите скорость, ускорение, время или пройденный путь.",
     "category": "Кинематика",
     "icon": "🚀",
     "image": "/static/img/kinematics.svg",
@@ -127,6 +128,7 @@ def solve_newton(known, target):
 
 TASKS['newton'] = {
     "name": "Второй закон Ньютона",
+    "description": "Вычислите силу, массу или ускорение по второму закону Ньютона: F = m·a.",
     "category": "Динамика",
     "icon": "⚙️",
     "image": "/static/img/newton.svg",
@@ -179,6 +181,7 @@ def solve_ohm(known, target):
 
 TASKS['ohm'] = {
     "name": "Закон Ома",
+    "description": "Найдите силу тока, напряжение или сопротивление по закону Ома: I = U/R.",
     "category": "Электричество",
     "icon": "🔌",
     "image": "/static/img/ohm.svg",
@@ -231,6 +234,7 @@ def solve_work(known, target):
 
 TASKS['work'] = {
     "name": "Механическая работа",
+    "description": "Вычислите работу, силу или перемещение: A = F·s.",
     "category": "Энергия",
     "icon": "💪",
     "image": "/static/img/work.svg",
@@ -283,6 +287,7 @@ def solve_energy(known, target):
 
 TASKS['energy'] = {
     "name": "Кинетическая энергия",
+    "description": "Найдите кинетическую энергию, массу или скорость: E = m·v²/2.",
     "category": "Энергия",
     "icon": "⚡",
     "image": "/static/img/energy.svg",
@@ -335,6 +340,7 @@ def solve_pressure(known, target):
 
 TASKS['pressure'] = {
     "name": "Давление",
+    "description": "Вычислите давление, силу или площадь: p = F/S.",
     "category": "Давление",
     "icon": "📏",
     "image": "/static/img/pressure.svg",
@@ -387,6 +393,7 @@ def solve_density(known, target):
 
 TASKS['density'] = {
     "name": "Плотность вещества",
+    "description": "Найдите плотность, массу или объём вещества: ρ = m/V.",
     "category": "Давление",
     "icon": "🧪",
     "image": "/static/img/density.svg",
@@ -432,6 +439,7 @@ def solve_gravity(known, target):
 
 TASKS['gravity'] = {
     "name": "Сила тяжести",
+    "description": "Вычислите силу тяжести по формуле F = m·g, где g = 9.8 м/с².",
     "category": "Динамика",
     "icon": "🌍",
     "image": "/static/img/gravity.svg",
@@ -483,6 +491,7 @@ def solve_archimedes(known, target):
 
 TASKS['archimedes'] = {
     "name": "Сила Архимеда",
+    "description": "Найдите выталкивающую силу в жидкости: F_A = ρ·g·V.",
     "category": "Давление",
     "icon": "🚢",
     "image": "/static/img/archimedes.svg",
@@ -535,6 +544,7 @@ def solve_power(known, target):
 
 TASKS['power'] = {
     "name": "Механическая мощность",
+    "description": "Вычислите механическую мощность: N = A/t.",
     "category": "Энергия",
     "icon": "⚙️",
     "image": "/static/img/power.svg",
@@ -587,6 +597,7 @@ def solve_series(known, target):
 
 TASKS['series'] = {
     "name": "Последовательное соединение",
+    "description": "Найдите общее сопротивление или сопротивление одного резистора при последовательном соединении: R = R₁ + R₂.",
     "category": "Электричество",
     "icon": "🔗",
     "image": "/static/img/series.svg",
@@ -639,6 +650,7 @@ def solve_parallel(known, target):
 
 TASKS['parallel'] = {
     "name": "Параллельное соединение",
+    "description": "Вычислите сопротивление при параллельном соединении резисторов: R = R₁·R₂ / (R₁ + R₂).",
     "category": "Электричество",
     "icon": "🔀",
     "image": "/static/img/parallel.svg",
@@ -695,6 +707,7 @@ def solve_freefall(known, target):
 
 TASKS['freefall'] = {
     "name": "Свободное падение",
+    "description": "Решите задачи на свободное падение тела: h = g·t²/2, v = g·t.",
     "category": "Кинематика",
     "icon": "🍎",
     "image": "/static/img/freefall.svg",
@@ -769,6 +782,7 @@ def solve_ballistics(known, target):
 
 TASKS['ballistics'] = {
     "name": "Баллистика (угол к горизонту)",
+    "description": "Найдите дальность, высоту или время полёта тела, брошенного под углом к горизонту.",
     "category": "Кинематика",
     "icon": "🎯",
     "image": "/static/img/ballistics.svg",
@@ -815,6 +829,7 @@ def solve_heat(known, target):
 
 TASKS['heat'] = {
     "name": "Нагревание вещества",
+    "description": "Вычислите количество теплоты при нагревании или охлаждении: Q = c·m·ΔT.",
     "category": "Термодинамика",
     "icon": "🔥",
     "image": "/static/img/heat.svg",
@@ -853,6 +868,7 @@ def solve_reflection(known, target):
 
 TASKS['reflection'] = {
     "name": "Закон отражения света",
+    "description": "Примените закон отражения света: угол падения равен углу отражения (α = β).",
     "category": "Оптика",
     "icon": "🪞",
     "image": "/static/img/reflection.svg",
@@ -904,6 +920,7 @@ def solve_lens(known, target):
 
 TASKS['lens'] = {
     "name": "Формула тонкой линзы",
+    "description": "Найдите фокусное расстояние, расстояние до предмета или изображения по формуле тонкой линзы: 1/F = 1/d + 1/f.",
     "category": "Оптика",
     "icon": "🔍",
     "image": "/static/img/lens.svg",
@@ -954,6 +971,7 @@ def solve_optical_power(known, target):
 
 TASKS['optical_power'] = {
     "name": "Оптическая сила линзы",
+    "description": "Вычислите оптическую силу линзы по формуле D = 1/F, где F — фокусное расстояние в метрах.",
     "category": "Оптика",
     "icon": "👓",
     "image": "/static/img/optical_power.svg",
@@ -1032,6 +1050,7 @@ def solve_magnification(known, target):
 
 TASKS['magnification'] = {
     "name": "Линейное увеличение линзы",
+    "description": "Определите увеличение линзы, расстояние до изображения или предмета, а также размеры изображения по известным параметрам линзы.",
     "category": "Оптика",
     "icon": "🔎",
     "image": "/static/img/magnification.svg",

@@ -151,6 +151,14 @@ templates:
         steps:
           - "Из p = m·v: v = p/m"
           - "v = {p}/{m} = {result:.3f} м/с"
+      - id: m_from_pv
+        target: m
+        label: "Массу m"
+        requires: [p, v]
+        formula: "p / v"
+        steps:
+          - "Из p = m·v: m = p/v"
+          - "m = {p}/{v} = {result:.3f} кг"
     explanation: "Импульс тела: p = m·v."
 
   - id: weight
