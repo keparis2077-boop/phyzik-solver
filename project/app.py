@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from loader import TASKS, group_by_category, get_math_tasks_by_category
 from reference import CONSTANTS, FORMULAS
 from models import (
@@ -8,6 +8,8 @@ from models import (
 )
 from graphs import generate_graph
 from math_tasks import MATH_TASKS
+from pdf_report import create_pdf_report
+import os
 
 app = Flask(__name__)
 app.secret_key = 'physics-solver-secret-key-2025'
@@ -224,6 +226,61 @@ def history_clear():
     return redirect(url_for('history'))
 
 
+@app.route('/pdf/<task_id>')
+def download_pdf(task_id):
+    user = get_current_user()
+    if not user:
+        flash('Войдите в аккаунт для скачивания отчёта', 'warning')
+        return redirect(url_for('login'))
+    
+    if task_id not in TASKS:
+        flash('Задача не найдена', 'error')
+        return redirect(url_for('index'))
+    
+    t = TASKS[task_id]
+    
+    # Генерируем решение для отчёта
+    try:
+        # Берём последние данные из формы или используем тестовые
+        target = request.form.get('target', list(t['targets'].keys())[0])
+        known = {}
+        for key, (label, unit) in t['quantities'].items():
+            if key == target:
+                continue
+            raw = request.form.get(key, '').strip()
+            if raw:
+                try:
+                    known[key] = float(raw)
+                except ValueError:
+                    pass
+        
+        if not known:
+            # Если нет данных в форме, используем тестовые значения
+            known = {k: 10.0 for k, v in t['quantities'].items() if k != target}
+        
+        results, steps, explanation = t['solve'](known, target)
+    except Exception:
+        results, steps, explanation = {}, ['Невозможно сгенерировать отчёт'], ''
+    
+    # Создаём PDF
+    pdf_path = create_pdf_report(
+        task_name=t['name'],
+        category=t['category'],
+        steps=steps,
+        results=results,
+        explanation=explanation,
+        username=user['username'],
+    )
+    
+    # Отправляем файл
+    return send_file(
+        pdf_path,
+        as_attachment=True,
+        download_name=f'{t["name"]}.pdf',
+        mimetype='application/pdf'
+    )
+
+
 @app.route('/reference')
 def reference():
     user = get_current_user()
@@ -298,6 +355,102 @@ def math_solve(task_id):
                            task=task, task_id=task_id,
                            results=results, steps=steps, explanation=explanation,
                            error=error, has_root=has_root, has_fraction=has_fraction)
+
+
+# ==================== ХИМИЯ ====================
+
+@app.route('/chemistry')
+def chemistry():
+    user = get_current_user()
+    if not user:
+        flash('Войдите в аккаунт для сохранения результатов', 'warning')
+        return redirect(url_for('login'))
+    
+    # Загружаем задачи по химии из TASKS
+    chemistry_tasks = [t for t in TASKS.values() if t.get('category') == 'Химия']
+    
+    return render_template('chemistry.html',
+                           user=user,
+                           chemistry_tasks=chemistry_tasks,
+                           avogadro_tasks=[t for t in chemistry_tasks if 'Авогадро' in t['name']],
+                           gas_law_tasks=[t for t in chemistry_tasks if 'Газ' in t['name']],
+                           concentration_tasks=[t for t in chemistry_tasks if 'Раствор' in t['name']],
+                           stoichiometry_tasks=[t for t in chemistry_tasks if 'Стехиометрия' in t['name']],
+                           mass_percent_tasks=[t for t in chemistry_tasks if 'Массовая' in t['name']])
+
+
+@app.route('/chemistry/task/<task_id>')
+def chemistry_task(task_id):
+    if task_id not in TASKS:
+        return redirect(url_for('chemistry'))
+    
+    task = TASKS[task_id]
+    return render_template('task.html', task_id=task_id, task=task)
+
+
+@app.route('/chemistry/solve/<task_id>', methods=['POST'])
+def chemistry_solve(task_id):
+    user = get_current_user()
+    if not user:
+        flash('Войдите в аккаунт', 'warning')
+        return redirect(url_for('login'))
+    
+    if task_id not in TASKS:
+        return redirect(url_for('chemistry'))
+    
+    t = TASKS[task_id]
+
+    if 'quantities' in t:
+        target = request.form.get('target')
+        if not target:
+            return redirect(url_for('chemistry_task', task_id=task_id))
+
+        known = {}
+        for key, (label, unit) in t['quantities'].items():
+            if key == target:
+                continue
+            raw = request.form.get(key, '').strip()
+            if raw:
+                try:
+                    known[key] = float(raw)
+                except ValueError:
+                    return render_template(
+                        'result.html', task_id=task_id, task=t,
+                        error=f"Некорректное число в поле «{label}»",
+                        form=request.form, results={}, steps=[], explanation='',
+                    )
+
+        try:
+            results, steps, explanation = t['solve'](known, target)
+            error = None
+            inputs_str = ', '.join(f"{k}={v}" for k, v in known.items()) + f' | найти: {target}'
+            results_str = ', '.join(f"{k}={v}" for k, v in results.items())
+            save_solution(user['id'], task_id, t['name'], inputs_str, results_str)
+            add_xp(user['id'], 10)
+            add_coins(user['id'], 5)
+            
+            graph_type = t.get('graph_type')
+            graph_svg = None
+            if graph_type:
+                try:
+                    graph_svg = generate_graph(graph_type, known)
+                except Exception:
+                    graph_svg = None
+        except Exception as e:
+            results, steps, explanation, graph_svg = {}, [], '', None
+            error = str(e)
+
+        has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
+        has_fraction = any('/' in s for s in steps)
+
+        return render_template(
+            'result.html',
+            task_id=task_id, task=t,
+            results=results, steps=steps, explanation=explanation,
+            error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
+        )
+
+    return redirect(url_for('chemistry_task', task_id=task_id))
 
 
 # ==================== КОНСТРУКТОР ====================

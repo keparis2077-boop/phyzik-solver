@@ -5,11 +5,51 @@
 <div class="page-header">
     <div class="task-icon">📐</div>
     <h1>Математика</h1>
-    <p class="subtitle">Алгебра, геометрия и тригонометрия — решайте задачи с пошаговым решением</p>
+    <p class="subtitle">пошаговое решение задач</p>
+</div>
+
+<!-- Список категорий -->
+<div class="category-sidebar">
+    <h3 class="sidebar-title">📚 Категории</h3>
+    <button class="category-item active" data-category="all" onclick="filterTasks('all')">
+        <span class="category-icon">📋</span>
+        <span class="category-name">Все задачи</span>
+        <span class="category-badge">6</span>
+    </button>
+    <button class="category-item" data-category="Алгебра" onclick="filterTasks('Алгебра')">
+        <span class="category-icon">📊</span>
+        <span class="category-name">Алгебра</span>
+        <span class="category-badge">{{ algebra_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Геометрия" onclick="filterTasks('Геометрия')">
+        <span class="category-icon">📏</span>
+        <span class="category-name">Геометрия</span>
+        <span class="category-badge">{{ geometry_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Тригонометрия" onclick="filterTasks('Тригонометрия')">
+        <span class="category-icon">📈</span>
+        <span class="category-name">Тригонометрия</span>
+        <span class="category-badge">{{ trigonometry_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Анализ" onclick="filterTasks('Анализ')">
+        <span class="category-icon">📉</span>
+        <span class="category-name">Анализ</span>
+        <span class="category-badge">{{ analysis_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Векторы" onclick="filterTasks('Векторы')">
+        <span class="category-icon">➡️</span>
+        <span class="category-name">Векторы</span>
+        <span class="category-badge">{{ vectors_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Теория вероятностей" onclick="filterTasks('Теория вероятностей')">
+        <span class="category-icon">🎲</span>
+        <span class="category-name">Т. Вероятностей</span>
+        <span class="category-badge">{{ probability_tasks|length }}</span>
+    </button>
 </div>
 
 <!-- Алгебра -->
-<section class="category-section">
+<section class="category-section" data-category="Алгебра">
     <div class="category-header">
         <h2>📊 Алгебра</h2>
         <span class="category-count">{{ algebra_tasks|length }} задач</span>
@@ -34,7 +74,7 @@
 </section>
 
 <!-- Геометрия -->
-<section class="category-section">
+<section class="category-section" data-category="Геометрия">
     <div class="category-header">
         <h2>📏 Геометрия</h2>
         <span class="category-count">{{ geometry_tasks|length }} задач</span>
@@ -59,7 +99,7 @@
 </section>
 
 <!-- Тригонометрия -->
-<section class="category-section">
+<section class="category-section" data-category="Тригонометрия">
     <div class="category-header">
         <h2>📈 Тригонометрия</h2>
         <span class="category-count">{{ trigonometry_tasks|length }} задач</span>
@@ -84,7 +124,7 @@
 </section>
 
 <!-- Анализ -->
-<section class="category-section">
+<section class="category-section" data-category="Анализ">
     <div class="category-header">
         <h2>📉 Анализ</h2>
         <span class="category-count">{{ analysis_tasks|length }} задач</span>
@@ -109,7 +149,7 @@
 </section>
 
 <!-- Векторы -->
-<section class="category-section">
+<section class="category-section" data-category="Векторы">
     <div class="category-header">
         <h2>➡️ Векторы</h2>
         <span class="category-count">{{ vectors_tasks|length }} задач</span>
@@ -134,7 +174,7 @@
 </section>
 
 <!-- Теория вероятностей -->
-<section class="category-section">
+<section class="category-section" data-category="Теория вероятностей">
     <div class="category-header">
         <h2>🎲 Теория вероятностей</h2>
         <span class="category-count">{{ probability_tasks|length }} задач</span>
@@ -157,5 +197,31 @@
         {% endfor %}
     </div>
 </section>
+
+<script>
+function filterTasks(category) {
+    document.querySelectorAll('.category-item').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+
+    document.querySelectorAll('.category-section').forEach(section => {
+        if (category === 'all') {
+            section.style.display = 'block';
+        } else {
+            section.style.display = section.dataset.category === category ? 'block' : 'none';
+        }
+    });
+
+    if (category !== 'all') {
+        const firstVisible = document.querySelector('.category-section[style*="block"]');
+        if (firstVisible) {
+            firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+</script>
 
 {% endblock %}

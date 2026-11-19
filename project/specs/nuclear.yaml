@@ -1,92 +1,128 @@
-# ============================================================
-# ЯДЕРНАЯ ФИЗИКА — 11 КЛАСС
-# Масса, энергия связи, дефект массы, радиоактивность
-# ============================================================
+# ЯДЕРНАЯ ФИЗИКА
+# Масса-энергия, связывающая энергия, радиоактивный распад
 
 templates:
   - id: mass_energy
-    name: "Энергия покоя (E=mc²)"
+    name: "Эквивалент массы и энергии (E=mc²)"
     category: "Ядерная физика"
     icon: "☢️"
-    description: "E = m·c²"
+    description: "Вычислите энергию по формуле Эйнштейна E = mc²"
     variables:
       m: { label: "Масса m", unit: "кг", type: float }
+      c: { label: "Скорость света c", unit: "м/с", type: float }
       E: { label: "Энергия E", unit: "Дж", type: float }
     solutions:
-      - id: E_from_m
+      - id: E_from_mc2
         target: E
         label: "Энергию E"
-        requires: [m]
-        formula: "m * 9e16"
+        requires: [m, c]
+        formula: "m * c * c"
         steps:
           - "Формула: E = m·c²"
-          - "E = {m}·(3·10⁸)² = {result:.3e} Дж"
-      - id: m_from_E
+          - "E = {m}·({c})² = {result:.3e} Дж"
+      - id: m_from_Ec2
         target: m
         label: "Массу m"
-        requires: [E]
-        formula: "E / 9e16"
+        requires: [E, c]
+        formula: "E / (c * c)"
         steps:
           - "Из E = m·c²: m = E/c²"
-          - "m = {E:.3e}/(3·10⁸)² = {result:.3e} кг"
-    explanation: "Энергия покоя: E = m·c²."
+          - "m = {E} / ({c})² = {result:.3e} кг"
+    explanation: "Эквивалент массы и энергии: E = mc²."
 
   - id: binding_energy
     name: "Энергия связи ядра"
     category: "Ядерная физика"
     icon: "⚛️"
-    description: "ΔE = Δm·c², Δm = Z·mp + N·mn - M"
+    description: "ΔE = Δm·c², где Δm = Z·m_p + N·m_n - m_ядра"
     variables:
-      Z: { label: "Число протонов Z", unit: "", type: float }
-      N: { label: "Число нейтронов N", unit: "", type: float }
-      M: { label: "Масса ядра M", unit: "кг", type: float }
-      Delta_m: { label: "Дефект массы Δm", unit: "кг", type: float }
-      Delta_E: { label: "Энергия связи ΔE", unit: "Дж", type: float }
+      Z: { label: "Число протонов Z", unit: "", type: int }
+      N: { label: "Число нейтронов N", unit: "", type: int }
+      m_nucleus: { label: "Масса ядра m_ядра", unit: "а.е.м.", type: float }
+      Ep: { label: "Энергия связи E_с", unit: "МэВ", type: float }
+      delta_Ep: { label: "Энергия связи на нуклон E_с/A", unit: "МэВ/нуклон", type: float }
     solutions:
-      - id: delta_m_from_ZNM
-        target: Delta_m
-        label: "Дефект массы Δm"
-        requires: [Z, N, M]
-        formula: "Z*1.6726e-27 + N*1.6749e-27 - M"
+      - id: Ep_from_ZN
+        target: Ep
+        label: "Энергию связи E_с"
+        requires: [Z, N, m_nucleus]
+        formula: "(Z * 1.00728 + N * 1.00866 - m_nucleus) * 931.5"
         steps:
-          - "Формула: Δm = Z·mp + N·mn - M"
-          - "Δm = {Z}·1.6726·10⁻²⁷ + {N}·1.6749·10⁻²⁷ - {M:.3e}"
-          - "Δm = {result:.3e} кг"
-      - id: Delta_E_from_delta_m
-        target: Delta_E
-        label: "Энергию связи ΔE"
-        requires: [Delta_m]
-        formula: "Delta_m * 9e16"
+          - "Δm = Z·m_p + N·m_n - m_ядра"
+          - "Δm = {Z}·1.00728 + {N}·1.00866 - {m_nucleus} = {delta_m:.4f} а.е.м."
+          - "E_с = Δm·931.5 = {result:.1f} МэВ"
+      - id: delta_Ep_from_Ep_A
+        target: delta_Ep
+        label: "Энергию связи на нуклон E_с/A"
+        requires: [Ep, Z, N]
+        formula: "Ep / (Z + N)"
         steps:
-          - "Формула: ΔE = Δm·c²"
-          - "ΔE = {Delta_m:.3e}·(3·10⁸)² = {result:.3e} Дж"
-    explanation: "Энергия связи ядра: ΔE = Δm·c²."
+          - "A = Z + N = {Z} + {N} = {A}"
+          - "E_с/A = {Ep} / {A} = {result:.2f} МэВ/нуклон"
+    explanation: "Энергия связи: E_с = Δm·c², где Δm — дефект массы."
 
-  - id: radioactivity
-    name: "Закон радиоактивного распада"
+  - id: radioactive_decay
+    name: "Радиоактивный распад"
     category: "Ядерная физика"
     icon: "📉"
-    description: "N = N₀·2^(-t/T)"
+    description: "N = N₀·2^(-t/T₁/₂) — закон радиоактивного распада"
     variables:
-      N0: { label: "Начальное число N₀", unit: "", type: float }
-      T: { label: "Период полураспада T", unit: "с", type: float }
-      t: { label: "Время t", unit: "с", type: float }
+      N0: { label: "Начальное число ядер N₀", unit: "", type: float }
       N: { label: "Оставшееся число N", unit: "", type: float }
+      t: { label: "Время t", unit: "ч", type: float }
+      T: { label: "Период полураспада T₁/₂", unit: "ч", type: float }
     solutions:
-      - id: N_from_N0Tt
+      - id: N_from_N0_tT
         target: N
         label: "Оставшееся число N"
-        requires: [N0, T, t]
-        formula: "N0 * 2**(-t/T)"
+        requires: [N0, t, T]
+        formula: "N0 * 2 ** (-t / T)"
         steps:
-          - "Формула: N = N₀·2^(-t/T)"
-          - "N = {N0}·2^(-{t}/{T}) = {result:.2f}"
-      - id: t_from_NN0
+          - "Закон распада: N = N₀·2^(-t/T)"
+          - "N = {N0}·2^(-{t}/{T}) = {result:.0f}"
+      - id: T_from_N0_N_t
+        target: T
+        label: "Период полураспада T"
+        requires: [N0, N, t]
+        formula: "t / (math.log2(N0 / N))"
+        steps:
+          - "Из N = N₀·2^(-t/T): T = t / log₂(N₀/N)"
+          - "T = {t} / log₂({N0}/{N}) = {result:.1f} ч"
+      - id: t_from_N0_N_T
         target: t
         label: "Время t"
         requires: [N0, N, T]
-        formula: "T * (-log2(N/N0))"
+        formula: "T * math.log2(N0 / N)"
         steps:
-          - "Из N = N₀·2^(-t/T): t = -T·log₂(N/N₀)"
-          - "t = -{T}·log₂({N}/{N0}) = {result:.2f} с"
-    explanation: "Закон радиоактивного распада: N = N₀·2^(-t/T)."
+          - "Из N = N₀·2^(-t/T): t = T·log₂(N₀/N)"
+          - "t = {T}·log₂({N0}/{N}) = {result:.1f} ч"
+    explanation: "Закон радиоактивного распада: N = N₀·2^(-t/T₁/₂)."
+
+  - id: activity
+    name: "Активность радиоактивного источника"
+    category: "Ядерная физика"
+    icon: "📊"
+    description: "A = A₀·2^(-t/T₁/₂), где A = λ·N"
+    variables:
+      A0: { label: "Начальная активность A₀", unit: "Бк", type: float }
+      A: { label: "Активность A", unit: "Бк", type: float }
+      t: { label: "Время t", unit: "ч", type: float }
+      T: { label: "Период полураспада T₁/₂", unit: "ч", type: float }
+    solutions:
+      - id: A_from_A0_tT
+        target: A
+        label: "Активность A"
+        requires: [A0, t, T]
+        formula: "A0 * 2 ** (-t / T)"
+        steps:
+          - "Закон распада: A = A₀·2^(-t/T)"
+          - "A = {A0}·2^(-{t}/{T}) = {result:.1f} Бк"
+      - id: T_from_A0_A_t
+        target: T
+        label: "Период полураспада T"
+        requires: [A0, A, t]
+        formula: "t / (math.log2(A0 / A))"
+        steps:
+          - "Из A = A₀·2^(-t/T): T = t / log₂(A₀/A)"
+          - "T = {t} / log₂({A0}/{A}) = {result:.1f} ч"
+    explanation: "Активность: A = A₀·2^(-t/T₁/₂)."

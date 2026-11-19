@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Химия — ФИЗИК{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div class="task-icon">🧪</div>
+    <h1>Химия</h1>
+    <p class="subtitle">пошаговое решение задач</p>
+</div>
+
+<!-- Список категорий -->
+<div class="category-sidebar">
+    <h3 class="sidebar-title">📚 Категории</h3>
+    <button class="category-item active" data-category="all" onclick="filterTasks('all')">
+        <span class="category-icon">📋</span>
+        <span class="category-name">Все задачи</span>
+        <span class="category-badge">6</span>
+    </button>
+    <button class="category-item" data-category="Молярная масса" onclick="filterTasks('Молярная масса')">
+        <span class="category-icon">⚗️</span>
+        <span class="category-name">Молярная масса</span>
+        <span class="category-badge">{{ chemistry_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Число Авогадро" onclick="filterTasks('Число Авогадро')">
+        <span class="category-icon">🔢</span>
+        <span class="category-name">Число Авогадро</span>
+        <span class="category-badge">{{ avogadro_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Газовые законы" onclick="filterTasks('Газовые законы')">
+        <span class="category-icon">🎈</span>
+        <span class="category-name">Газовые законы</span>
+        <span class="category-badge">{{ gas_law_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Растворы" onclick="filterTasks('Растворы')">
+        <span class="category-icon">🧪</span>
+        <span class="category-name">Растворы</span>
+        <span class="category-badge">{{ concentration_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Стехиометрия" onclick="filterTasks('Стехиометрия')">
+        <span class="category-icon">⚖️</span>
+        <span class="category-name">Стехиометрия</span>
+        <span class="category-badge">{{ stoichiometry_tasks|length }}</span>
+    </button>
+    <button class="category-item" data-category="Массовая доля" onclick="filterTasks('Массовая доля')">
+        <span class="category-icon">📊</span>
+        <span class="category-name">Масс. доля</span>
+        <span class="category-badge">{{ mass_percent_tasks|length }}</span>
+    </button>
+</div>
+
+<!-- Молярная масса -->
+<section class="category-section" data-category="Молярная масса">
+    <div class="category-header">
+        <h2>⚗️ Молярная масса</h2>
+        <span class="category-count">{{ chemistry_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in chemistry_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Число Авогадро -->
+<section class="category-section" data-category="Число Авогадро">
+    <div class="category-header">
+        <h2>🔢 Число Авогадро</h2>
+        <span class="category-count">{{ avogadro_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in avogadro_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Газовые законы -->
+<section class="category-section" data-category="Газовые законы">
+    <div class="category-header">
+        <h2>🎈 Газовые законы</h2>
+        <span class="category-count">{{ gas_law_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in gas_law_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Растворы -->
+<section class="category-section" data-category="Растворы">
+    <div class="category-header">
+        <h2>🧪 Растворы</h2>
+        <span class="category-count">{{ concentration_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in concentration_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Стехиометрия -->
+<section class="category-section" data-category="Стехиометрия">
+    <div class="category-header">
+        <h2>⚖️ Стехиометрия</h2>
+        <span class="category-count">{{ stoichiometry_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in stoichiometry_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Массовая доля -->
+<section class="category-section" data-category="Массовая доля">
+    <div class="category-header">
+        <h2>📊 Массовая доля</h2>
+        <span class="category-count">{{ mass_percent_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in mass_percent_tasks %}
+        <a href="{{ url_for('chemistry_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Химия</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+function filterTasks(category) {
+    document.querySelectorAll('.category-item').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+
+    document.querySelectorAll('.category-section').forEach(section => {
+        if (category === 'all') {
+            section.style.display = 'block';
+        } else {
+            section.style.display = section.dataset.category === category ? 'block' : 'none';
+        }
+    });
+
+    if (category !== 'all') {
+        const firstVisible = document.querySelector('.category-section[style*="block"]');
+        if (firstVisible) {
+            firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+</script>
+
+{% endblock %}

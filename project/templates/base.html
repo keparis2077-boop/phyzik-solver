@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Физик — Решебник{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=11">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=13">
 
     <!-- MathJax для формул -->
     <script>
@@ -28,9 +28,13 @@
 
         <!-- Навигация -->
         <nav class="topnav">
+            <a href="{{ url_for('chemistry') }}" class="topnav-item {% if request.endpoint == 'chemistry' %}active{% endif %}">
+                <span class="topnav-icon">🧪</span>
+                <span>Химия</span>
+            </a>
             <a href="{{ url_for('index') }}" class="topnav-item {% if request.endpoint == 'index' %}active{% endif %}">
-                <span class="topnav-icon">📚</span>
-                <span>Занятия</span>
+                <span class="topnav-icon">⚛️</span>
+                <span>Физика</span>
             </a>
             <a href="{{ url_for('math') }}" class="topnav-item {% if request.endpoint == 'math' %}active{% endif %}">
                 <span class="topnav-icon">📐</span>
@@ -129,9 +133,13 @@
 <!-- Мобильная навигация -->
 <div class="topnav-mobile">
     <div class="topnav-mobile-inner">
+        <a href="{{ url_for('chemistry') }}" class="topnav-mobile-item {% if request.endpoint == 'chemistry' %}active{% endif %}">
+            <span class="topnav-mobile-icon">🧪</span>
+            <span>Химия</span>
+        </a>
         <a href="{{ url_for('index') }}" class="topnav-mobile-item {% if request.endpoint == 'index' %}active{% endif %}">
-            <span class="topnav-mobile-icon">📚</span>
-            <span>Занятия</span>
+            <span class="topnav-mobile-icon">⚛️</span>
+            <span>Физика</span>
         </a>
         <a href="{{ url_for('math') }}" class="topnav-mobile-item {% if request.endpoint == 'math' %}active{% endif %}">
             <span class="topnav-mobile-icon">📐</span>

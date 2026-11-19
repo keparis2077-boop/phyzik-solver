@@ -1,0 +1,191 @@
+# ХИМИЯ
+# Молярная масса, стехиометрия, растворы, реакции
+
+templates:
+  - id: molar_mass
+    name: "Молярная масса"
+    category: "Химия"
+    icon: "⚗️"
+    description: "Вычислите молярную массу вещества по формуле"
+    variables:
+      m: { label: "Масса m", unit: "г", type: float }
+      n: { label: "Количество вещества n", unit: "моль", type: float }
+      M: { label: "Молярная масса M", unit: "г/моль", type: float }
+    solutions:
+      - id: M_from_mn
+        target: M
+        label: "Молярную массу M"
+        requires: [m, n]
+        formula: "m / n"
+        steps:
+          - "Формула: M = m/n"
+          - "M = {m} / {n} = {result:.2f} г/моль"
+      - id: m_from_Mn
+        target: m
+        label: "Массу m"
+        requires: [M, n]
+        formula: "M * n"
+        steps:
+          - "Формула: m = M·n"
+          - "m = {M}·{n} = {result:.2f} г"
+      - id: n_from_mM
+        target: n
+        label: "Количество вещества n"
+        requires: [m, M]
+        formula: "m / M"
+        steps:
+          - "Формула: n = m/M"
+          - "n = {m} / {M} = {result:.3f} моль"
+    explanation: "Молярная масса: M = m/n."
+
+  - id: avogadro
+    name: "Число Авогадро"
+    category: "Химия"
+    icon: "🔢"
+    description: "N = n·Na — связь между количеством вещества и числом частиц"
+    variables:
+      n: { label: "Количество вещества n", unit: "моль", type: float }
+      N: { label: "Число частиц N", unit: "", type: float }
+      Na: { label: "Число Авогадро Na", unit: "моль⁻¹", type: float }
+    solutions:
+      - id: N_from_n
+        target: N
+        label: "Число частиц N"
+        requires: [n]
+        formula: "n * 6.022e23"
+        steps:
+          - "Формула: N = n·Na"
+          - "N = {n}·6.022·10²³ = {result:.2e}"
+      - id: n_from_N
+        target: n
+        label: "Количество вещества n"
+        requires: [N]
+        formula: "N / 6.022e23"
+        steps:
+          - "Из N = n·Na: n = N/Na"
+          - "n = {N} / 6.022·10²³ = {result:.3f} моль"
+    explanation: "Число Авогадро: Na = 6.022·10²³ моль⁻¹."
+
+  - id: gas_law
+    name: "Закон Авогадро (газовые законы)"
+    category: "Химия"
+    icon: "🎈"
+    description: "V = n·Vm — объём газа при нормальных условиях"
+    variables:
+      n: { label: "Количество вещества n", unit: "моль", type: float }
+      V: { label: "Объём V", unit: "л", type: float }
+      Vm: { label: "Молярный объём Vm", unit: "л/моль", type: float }
+    solutions:
+      - id: V_from_n
+        target: V
+        label: "Объём V"
+        requires: [n]
+        formula: "n * Vm"
+        steps:
+          - "Формула: V = n·Vm"
+          - "V = {n}·{Vm} = {result:.2f} л"
+      - id: n_from_V
+        target: n
+        label: "Количество вещества n"
+        requires: [V, Vm]
+        formula: "V / Vm"
+        steps:
+          - "Из V = n·Vm: n = V/Vm"
+          - "n = {V} / {Vm} = {result:.3f} моль"
+    explanation: "Молярный объём газа при н.у.: Vm = 22.4 л/моль."
+
+  - id: concentration
+    name: "Концентрация раствора"
+    category: "Химия"
+    icon: "🧪"
+    description: "C = n/V — молярная концентрация"
+    variables:
+      n: { label: "Количество вещества n", unit: "моль", type: float }
+      V: { label: "Объём раствора V", unit: "л", type: float }
+      C: { label: "Концентрация C", unit: "моль/л", type: float }
+      m: { label: "Масса вещества m", unit: "г", type: float }
+      M: { label: "Молярная масса M", unit: "г/моль", type: float }
+    solutions:
+      - id: C_from_nV
+        target: C
+        label: "Концентрацию C"
+        requires: [n, V]
+        formula: "n / V"
+        steps:
+          - "Формула: C = n/V"
+          - "C = {n} / {V} = {result:.3f} моль/л"
+      - id: n_from_CV
+        target: n
+        label: "Количество вещества n"
+        requires: [C, V]
+        formula: "C * V"
+        steps:
+          - "Из C = n/V: n = C·V"
+          - "n = {C}·{V} = {result:.3f} моль"
+      - id: V_from_nC
+        target: V
+        label: "Объём V"
+        requires: [n, C]
+        formula: "n / C"
+        steps:
+          - "Из C = n/V: V = n/C"
+          - "V = {n} / {C} = {result:.3f} л"
+    explanation: "Молярная концентрация: C = n/V."
+
+  - id: reaction_stoichiometry
+    name: "Стехиометрия реакций"
+    category: "Химия"
+    icon: "⚖️"
+    description: "Расчёт по уравнению химической реакции"
+    variables:
+      n1: { label: "Количество вещества 1 n₁", unit: "моль", type: float }
+      k1: { label: "Коэффициент 1 k₁", unit: "", type: int }
+      n2: { label: "Количество вещества 2 n₂", unit: "моль", type: float }
+      k2: { label: "Коэффициент 2 k₂", unit: "", type: int }
+    solutions:
+      - id: n2_from_n1
+        target: n2
+        label: "Количество n₂"
+        requires: [n1, k1, k2]
+        formula: "n1 * k2 / k1"
+        steps:
+          - "По уравнению: n₁/k₁ = n₂/k₂"
+          - "n₂ = n₁·k₂/k₁"
+          - "n₂ = {n1}·{k2}/{k1} = {result:.3f} моль"
+      - id: n1_from_n2
+        target: n1
+        label: "Количество n₁"
+        requires: [n2, k1, k2]
+        formula: "n2 * k1 / k2"
+        steps:
+          - "Из n₁/k₁ = n₂/k₂: n₁ = n₂·k₁/k₂"
+          - "n₁ = {n2}·{k1}/{k2} = {result:.3f} моль"
+    explanation: "Стехиометрия: отношение количеств веществ равно отношению коэффициентов."
+
+  - id: mass_percent
+    name: "Массовая доля вещества"
+    category: "Химия"
+    icon: "📊"
+    description: "w = m(в-ва)/m(раствора) — массовая доля"
+    variables:
+      m_solute: { label: "Масса вещества m(в-ва)", unit: "г", type: float }
+      m_solution: { label: "Масса раствора m(р-ра)", unit: "г", type: float }
+      w: { label: "Массовая доля w", unit: "%", type: float }
+    solutions:
+      - id: w_from_m
+        target: w
+        label: "Массовую долю w"
+        requires: [m_solute, m_solution]
+        formula: "m_solute / m_solution * 100"
+        steps:
+          - "Формула: w = m(в-ва)/m(р-ра)·100%"
+          - "w = {m_solute}/{m_solution}·100% = {result:.2f}%"
+      - id: m_solute_from_w
+        target: m_solute
+        label: "Массу вещества m(в-ва)"
+        requires: [m_solution, w]
+        formula: "w * m_solution / 100"
+        steps:
+          - "Из w = m(в-ва)/m(р-ра): m(в-ва) = w·m(р-ра)/100%"
+          - "m(в-ва) = {w}·{m_solution}/100 = {result:.2f} г"
+    explanation: "Массовая доля: w = m(в-ва)/m(р-ра)·100%."

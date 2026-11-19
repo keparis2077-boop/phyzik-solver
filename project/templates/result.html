@@ -120,6 +120,8 @@ setTimeout(() => {
 
         <div class="actions">
             <a href="{{ url_for('task', task_id=task_id) }}" class="btn btn-primary-light">🔄 Решить ещё</a>
+            <button class="btn btn-outline" onclick="openCompareModal()">🔍 Сравнить</button>
+            <a href="{{ url_for('download_pdf', task_id=task_id) }}" class="btn btn-outline">📄 PDF</a>
             <button class="btn btn-outline" onclick="window.print()">🖨 Печать</button>
         </div>
     </div>
@@ -136,7 +138,26 @@ setTimeout(() => {
 {% endif %}
 
 {% endif %}
-{% endblock %}
+
+<!-- Модальное окно сравнения -->
+<div class="compare-modal" id="compare-modal">
+    <div class="compare-modal-content">
+        <div class="compare-header">
+            <h2>🔍 Сравнение решений</h2>
+            <button class="compare-close" onclick="closeCompareModal()">✕</button>
+        </div>
+        <div class="compare-body">
+            <p>Введите ваши шаги решения (каждый с новой строки):</p>
+            <textarea id="user-steps" placeholder="1. Формула: E = mc²&#10;2. Подставляем значения...&#10;3. Вычисляем ответ..."></textarea>
+            <button class="btn btn-primary" onclick="runComparison()" style="margin-top: 16px;">Сравнить</button>
+        </div>
+        <div id="comparison-result" style="display: none;">
+            <!-- Результаты будут здесь -->
+        </div>
+    </div>
+</div>
+
+{% endif %}
 
 {% block scripts %}
 <script>
@@ -293,6 +314,156 @@ function setFormat(format) {
 }
 </script>
 
+<script>
+// ===== Сравнение решений =====
+function compareSolutions(userSteps, correctSteps, tolerance = 0.05) {
+    const result = {
+        is_correct: false,
+        score: 0,
+        total: correctSteps.length,
+        differences: [],
+        suggestions: []
+    };
+    
+    if (!correctSteps.length) {
+        result.score = 0;
+        return result;
+    }
+    
+    let matched = 0;
+    correctSteps.forEach((correctStep, i) => {
+        if (i < userSteps.length) {
+            if (stepsMatch(userSteps[i], correctStep, tolerance)) {
+                matched++;
+            } else {
+                result.differences.push({
+                    step: i + 1,
+                    user: userSteps[i],
+                    correct: correctStep
+                });
+            }
+        } else {
+            result.differences.push({
+                step: i + 1,
+                user: '(не указано)',
+                correct: correctStep
+            });
+        }
+    });
+    
+    if (userSteps.length > correctSteps.length) {
+        result.suggestions.push('Вы добавили дополнительные шаги — это хорошо, но можно короче!');
+    }
+    
+    result.score = Math.round((matched / correctSteps.length) * 100);
+    result.is_correct = result.score >= 90;
+    
+    if (result.score < 50) {
+        result.suggestions.push('Попробуйте ещё раз — обратите внимание на формулы!');
+    } else if (result.score < 90) {
+        result.suggestions.push('Хорошо, но есть небольшие ошибки. Проверьте вычисления.');
+    } else {
+        result.suggestions.push('Отличное решение! 🎉');
+    }
+    
+    return result;
+}
+
+function stepsMatch(userStep, correctStep, tolerance) {
+    const u = userStep.trim().toLowerCase();
+    const c = correctStep.trim().toLowerCase();
+    
+    if (u === c) return true;
+    
+    const uNums = extractNumbers(u);
+    const cNums = extractNumbers(c);
+    
+    if (uNums.length && cNums.length && uNums.length === cNums.length) {
+        return uNums.every((n, i) => numbersClose(n, cNums[i], tolerance));
+    }
+    
+    if (c.includes(u) || u.includes(c)) return true;
+    
+    return false;
+}
+
+function extractNumbers(text) {
+    const matches = text.match(/[-+]?\d*\.?\d+/g);
+    return matches ? matches.map(Number) : [];
+}
+
+function numbersClose(a, b, tolerance) {
+    if (b === 0) return Math.abs(a) < tolerance;
+    return Math.abs(a - b) / Math.abs(b) <= tolerance;
+}
+
+function openCompareModal() {
+    document.getElementById('compare-modal').classList.add('active');
+}
+
+function closeCompareModal() {
+    document.getElementById('compare-modal').classList.remove('active');
+    document.getElementById('comparison-result').style.display = 'none';
+}
+
+function runComparison() {
+    const userText = document.getElementById('user-steps').value.trim();
+    if (!userText) {
+        alert('Введите ваш вариант решения!');
+        return;
+    }
+    
+    const userSteps = userText.split('\n').filter(s => s.trim());
+    const correctSteps = {{ steps | tojson }};
+    
+    const result = compareSolutions(userSteps, correctSteps);
+    
+    const resultDiv = document.getElementById('comparison-result');
+    resultDiv.style.display = 'block';
+    
+    let scoreClass = result.score >= 90 ? 'score-good' : (result.score >= 50 ? 'score-medium' : 'score-bad');
+    
+    let html = `
+        <div style="text-align: center; margin: 20px 0;">
+            <div class="score-badge ${scoreClass}">${result.score}%</div>
+            <p style="color: var(--text-secondary); margin: 8px 0;">${result.is_correct ? '✅ Решение правильное!' : '⚠️ Есть ошибки'}</p>
+        </div>
+    `;
+    
+    if (result.differences.length > 0) {
+        html += '<h3 style="font-size: 16px; margin: 16px 0 8px;">❌ Ошибки:</h3><ul class="diff-list">';
+        result.differences.forEach(diff => {
+            html += `
+                <li class="diff-item">
+                    <span class="step-num">Шаг ${diff.step}:</span><br/>
+                    <span style="color: #64748b;">Ваш ответ: ${diff.user}</span><br/>
+                    <span style="color: #065f46;">Правильно: ${diff.correct}</span>
+                </li>
+            `;
+        });
+        html += '</ul>';
+    }
+    
+    if (result.suggestions.length > 0) {
+        html += '<h3 style="font-size: 16px; margin: 16px 0 8px;">💡 Рекомендации:</h3><ul class="suggestion-list">';
+        result.suggestions.forEach(s => {
+            html += `<li>${s}</li>`;
+        });
+        html += '</ul>';
+    }
+    
+    resultDiv.innerHTML = html;
+}
+
+document.getElementById('compare-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeCompareModal();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeCompareModal();
+});
+</script>
+
 <style>
 .answer-table td:last-child {
     font-family: 'Times New Roman', serif;
@@ -374,6 +545,136 @@ function setFormat(format) {
         left: 16px;
         max-width: none;
     }
+}
+
+/* ===== Модальное окно сравнения ===== */
+.compare-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-modal.active {
+    display: flex;
+}
+
+.compare-modal-content {
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.compare-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.compare-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--text);
+}
+
+.compare-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+}
+
+.compare-close:hover {
+    color: var(--text);
+}
+
+.compare-body textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.compare-body textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Результаты сравнения */
+.score-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 16px 0;
+}
+
+.score-good {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.score-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.score-bad {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.diff-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+}
+
+.diff-item {
+    padding: 12px;
+    border-left: 3px solid #ef4444;
+    background: #fef2f2;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+}
+
+.diff-item .step-num {
+    font-weight: 700;
+    color: #dc2626;
+}
+
+.suggestion-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+}
+
+.suggestion-list li {
+    padding: 8px 12px;
+    background: #eef2ff;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    color: var(--primary);
+    font-size: 14px;
 }
 </style>
 {% endblock %}

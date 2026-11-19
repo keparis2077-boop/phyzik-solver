@@ -110,6 +110,7 @@ def _infer_category(task_id: str) -> str:
         "refraction": "Оптика",
         "thin_lens": "Оптика",
         "optical_power": "Оптика",
+        "diffraction_grating": "Оптика",
         # Колебания
         "oscillations": "Колебания и волны",
         "frequency": "Колебания и волны",
@@ -121,6 +122,7 @@ def _infer_category(task_id: str) -> str:
         "photon_energy": "Квантовая физика",
         "photoelectric": "Квантовая физика",
         "de_broglie": "Квантовая физика",
+        "Bohr": "Квантовая физика",
         # Ядерная физика
         "nuclear": "Ядерная физика",
         "mass_energy": "Ядерная физика",
@@ -131,9 +133,17 @@ def _infer_category(task_id: str) -> str:
         "lorentz_force": "Электромагнетизм",
         "ampere_force": "Электромагнетизм",
         "electromagnetic_wave": "Электромагнетизм",
+        "electromagnetic_induction": "Электромагнетизм",
         "inductance": "Электромагнетизм",
         # Математика
         "math": "Математика",
+        # Химия
+        "molar_mass": "Химия",
+        "avogadro": "Химия",
+        "gas_law": "Химия",
+        "concentration": "Химия",
+        "reaction_stoichiometry": "Химия",
+        "mass_percent": "Химия",
     }
     return category_map.get(task_id, "Прочее")
 

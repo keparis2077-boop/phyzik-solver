@@ -6,12 +6,29 @@
 <div class="page-header">
     <div class="task-icon">⚛️</div>
     <h1>Физика</h1>
-    <p class="subtitle">Решайте задачи с пошаговым решением</p>
+    <p class="subtitle">пошаговое решение задач</p>
+</div>
+
+<!-- Список категорий -->
+<div class="category-sidebar">
+    <h3 class="sidebar-title">📚 Категории задач</h3>
+    <button class="category-item active" data-category="all" onclick="filterTasks('all')">
+        <span class="category-icon">📋</span>
+        <span class="category-name">Все задачи</span>
+        <span class="category-badge">{{ groups|length }}</span>
+    </button>
+    {% for category, items in groups.items() %}
+    <button class="category-item" data-category="{{ category }}" onclick="filterTasks('{{ category }}')">
+        <span class="category-icon">{{ items[0][1].icon }}</span>
+        <span class="category-name">{{ category }}</span>
+        <span class="category-badge">{{ items|length }}</span>
+    </button>
+    {% endfor %}
 </div>
 
 <!-- Категории задач -->
 {% for category, items in groups.items() %}
-<section class="category-section">
+<section class="category-section" data-category="{{ category }}">
     <div class="category-header">
         <h2>{{ category }}</h2>
         <span class="category-count">{{ items|length }} задач</span>
@@ -48,5 +65,34 @@
         </ul>
     </div>
 </div>
+
+<script>
+function filterTasks(category) {
+    // Обновляем активную кнопку
+    document.querySelectorAll('.category-item').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Фильтруем секции
+    document.querySelectorAll('.category-section').forEach(section => {
+        if (category === 'all') {
+            section.style.display = 'block';
+        } else {
+            section.style.display = section.dataset.category === category ? 'block' : 'none';
+        }
+    });
+
+    // Скроллим к первой видимой секции
+    if (category !== 'all') {
+        const firstVisible = document.querySelector('.category-section[style*="block"]');
+        if (firstVisible) {
+            firstVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+</script>
 
 {% endblock %}

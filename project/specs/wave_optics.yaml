@@ -1,0 +1,201 @@
+# ОПТИКА — ВОЛНОВАЯ ОПТИКА
+# Преломление, интерференция, дифракция, дифракционная решётка
+
+templates:
+  - id: refraction
+    name: "Закон преломления света"
+    category: "Оптика"
+    icon: "🌊"
+    description: "n₁·sin(α) = n₂·sin(β) — закон Снеллиуса"
+    variables:
+      n1: { label: "Показатель преломления среды 1 n₁", unit: "", type: float }
+      n2: { label: "Показатель преломления среды 2 n₂", unit: "", type: float }
+      alpha: { label: "Угол падения α", unit: "°", type: float }
+      beta: { label: "Угол преломления β", unit: "°", type: float }
+    solutions:
+      - id: beta_from_n1n2alpha
+        target: beta
+        label: "Угол преломления β"
+        requires: [n1, n2, alpha]
+        formula: "arcsin(n1 * sin(alpha) / n2)"
+        steps:
+          - "Закон Снеллиуса: n₁·sin(α) = n₂·sin(β)"
+          - "sin(β) = n₁·sin(α) / n₂"
+          - "sin(β) = {n1}·sin({alpha}°) / {n2} = {sin_beta:.4f}"
+          - "β = arcsin({sin_beta:.4f}) = {result:.1f}°"
+      - id: n2_from_n1alpha_beta
+        target: n2
+        label: "Показатель n₂"
+        requires: [n1, alpha, beta]
+        formula: "n1 * sin(alpha) / sin(beta)"
+        steps:
+          - "Закон Снеллиуса: n₂ = n₁·sin(α) / sin(β)"
+          - "n₂ = {n1}·sin({alpha}°) / sin({beta}°) = {result:.3f}"
+    explanation: "Закон преломления: n₁·sin(α) = n₂·sin(β)."
+
+  - id: diffraction_grating
+    name: "Дифракционная решётка"
+    category: "Оптика"
+    icon: "🔬"
+    description: "d·sin(φ) = k·λ — формула дифракционной решётки"
+    variables:
+      d: { label: "Период решётки d", unit: "мкм", type: float }
+      lambda_: { label: "Длина волны λ", unit: "нм", type: float }
+      k: { label: "Порядок спектра k", unit: "", type: int }
+      phi: { label: "Угол φ", unit: "°", type: float }
+    solutions:
+      - id: lambda_from_dkphi
+        target: lambda_
+        label: "Длину волны λ"
+        requires: [d, k, phi]
+        formula: "d * sin(phi) / k"
+        steps:
+          - "Формула решётки: d·sin(φ) = k·λ"
+          - "λ = d·sin(φ) / k"
+          - "λ = {d}·sin({phi}°) / {k} = {result:.1f} нм"
+      - id: phi_from_dklambda
+        target: phi
+        label: "Угол φ"
+        requires: [d, k, lambda_]
+        formula: "arcsin(k * lambda_ / d)"
+        steps:
+          - "Формула решётки: sin(φ) = k·λ / d"
+          - "sin(φ) = {k}·{lambda_} / {d} = {sin_val:.4f}"
+          - "φ = arcsin({sin_val:.4f}) = {result:.1f}°"
+      - id: d_from_klambda_phi
+        target: d
+        label: "Период d"
+        requires: [k, lambda_, phi]
+        formula: "k * lambda_ / sin(phi)"
+        steps:
+          - "Формула решётки: d = k·λ / sin(φ)"
+          - "d = {k}·{lambda_} / sin({phi}°) = {result:.1f} мкм"
+    explanation: "Дифракционная решётка: d·sin(φ) = k·λ."
+
+  - id: photon_energy
+    name: "Энергия фотона"
+    category: "Квантовая физика"
+    icon: "⚛️"
+    description: "E = h·ν = h·c/λ"
+    variables:
+      lambda_: { label: "Длина волны λ", unit: "нм", type: float }
+      nu: { label: "Частота ν", unit: "Гц", type: float }
+      E: { label: "Энергия фотона E", unit: "эВ", type: float }
+    solutions:
+      - id: E_from_lambda
+        target: E
+        label: "Энергию фотона E"
+        requires: [lambda_]
+        formula: "1240 / lambda_"
+        steps:
+          - "Формула: E = h·c/λ ≈ 1240/λ (эВ·нм)"
+          - "E = 1240 / {lambda_} = {result:.2f} эВ"
+      - id: lambda_from_E
+        target: lambda_
+        label: "Длину волны λ"
+        requires: [E]
+        formula: "1240 / E"
+        steps:
+          - "Из E = 1240/λ: λ = 1240/E"
+          - "λ = 1240 / {E} = {result:.1f} нм"
+      - id: nu_from_E
+        target: nu
+        label: "Частоту ν"
+        requires: [E]
+        formula: "E * 1.602e-19 / 6.626e-34"
+        steps:
+          - "Формула: E = h·ν"
+          - "ν = E·e / h"
+          - "ν = {E}·1.602·10⁻¹⁹ / 6.626·10⁻³⁴ = {result:.2e} Гц"
+    explanation: "Энергия фотона: E = hν = hc/λ."
+
+  - id: photoelectric_effect
+    name: "Фотоэффект (уравнение Эйнштейна)"
+    category: "Квантовая физика"
+    icon: "💡"
+    description: "hν = A + E_k — уравнение Эйнштейна для фотоэффекта"
+    variables:
+      lambda_: { label: "Длина волны λ", unit: "нм", type: float }
+      A: { label: "Работа выхода A", unit: "эВ", type: float }
+      U_z: { label: "Задерживающее напряжение Uз", unit: "В", type: float }
+      E_k: { label: "Кинетическая энергия E_k", unit: "эВ", type: float }
+    solutions:
+      - id: Uz_from_lambda_A
+        target: U_z
+        label: "Задерживающее напряжение Uз"
+        requires: [lambda_, A]
+        formula: "1240 / lambda_ - A"
+        steps:
+          - "Уравнение Эйнштейна: hν = A + E_k"
+          - "E_k = 1240/λ - A"
+          - "E_k = 1240/{lambda_} - {A} = {result:.2f} эВ"
+          - "Uз = {result:.2f} В"
+      - id: A_from_lambda_Uz
+        target: A
+        label: "Работу выхода A"
+        requires: [lambda_, U_z]
+        formula: "1240 / lambda_ - U_z"
+        steps:
+          - "Уравнение Эйнштейна: A = hν - E_k"
+          - "A = 1240/λ - Uз"
+          - "A = 1240/{lambda_} - {U_z} = {result:.2f} эВ"
+    explanation: "Фотоэффект: hν = A + E_k."
+
+  - id: de_broglie
+    name: "Длина волны де Бройля"
+    category: "Квантовая физика"
+    icon: "🌊"
+    description: "λ = h/p = h/(m·v)"
+    variables:
+      m: { label: "Масса частицы m", unit: "кг", type: float }
+      v: { label: "Скорость v", unit: "м/с", type: float }
+      p: { label: "Импульс p", unit: "кг·м/с", type: float }
+      lambda_: { label: "Длина волны λ", unit: "нм", type: float }
+    solutions:
+      - id: lambda_from_mv
+        target: lambda_
+        label: "Длину волны λ"
+        requires: [m, v]
+        formula: "6.626e-34 / (m * v)"
+        steps:
+          - "Формула де Бройля: λ = h/(m·v)"
+          - "λ = 6.626·10⁻³⁴ / ({m}·{v}) = {result:.2e} м"
+          - "λ = {result_e:.1f} нм"
+      - id: v_from_lm
+        target: v
+        label: "Скорость v"
+        requires: [lambda_, m]
+        formula: "6.626e-34 / (m * lambda_)"
+        steps:
+          - "Из λ = h/(m·v): v = h/(m·λ)"
+          - "v = 6.626·10⁻³⁴ / ({m}·{lambda_}) = {result:.2e} м/с"
+    explanation: "Волны де Бройля: λ = h/p."
+
+  - id: Bohr
+    name: "Модель атома Бора"
+    category: "Квантовая физика"
+    icon: "🔵"
+    description: "ΔE = E₂ - E₁ = h·c/λ — излучение фотона при переходе электрона"
+    variables:
+      E1: { label: "Энергия уровня E₁", unit: "эВ", type: float }
+      E2: { label: "Энергия уровня E₂", unit: "эВ", type: float }
+      lambda_: { label: "Длина волны λ", unit: "нм", type: float }
+    solutions:
+      - id: lambda_from_E
+        target: lambda_
+        label: "Длину волны λ"
+        requires: [E1, E2]
+        formula: "1240 / abs(E2 - E1)"
+        steps:
+          - "ΔE = |E₂ - E₁| = |{E2} - {E1}| = {delta:.2f} эВ"
+          - "λ = 1240/ΔE"
+          - "λ = 1240 / {delta:.2f} = {result:.1f} нм"
+      - id: E2_from_E1_lambda
+        target: E2
+        label: "Энергию уровня E₂"
+        requires: [E1, lambda_]
+        formula: "E1 + 1240 / lambda_"
+        steps:
+          - "ΔE = 1240/λ = 1240/{lambda_} = {delta:.2f} эВ"
+          - "E₂ = E₁ + ΔE = {E1} + {delta:.2f} = {result:.2f} эВ"
+    explanation: "Излучение фотона при переходе электрона между уровнями."
