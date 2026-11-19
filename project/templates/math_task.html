@@ -1,0 +1,464 @@
+{% extends 'base.html' %}
+{% block title %}{{ task.name }} — Математика — ФИЗИК{% endblock %}
+{% block content %}
+
+<style>
+.task-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 0;
+    margin-bottom: 8px;
+}
+.breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6366f1;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.breadcrumb-link:hover { text-decoration: underline; }
+.breadcrumb-sep { color: #94a3b8; font-size: 14px; }
+.breadcrumb-current { color: #1e293b; font-size: 14px; font-weight: 500; }
+
+.task-hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 32px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    border-radius: 16px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.25);
+}
+.task-hero-icon {
+    font-size: 56px;
+    background: rgba(255,255,255,0.2);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    flex-shrink: 0;
+}
+.task-hero-info h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+}
+.task-category-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.task-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 24px;
+}
+
+.task-info-panel { display: flex; flex-direction: column; gap: 20px; }
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+.info-card-icon { font-size: 20px; }
+.info-card-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+.info-card-body { padding: 20px; }
+
+.formulas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.formulas-list li {
+    padding: 8px 12px;
+    background: #f0f9ff;
+    border-left: 3px solid #0ea5e9;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #0c4a6e;
+}
+
+.task-form-panel { display: flex; flex-direction: column; }
+.form-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+}
+.form-card-icon { font-size: 22px; }
+.form-card-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.input-group {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s ease;
+}
+.input-group:last-of-type { border-bottom: none; }
+.input-group:hover { background: #f8fafc; }
+
+.input-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+.input-label-text { font-weight: 800; font-size: 15px; }
+.input-label-unit {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #f8fafc;
+    color: #1e293b;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+}
+.input-field::placeholder {
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 400;
+}
+.input-field:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+    background-color: #fff;
+    transform: translateY(-1px);
+}
+
+.solve-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 80%;
+    margin: 12px auto 0;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+.solve-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+}
+.solve-btn:active { transform: translateY(0); }
+.solve-btn-icon { font-size: 20px; }
+
+/* === Результаты === */
+.result-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-top: 20px;
+}
+.result-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+.result-card-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.result-body { padding: 24px; }
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.result-item {
+    padding: 16px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-radius: 12px;
+    text-align: center;
+}
+.result-item-label {
+    font-size: 13px;
+    color: #065f46;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.result-item-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #047857;
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.steps-list li {
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-left: 3px solid #6366f1;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #334155;
+}
+.steps-list li code {
+    background: #eef2ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #4338ca;
+}
+
+.explanation-box {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 12px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #92400e;
+}
+.explanation-box strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.error-box {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-radius: 12px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin-top: 16px;
+}
+.back-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+</style>
+
+<!-- Хлебные крошки -->
+<div class="task-breadcrumbs">
+    <a href="{{ url_for('math') }}" class="breadcrumb-link">
+        <span>←</span> Математика
+    </a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">{{ task.name }}</span>
+</div>
+
+<!-- Заголовок задачи -->
+<div class="task-hero">
+    <div class="task-hero-icon">{{ task.icon }}</div>
+    <div class="task-hero-info">
+        <h1>{{ task.name }}</h1>
+        <div class="task-hero-meta">
+            <span class="task-category-badge">{{ task.category }}</span>
+            {% if task.difficulty %}
+            <span class="task-category-badge">{{ task.difficulty }} класс</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="task-layout">
+    <!-- Левая панель: информация -->
+    <div class="task-info-panel">
+        <div class="info-card">
+            <div class="info-card-header">
+                <span class="info-card-icon">📋</span>
+                <h2>Условие</h2>
+            </div>
+            <div class="info-card-body">
+                <p style="margin: 0; color: #475569; line-height: 1.7;">{{ task.condition }}</p>
+            </div>
+        </div>
+
+        {% if task.formulas %}
+        <div class="info-card">
+            <div class="info-card-header">
+                <span class="info-card-icon">📐</span>
+                <h2>Формулы</h2>
+            </div>
+            <div class="info-card-body">
+                <ul class="formulas-list">
+                    {% for formula in task.formulas %}
+                    <li>{{ formula }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results and results %}
+        <div class="result-card">
+            <div class="result-card-header">
+                <span class="result-card-icon" style="font-size:22px;">✅</span>
+                <h2>Результат</h2>
+            </div>
+            <div class="result-body">
+                <div class="results-grid">
+                    {% for key, value in results.items() %}
+                    <div class="result-item">
+                        <div class="result-item-label">{{ key }}</div>
+                        <div class="result-item-value">{{ value }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if steps %}
+                <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin:20px 0 12px 0;">📝 Решение:</h3>
+                <ol class="steps-list">
+                    {% for step in steps %}
+                    <li>{{ step | replace('√', '√') | replace('sqrt', '√') | safe }}</li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
+
+                {% if explanation %}
+                <div class="explanation-box">
+                    <strong>💡 Пояснение</strong>
+                    {{ explanation }}
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('math_task', task_id=task_id) }}" class="back-btn">
+                    <span>↩</span> К задаче
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-box">
+            <strong>⚠️ Ошибка</strong>
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Правая панель: форма -->
+    <div class="task-form-panel">
+        <div class="form-card">
+            <div class="form-card-header">
+                <span class="form-card-icon">✏️</span>
+                <h2>Введите данные</h2>
+            </div>
+
+            <form method="post" action="{{ url_for('math_solve', task_id=task_id) }}">
+                {% for key, info in task.inputs.items() %}
+                <div class="input-group">
+                    <label class="input-label">
+                        <span class="input-label-text">{{ info.label }}</span>
+                    </label>
+                    <input type="number" step="any" name="{{ key }}"
+                           class="input-field" placeholder="{{ info.placeholder | default('Введите число') }}" required>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="solve-btn">
+                    <span class="solve-btn-icon">🚀</span>
+                    <span class="solve-btn-text">Решить</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
