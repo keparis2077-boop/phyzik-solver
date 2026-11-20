@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% block title %}Результат — Конструктор — ФИЗИК{% endblock %}
+{% block content %}
+
+<style>
+.result-hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 16px;
+    margin-bottom: 32px;
+    color: white;
+}
+.result-hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+}
+.result-hero p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.result-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.result-panel {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+.result-panel-header {
+    padding: 20px 24px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+.result-panel-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+.result-panel-body {
+    padding: 24px;
+}
+
+.answer-box {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+.answer-label {
+    font-size: 14px;
+    color: #065f46;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.answer-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #047857;
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.steps-list li {
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-left: 3px solid #6366f1;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #334155;
+}
+
+.bodies-list {
+    display: grid;
+    gap: 12px;
+}
+.body-info-card {
+    background: #f0f9ff;
+    border: 2px solid #bae6fd;
+    border-radius: 12px;
+    padding: 16px;
+}
+.body-info-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0c4a6e;
+    margin-bottom: 8px;
+}
+.body-info-details {
+    font-size: 13px;
+    color: #0369a1;
+    line-height: 1.6;
+}
+
+.explanation-box {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #92400e;
+}
+.explanation-box strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.error-box {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-radius: 16px;
+    text-align: center;
+    color: #991b1b;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin-top: 16px;
+}
+.back-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.action-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+.action-btn.secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+.action-btn.secondary:hover {
+    background: #e2e8f0;
+}
+</style>
+
+{% if error %}
+<div class="result-hero" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+    <h1>⚠️ Ошибка</h1>
+    <p>{{ error }}</p>
+</div>
+{% else %}
+<div class="result-hero">
+    <h1>✅ Задача решена!</h1>
+    <p>{{ task_type_name }}</p>
+</div>
+
+<div class="result-layout">
+    <!-- Левая панель: ответ и тела -->
+    <div class="result-panel">
+        <div class="result-panel-header">
+            <h2>🎯 Ответ</h2>
+        </div>
+        <div class="result-panel-body">
+            <div class="answer-box">
+                <div class="answer-label">{{ answer_label }}</div>
+                <div class="answer-value">{{ answer_value }}</div>
+            </div>
+
+            {% if bodies_info %}
+            <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 20px 0 12px 0;">📦 Тела в задаче</h3>
+            <div class="bodies-list">
+                {% for body in bodies_info %}
+                <div class="body-info-card">
+                    <div class="body-info-title">{{ body.name }} — {{ body.material_name }}</div>
+                    <div class="body-info-details">
+                        {% if body.c %}c = {{ body.c }} Дж/кг·°C<br>{% endif %}
+                        {% if body.mass %}m = {{ body.mass }} кг<br>{% endif %}
+                        {% if body.temp %}t = {{ body.temp }} °C{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <a href="{{ url_for('builder') }}" class="back-btn">
+                <span>↩</span> К конструктору
+            </a>
+        </div>
+    </div>
+
+    <!-- Правая панель: решение -->
+    <div class="result-panel">
+        <div class="result-panel-header">
+            <h2>📝 Ход решения</h2>
+        </div>
+        <div class="result-panel-body">
+            <ol class="steps-list">
+                {% for step in steps %}
+                <li>{{ step }}</li>
+                {% endfor %}
+            </ol>
+
+            {% if explanation %}
+            <div class="explanation-box" style="margin-top: 20px;">
+                <strong>💡 Пояснение</strong>
+                {{ explanation }}
+            </div>
+            {% endif %}
+
+            <div class="actions">
+                <a href="{{ url_for('builder') }}" class="action-btn secondary">🔄 Новая задача</a>
+                <button class="action-btn secondary" onclick="window.print()">🖨 Печать</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
