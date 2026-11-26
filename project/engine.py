@@ -66,6 +66,143 @@ def _format_value(value: float, precision: str = ".3f") -> str:
     return f"{value:{precision}}"
 
 
+def _get_exact_trig(angle_deg: float) -> tuple[str, float] | None:
+    """
+    Возвращает точное значение тригонометрической функции для специальных углов.
+    Returns: (строка с корнем, десятичное значение) или None.
+    """
+    special_angles = {
+        0:   {"sin": ("0", 0.0), "cos": ("1", 1.0), "tan": ("0", 0.0)},
+        30:  {"sin": ("1/2", 0.5), "cos": ("√3/2", 0.8660254), "tan": ("√3/3", 0.5773503)},
+        45:  {"sin": ("√2/2", 0.7071068), "cos": ("√2/2", 0.7071068), "tan": ("1", 1.0)},
+        60:  {"sin": ("√3/2", 0.8660254), "cos": ("1/2", 0.5), "tan": ("√3", 1.7320508)},
+        90:  {"sin": ("1", 1.0), "cos": ("0", 0.0), "tan": None},
+        120: {"sin": ("√3/2", 0.8660254), "cos": ("-1/2", -0.5), "tan": ("-√3", -1.7320508)},
+        135: {"sin": ("√2/2", 0.7071068), "cos": ("-√2/2", -0.7071068), "tan": ("-1", -1.0)},
+        150: {"sin": ("1/2", 0.5), "cos": ("-√3/2", -0.8660254), "tan": ("-√3/3", -0.5773503)},
+        180: {"sin": ("0", 0.0), "cos": ("-1", -1.0), "tan": ("0", 0.0)},
+    }
+    angle = round(angle_deg)
+    if angle in special_angles:
+        return special_angles[angle]
+    return None
+
+
+def _format_trig_in_step(step: str, known: dict) -> str:
+    """
+    Ищет в шаге sin(α°), cos(α°), tan(α°) и подставляет точные значения с корнями.
+    Также обрабатывает sin(α) без градусов — для шагов из YAML.
+    """
+    import re
+
+    # Сначала заменяем sin(radians(α)), cos(radians(α)), tan(radians(α))
+    def replace_trig_radians(match):
+        func = match.group(1)
+        angle = float(match.group(2))
+        exact = _get_exact_trig(angle)
+        if exact and func in exact:
+            return exact[func][0]
+        try:
+            rad = math.radians(angle)
+            if func == "sin":
+                return str(round(math.sin(rad), 6))
+            elif func == "cos":
+                return str(round(math.cos(rad), 6))
+            elif func == "tan":
+                val = math.tan(rad)
+                if abs(val) > 1e10:
+                    return "∞"
+                return str(round(val, 6))
+        except Exception:
+            pass
+        return match.group(0)
+
+    step = re.sub(r'(sin|cos|tan)\(radians\((\d+(?:\.\d+)?)\)\)', replace_trig_radians, step)
+
+    # Заменяем sin(α°), cos(α°), tan(α°)
+    pattern = r'(sin|cos|tan)\((\d+(?:\.\d+)?)°?\)'
+
+    def replace_trig(match):
+        func = match.group(1)
+        angle = float(match.group(2))
+        exact = _get_exact_trig(angle)
+        if exact and func in exact:
+            return exact[func][0]
+        try:
+            rad = math.radians(angle)
+            if func == "sin":
+                return str(round(math.sin(rad), 6))
+            elif func == "cos":
+                return str(round(math.cos(rad), 6))
+            elif func == "tan":
+                val = math.tan(rad)
+                if abs(val) > 1e10:
+                    return "∞"
+                return str(round(val, 6))
+        except Exception:
+            pass
+        return match.group(0)
+
+    return re.sub(pattern, replace_trig, step)
+
+
+def _format_num_for_exact(val: float) -> str:
+    """Форматирует число для точного выражения."""
+    if val == int(val):
+        return str(int(val))
+    return str(val)
+
+
+def _build_exact_expression(solution: dict, known: dict, result_value: float) -> str:
+    """
+    Строит точное выражение результата из формулы и известных значений.
+    Заменяет sin(radians(45)) на √2/2, cos(radians(30)) на √3/2 и т.д.
+    """
+    formula = solution["formula"]
+    # Если формула содержит '=', берём только правую часть
+    if "=" in formula:
+        formula = formula.split("=", 1)[1].strip()
+
+    # Сначала заменяем переменные внутри trig/radians функций
+    for key, val in known.items():
+        num_str = _format_num_for_exact(val)
+        # Заменяем radians(key) -> radians(num) без лишних скобок
+        formula = formula.replace(f"radians({key})", f"radians({num_str})")
+        # Заменяем sin(key) -> sin(num), cos(key) -> cos(num), tan(key) -> tan(num)
+        formula = formula.replace(f"sin({key})", f"sin({num_str})")
+        formula = formula.replace(f"cos({key})", f"cos({num_str})")
+        formula = formula.replace(f"tan({key})", f"tan({num_str})")
+
+    # Заменяем оставшиеся переменные (с скобками)
+    for key, val in known.items():
+        num_str = _format_num_for_exact(val)
+        formula = formula.replace(key, f"({num_str})")
+
+    # Заменяем sin(radians(α)), cos(radians(α)), tan(radians(α)) на точные значения
+    def replace_trig_exact(match):
+        func = match.group(1)
+        angle = float(match.group(2))
+        exact = _get_exact_trig(angle)
+        if exact and func in exact and exact[func] is not None:
+            return exact[func][0]
+        return match.group(0)
+
+    # Сначала заменяем sin(radians(45)), cos(radians(45)), tan(radians(45))
+    formula = re.sub(r'(sin|cos|tan)\(radians\((\d+(?:\.\d+)?)\)\)', replace_trig_exact, formula)
+    # Затем заменяем sin(45°), cos(45°), tan(45°)
+    formula = re.sub(r'(sin|cos|tan)\((\d+(?:\.\d+)?)°?\)', replace_trig_exact, formula)
+
+    # Заменяем константы
+    for name, val in PHYSICS_CONSTANTS.items():
+        formula = formula.replace(name, f"({val})")
+
+    # Убираем лишние скобки вокруг чисел
+    formula = re.sub(r'\((\d+\.?\d*)\)', r'\1', formula)
+    formula = re.sub(r'\((\d+\.?\d*)\)', r'\1', formula)  # дважды для вложенных
+
+    return formula
+
+
 def _fill_steps(steps: list, known: dict, result: float) -> list:
     """
     Подставляет значения переменных в шаги решения.
@@ -83,6 +220,8 @@ def _fill_steps(steps: list, known: dict, result: float) -> list:
             step = step.replace(match.group(0), _format_value(result, precision))
         else:
             step = step.replace("{result}", str(result))
+        # Заменяем sin(45°), cos(30°) и т.д. на точные значения с корнями
+        step = _format_trig_in_step(step, known)
         filled.append(step)
     return filled
 
@@ -135,9 +274,11 @@ def solve_task(template: dict, inputs: dict, target: str) -> tuple[dict, list, s
 
     # Находим подходящее решение для этого target
     solution = None
+    required_vars = []
     for sol in solutions:
         if sol["target"] == target:
             required = set(sol["requires"])
+            required_vars = list(required)
             input_keys = set(inputs.keys())
 
             # Проверяем, что все required переменные есть во вводе
@@ -147,10 +288,11 @@ def solve_task(template: dict, inputs: dict, target: str) -> tuple[dict, list, s
                 break
 
     if solution is None:
+        missing = [v for v in required_vars if v not in inputs]
         raise ValueError(
-            f"Не удалось найти решение для target={target}. "
+            f"Недостаточно данных для target={target}. "
             f"Введены: {list(inputs.keys())}. "
-            f"Нужны: {list(solution['requires']) if solution else '—'}"
+            f"Не хватает: {missing if missing else required_vars}"
         )
 
     # Вычисляем результат
@@ -187,9 +329,19 @@ def solve_task(template: dict, inputs: dict, target: str) -> tuple[dict, list, s
     target_var = variables.get(target, {})
     unit = target_var.get("unit", "")
     result_key = target
-    result_str = f"{_format_value(result_value)} {unit}".strip()
+    result_num = _format_value(result_value)
+    result_str = f"{result_num} {unit}".strip()
 
-    return {result_key: result_str}, steps, explanation
+    # Формируем точное выражение результата с единицами
+    try:
+        exact_str = _build_exact_expression(solution, inputs, result_value)
+        if exact_str and unit:
+            exact_str = f"{exact_str} {unit}"
+    except Exception:
+        exact_str = ""
+
+    # Возвращаем число и единицу отдельно
+    return {result_key: result_num, "_unit": unit}, steps, explanation, exact_str, unit
 
 
 # ─── Загрузка спецификаций ─────────────────────────────────────

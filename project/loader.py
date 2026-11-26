@@ -16,7 +16,16 @@ from pathlib import Path
 def _build_solve_function(template: dict):
     """
     Создаёт функцию solve() для Flask, которая вызывает engine.solve_task().
-    Совместима со старым интерфейсом: solve(known, target) -> (results, steps, explanation)
+    Совместима со старым интерфейсом: solve(known, target) -> (results, steps, explanation, exact)
+    """
+    def solve(known: dict, target: str):
+        return solve_task(template, known, target)
+    return solve
+
+
+def _build_solve_function_with_exact(template: dict):
+    """
+    Создаёт функцию solve() для Flask, которая возвращает 4 значения.
     """
     def solve(known: dict, target: str):
         return solve_task(template, known, target)

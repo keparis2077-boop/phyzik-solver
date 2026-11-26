@@ -44,6 +44,10 @@
                 <span class="topnav-icon">📖</span>
                 <span>Справочник</span>
             </a>
+            <a href="{{ url_for('equation') }}" class="topnav-item {% if request.endpoint == 'equation' %}active{% endif %}">
+                <span class="topnav-icon">🧮</span>
+                <span>Уравнения</span>
+            </a>
             <a href="{{ url_for('builder') }}" class="topnav-item {% if request.endpoint == 'builder' %}active{% endif %}">
                 <span class="topnav-icon">🔧</span>
                 <span>Конструктор</span>
@@ -54,8 +58,11 @@
             </a>
         </nav>
 
-        <!-- Правая часть: пользователь + тема -->
+        <!-- Правая часть: поиск + пользователь + тема -->
         <div class="topbar-right">
+            <a href="{{ url_for('search') }}" class="search-toggle" title="Поиск">
+                <span style="font-size: 18px;">🔍</span>
+            </a>
             {% if user %}
             <div class="user-badge">
                 <div class="user-avatar">{{ user.username[0]|upper }}</div>
@@ -133,6 +140,10 @@
 <!-- Мобильная навигация -->
 <div class="topnav-mobile">
     <div class="topnav-mobile-inner">
+        <a href="{{ url_for('search') }}" class="topnav-mobile-item">
+            <span class="topnav-mobile-icon">🔍</span>
+            <span>Поиск</span>
+        </a>
         <a href="{{ url_for('chemistry') }}" class="topnav-mobile-item {% if request.endpoint == 'chemistry' %}active{% endif %}">
             <span class="topnav-mobile-icon">🧪</span>
             <span>Химия</span>
@@ -148,6 +159,10 @@
         <a href="{{ url_for('reference') }}" class="topnav-mobile-item {% if request.endpoint == 'reference' %}active{% endif %}">
             <span class="topnav-mobile-icon">📖</span>
             <span>Справочник</span>
+        </a>
+        <a href="{{ url_for('equation') }}" class="topnav-mobile-item {% if request.endpoint == 'equation' %}active{% endif %}">
+            <span class="topnav-mobile-icon">🧮</span>
+            <span>Уравнения</span>
         </a>
         <a href="{{ url_for('builder') }}" class="topnav-mobile-item {% if request.endpoint == 'builder' %}active{% endif %}">
             <span class="topnav-mobile-icon">🔧</span>

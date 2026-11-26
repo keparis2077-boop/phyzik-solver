@@ -21,6 +21,11 @@
         <span class="category-name">Алгебра</span>
         <span class="category-badge">{{ algebra_tasks|length }}</span>
     </button>
+    <button class="category-item" data-category="Неравенства" onclick="filterTasks('Неравенства')">
+        <span class="category-icon">📏</span>
+        <span class="category-name">Неравенства</span>
+        <span class="category-badge">{{ inequality_tasks|length }}</span>
+    </button>
     <button class="category-item" data-category="Геометрия" onclick="filterTasks('Геометрия')">
         <span class="category-icon">📏</span>
         <span class="category-name">Геометрия</span>
@@ -65,6 +70,31 @@
                 <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
                 <div class="card-meta">
                     <span class="card-tag">Алгебра</span>
+                    <span class="card-unknowns">{{ task.difficulty }} класс</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Неравенства -->
+<section class="category-section" data-category="Неравенства">
+    <div class="category-header">
+        <h2>📏 Неравенства</h2>
+        <span class="category-count">{{ inequality_tasks|length }} задач</span>
+    </div>
+    <div class="cards-grid">
+        {% for task in inequality_tasks %}
+        <a href="{{ url_for('math_task', task_id=task.id) }}" class="lesson-card">
+            <div class="card-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <span class="card-emoji">{{ task.icon }}</span>
+            </div>
+            <div class="card-body">
+                <h3>{{ task.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">{{ task.condition[:80] }}...</p>
+                <div class="card-meta">
+                    <span class="card-tag">Неравенства</span>
                     <span class="card-unknowns">{{ task.difficulty }} класс</span>
                 </div>
             </div>

@@ -1,5 +1,18 @@
 # app.py
+import sys
+import os
+
+# Добавляем venv site-packages для запуска из IDE
+_venv_site = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    '.venv', 'lib',
+    f'python{sys.version_info.major}.{sys.version_info.minor}', 'site-packages'
+)
+if os.path.exists(_venv_site) and _venv_site not in sys.path:
+    sys.path.insert(0, _venv_site)
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from difflib import get_close_matches
 from loader import TASKS, group_by_category, get_math_tasks_by_category
 from reference import CONSTANTS, FORMULAS
 from models import (
@@ -8,7 +21,7 @@ from models import (
 )
 from graphs import generate_graph
 from math_tasks import MATH_TASKS
-from pdf_report import create_pdf_report
+from equation_solver import solve_equation, solve_system_of_equations, simplify_expression_only
 import os
 
 app = Flask(__name__)
@@ -143,7 +156,7 @@ def solve(task_id):
                     )
 
         try:
-            results, steps, explanation = t['solve'](known, target)
+            results, steps, explanation, exact, unit = t['solve'](known, target)
             error = None
             inputs_str = ', '.join(f"{k}={v}" for k, v in known.items()) + f' | найти: {target}'
             results_str = ', '.join(f"{k}={v}" for k, v in results.items())
@@ -159,7 +172,7 @@ def solve(task_id):
                 except Exception:
                     graph_svg = None
         except Exception as e:
-            results, steps, explanation, graph_svg = {}, [], '', None
+            results = {}; steps = []; explanation = ''; exact = ''; unit = ''; graph_svg = None
             error = str(e)
 
         has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
@@ -170,12 +183,14 @@ def solve(task_id):
             task_id=task_id, task=t,
             results=results, steps=steps, explanation=explanation,
             error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
+            exact=exact,
+            unit=unit,
         )
 
     selected = request.form.getlist('outputs') or list(t.get('outputs', {}).keys())
     graph_svg = None
     try:
-        results, steps, explanation = t['solve'](request.form, selected)
+        results, steps, explanation, exact, unit = t['solve'](request.form, selected)
         error = None
         inputs_str = ', '.join(
             f"{label.split('(')[0].strip()}={request.form[key]} {unit}"
@@ -192,7 +207,7 @@ def solve(task_id):
             except Exception:
                 graph_svg = None
     except Exception as e:
-        results, steps, explanation, graph_svg = {}, [], '', None
+        results, steps, explanation, exact, graph_svg = {}, [], '', '', None
         error = f"Ошибка ввода: {e}"
 
     has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
@@ -203,6 +218,8 @@ def solve(task_id):
         task_id=task_id, task=t,
         results=results, steps=steps, explanation=explanation,
         error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
+            exact=exact,
+            unit=unit,
     )
 
 
@@ -225,62 +242,6 @@ def history_clear():
         flash('История очищена', 'success')
     return redirect(url_for('history'))
 
-
-@app.route('/pdf/<task_id>')
-def download_pdf(task_id):
-    user = get_current_user()
-    if not user:
-        flash('Войдите в аккаунт для скачивания отчёта', 'warning')
-        return redirect(url_for('login'))
-    
-    if task_id not in TASKS:
-        flash('Задача не найдена', 'error')
-        return redirect(url_for('index'))
-    
-    t = TASKS[task_id]
-    
-    # Генерируем решение для отчёта
-    try:
-        # Берём последние данные из формы или используем тестовые
-        target = request.form.get('target', list(t['targets'].keys())[0])
-        known = {}
-        for key, (label, unit) in t['quantities'].items():
-            if key == target:
-                continue
-            raw = request.form.get(key, '').strip()
-            if raw:
-                try:
-                    known[key] = float(raw)
-                except ValueError:
-                    pass
-        
-        if not known:
-            # Если нет данных в форме, используем тестовые значения
-            known = {k: 10.0 for k, v in t['quantities'].items() if k != target}
-        
-        results, steps, explanation = t['solve'](known, target)
-    except Exception:
-        results, steps, explanation = {}, ['Невозможно сгенерировать отчёт'], ''
-    
-    # Создаём PDF
-    pdf_path = create_pdf_report(
-        task_name=t['name'],
-        category=t['category'],
-        steps=steps,
-        results=results,
-        explanation=explanation,
-        username=user['username'],
-    )
-    
-    # Отправляем файл
-    return send_file(
-        pdf_path,
-        as_attachment=True,
-        download_name=f'{t["name"]}.pdf',
-        mimetype='application/pdf'
-    )
-
-
 @app.route('/reference')
 def reference():
     user = get_current_user()
@@ -302,6 +263,7 @@ def math():
     analysis_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Анализ']
     vectors_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Векторы']
     probability_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Теория вероятностей']
+    inequality_tasks = [t for t in MATH_TASKS.values() if t['category'] == 'Неравенства']
     
     return render_template('math.html',
                            user=user,
@@ -310,7 +272,8 @@ def math():
                            trigonometry_tasks=trigonometry_tasks,
                            analysis_tasks=analysis_tasks,
                            vectors_tasks=vectors_tasks,
-                           probability_tasks=probability_tasks)
+                           probability_tasks=probability_tasks,
+                           inequality_tasks=inequality_tasks)
 
 
 @app.route('/math/task/<task_id>')
@@ -367,7 +330,7 @@ def chemistry():
         return redirect(url_for('login'))
     
     # Загружаем задачи по химии из TASKS
-    chemistry_tasks = [t for t in TASKS.values() if t.get('category') == 'Химия']
+    chemistry_tasks = [{'id': k, **t} for k, t in TASKS.items() if t.get('category') == 'Химия']
     
     return render_template('chemistry.html',
                            user=user,
@@ -421,7 +384,7 @@ def chemistry_solve(task_id):
                     )
 
         try:
-            results, steps, explanation = t['solve'](known, target)
+            results, steps, explanation, exact, unit = t['solve'](known, target)
             error = None
             inputs_str = ', '.join(f"{k}={v}" for k, v in known.items()) + f' | найти: {target}'
             results_str = ', '.join(f"{k}={v}" for k, v in results.items())
@@ -437,7 +400,7 @@ def chemistry_solve(task_id):
                 except Exception:
                     graph_svg = None
         except Exception as e:
-            results, steps, explanation, graph_svg = {}, [], '', None
+            results = {}; steps = []; explanation = ''; exact = ''; unit = ''; graph_svg = None
             error = str(e)
 
         has_root = any('√' in s or 'sqrt' in s.lower() for s in steps)
@@ -448,6 +411,8 @@ def chemistry_solve(task_id):
             task_id=task_id, task=t,
             results=results, steps=steps, explanation=explanation,
             error=error, form=request.form, graph_svg=graph_svg, has_root=has_root, has_fraction=has_fraction,
+            exact=exact,
+            unit=unit,
         )
 
     return redirect(url_for('chemistry_task', task_id=task_id))
@@ -867,6 +832,207 @@ def builder_solve():
             unknown_label="",
             graph_svg=None
         )
+
+
+# ==================== РЕШАТЕЛЬ УРАВНЕНИЙ ====================
+
+@app.route('/equation')
+def equation():
+    user = get_current_user()
+    if not user:
+        flash('Войдите в аккаунт для сохранения результатов', 'warning')
+        return redirect(url_for('login'))
+    
+    return render_template(
+        'equation.html',
+        user=user,
+        result=None,
+        error=None,
+    )
+
+
+@app.route('/equation/solve', methods=['POST'])
+def equation_solve():
+    user = get_current_user()
+    if not user:
+        flash('Войдите в аккаунт', 'warning')
+        return redirect(url_for('login'))
+    
+    equation_str = request.form.get('equation', '').strip()
+    mode = request.form.get('mode', 'solve')
+    variable = request.form.get('variable', 'x').strip()
+    system_equations = request.form.getlist('equations[]')
+    system_variables = request.form.get('system_variables', 'x, y').strip()
+    
+    if not equation_str and mode == 'solve':
+        return render_template(
+            'equation.html',
+            user=user,
+            result=None,
+            error='Введите уравнение',
+        )
+    
+    try:
+        if mode == 'simplify':
+            # Просто упрощаем выражение
+            res = simplify_expression_only(equation_str)
+            result = {
+                'mode': 'simplify',
+                'original': res['original'],
+                'simplified': res['simplified'],
+                'expanded': res['expanded'],
+                'steps': [
+                    f"Исходное выражение: {res['original']}",
+                    f"Упрощённое: {res['simplified']}",
+                    f"Раскрытое: {res['expanded']}",
+                ],
+                'explanation': 'Выражение упрощено с помощью sympy',
+                'solutions': [],
+                'type': 'упрощение',
+            }
+            error = None
+            
+        elif mode == 'solve_system':
+            # Система уравнений
+            eqs = [eq.strip() for eq in system_equations if eq.strip()]
+            if len(eqs) < 2:
+                raise ValueError("Нужно минимум 2 уравнения для системы")
+            
+            vars_list = [v.strip() for v in system_variables.split(',') if v.strip()]
+            res = solve_system_of_equations(eqs, vars_list)
+            result = {
+                'mode': 'solve_system',
+                'original': ' && '.join(eqs),
+                'solutions': res['solutions'],
+                'steps': res['steps'],
+                'explanation': res['explanation'],
+                'type': 'система уравнений',
+            }
+            error = None
+            
+        else:
+            # Обычное уравнение
+            res = solve_equation(equation_str, variable)
+            result = res
+            error = None
+            
+        # Сохраняем в историю
+        inputs_str = f"{equation_str or '&&'.join(system_equations)}"
+        results_str = '; '.join(result['solutions']) if result['solutions'] else 'решено'
+        save_solution(user['id'], 'equation_solver', result.get('type', 'уравнение'), inputs_str, results_str)
+        add_xp(user['id'], 20)
+        add_coins(user['id'], 15)
+        
+    except Exception as e:
+        result = None
+        error = str(e)
+    
+    return render_template(
+        'equation.html',
+        user=user,
+        result=result,
+        error=error,
+    )
+
+
+# ==================== ПОИСК ====================
+
+def search_tasks(query, tasks_dict, task_type='physics'):
+    """Ищет задачи по названию и условию."""
+    query_lower = query.lower().strip()
+    if not query_lower:
+        return []
+    
+    results = []
+    for task_id, task in tasks_dict.items():
+        name = task.get('name', '').lower()
+        condition = task.get('condition', '').lower()
+        category = task.get('category', '').lower()
+        
+        # Проверяем совпадение в названии, условии или категории
+        if (query_lower in name or query_lower in condition or 
+            query_lower in category or query_lower in task_id.lower()):
+            results.append({
+                'id': task_id,
+                'name': task.get('name', ''),
+                'condition': task.get('condition', ''),
+                'category': task.get('category', ''),
+                'icon': task.get('icon', '📐'),
+                'type': task_type,
+                'difficulty': task.get('difficulty', ''),
+            })
+    
+    return results
+
+
+@app.route('/search')
+def search():
+    user = get_current_user()
+    query = request.args.get('q', '').strip()
+    
+    all_results = []
+    
+    if query:
+        # Ищем по физике
+        physics_results = search_tasks(query, TASKS, 'physics')
+        all_results.extend(physics_results)
+        
+        # Ищем по математике
+        math_results = search_tasks(query, MATH_TASKS, 'math')
+        all_results.extend(math_results)
+        
+        # Ищем по уравнениям
+        if any(keyword in query.lower() for keyword in ['уравнение', 'неравенство', 'solve', 'inequality']):
+            all_results.append({
+                'id': 'equation',
+                'name': 'Решатель уравнений',
+                'condition': 'Введите уравнение — сайт упростит и решит пошагово',
+                'category': 'Инструменты',
+                'icon': '🧮',
+                'type': 'equation',
+                'difficulty': '',
+            })
+        
+        # Ищем по справочнику
+        if any(keyword in query.lower() for keyword in ['формула', 'константа', 'справочник', 'reference']):
+            all_results.append({
+                'id': 'reference',
+                'name': 'Справочник формул',
+                'condition': 'Константы и формулы по всем разделам физики',
+                'category': 'Инструменты',
+                'icon': '📖',
+                'type': 'reference',
+                'difficulty': '',
+            })
+        
+        # Ищем по конструктору
+        if any(keyword in query.lower() for keyword in ['конструктор', 'builder', 'теплов']):
+            all_results.append({
+                'id': 'builder',
+                'name': 'Конструктор задач',
+                'condition': 'Создавайте и решайте задачи с произвольными параметрами',
+                'category': 'Инструменты',
+                'icon': '🔧',
+                'type': 'builder',
+                'difficulty': '',
+            })
+        
+        # Убираем дубликаты
+        seen = set()
+        unique_results = []
+        for r in all_results:
+            if r['id'] not in seen:
+                seen.add(r['id'])
+                unique_results.append(r)
+        all_results = unique_results
+    
+    return render_template(
+        'search.html',
+        user=user,
+        query=query,
+        results=all_results,
+        total=len(all_results),
+    )
 
 
 # ==================== ПРОФИЛЬ ====================

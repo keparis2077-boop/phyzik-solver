@@ -67,8 +67,13 @@ setTimeout(() => {
         <ul class="find-list">
             {% for r in results.keys() %}
                 <li>
-                    {% if task.quantities is defined %}
-                        {{ task.quantities[r][0] }}
+                    {% if task.quantities is defined and task.quantities[r] is defined %}
+                        {% set qty = task.quantities[r] %}
+                        {% if qty is iterable and qty is not string %}
+                            {{ qty[0] }}
+                        {% else %}
+                            {{ qty }}
+                        {% endif %}
                     {% elif task.outputs is defined %}
                         {{ task.outputs[r] }}
                     {% else %}
@@ -91,27 +96,34 @@ setTimeout(() => {
                 <h2 style="margin: 0;">✅ Ответ</h2>
                 <div class="format-buttons">
                     <button class="format-btn active" data-format="decimal" onclick="setFormat('decimal')">Десятичная</button>
-                    {% if has_fraction %}
-                    <button class="format-btn" data-format="fraction" onclick="setFormat('fraction')">Дробь</button>
-                    {% endif %}
                     {% if has_root %}
                     <button class="format-btn" data-format="root" onclick="setFormat('root')">Корень</button>
                     {% endif %}
                 </div>
             </div>
             <div class="answer-display" id="answer-display">
-                {% for k, v in results.items() %}
-                    <span class="answer-item" data-decimal="{{ v }}">
-                        {% if task.quantities is defined %}
-                            {{ task.quantities[k][0] }} = {{ v }}
-                        {% elif task.outputs is defined %}
-                            {{ task.outputs[k] }} = {{ v }}
-                        {% else %}
-                            {{ k }} = {{ v }}
-                        {% endif %}
+                {% set target_key = request.form.get('target') %}
+                {% if exact and target_key %}
+                    {% set result_value = results[target_key] %}
+                    <span class="answer-item" data-decimal="{{ result_value }}" data-unit="{{ unit }}">
+                        {{ task.quantities[target_key][0] }} = {{ result_value }} {{ unit }}
                     </span>
-                    {% if not loop.last %}<span class="answer-sep"> | </span>{% endif %}
-                {% endfor %}
+                {% else %}
+                    {% for k, v in results.items() %}
+                        {% if k != '_unit' %}
+                            <span class="answer-item" data-decimal="{{ v }}" data-unit="{{ unit if k == target_key else '' }}">
+                                {% if task.quantities is defined and k in task.quantities %}
+                                    {{ task.quantities[k][0] }} = {{ v }} {{ unit if k == target_key else '' }}
+                                {% elif task.outputs is defined and k in task.outputs %}
+                                    {{ task.outputs[k] }} = {{ v }} {{ unit if k == target_key else '' }}
+                                {% else %}
+                                    {{ k }} = {{ v }} {{ unit if k == target_key else '' }}
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                        {% if not loop.last %}<span class="answer-sep"> | </span>{% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
 
@@ -120,8 +132,6 @@ setTimeout(() => {
 
         <div class="actions">
             <a href="{{ url_for('task', task_id=task_id) }}" class="btn btn-primary-light">🔄 Решить ещё</a>
-            <button class="btn btn-outline" onclick="openCompareModal()">🔍 Сравнить</button>
-            <a href="{{ url_for('download_pdf', task_id=task_id) }}" class="btn btn-outline">📄 PDF</a>
             <button class="btn btn-outline" onclick="window.print()">🖨 Печать</button>
         </div>
     </div>
@@ -288,18 +298,14 @@ function setFormat(format) {
             let formatted = '';
             if (format === 'decimal') {
                 formatted = formatLargeNumber(num);
-            } else if (format === 'fraction') {
-                const frac = toFraction(num);
-                if (frac.den === 1) {
-                    formatted = frac.num.toString();
-                } else {
-                    const sign = frac.num < 0 ? '-' : '';
-                    const absNum = Math.abs(frac.num);
-                    formatted = `<span class="fraction"><span class="fraction-num">${sign}${absNum}</span><span class="fraction-bar">—</span><span class="fraction-den">${frac.den}</span></span>`;
-                }
             } else if (format === 'root') {
-                const sqrtResult = simplifySquareRoot(Math.abs(num));
-                formatted = sqrtResult && Math.abs(num) > 1 ? (num < 0 ? `-(${sqrtResult})` : sqrtResult) : formatLargeNumber(num);
+                // Показываем вычисленный ответ с единицами измерения
+                const unit = item.dataset.unit;
+                if (unit) {
+                    formatted = `${formatLargeNumber(num)} ${unit}`;
+                } else {
+                    formatted = formatLargeNumber(num);
+                }
             }
             
             // Сохраняем label и заменяем только значение

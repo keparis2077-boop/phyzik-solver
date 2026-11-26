@@ -208,6 +208,14 @@ templates:
         steps:
           - "Формула макс. высоты: H = v₀²·sin²(α) / (2g)"
           - "H = {v0}²·sin²({alpha}°) / (2·9.8) = {result:.2f} м"
+      - id: v0_from_Halpha
+        target: v0
+        label: "Начальную скорость v₀"
+        requires: [alpha, H]
+        formula: "(2*g*H / sin(radians(alpha))**2)**0.5"
+        steps:
+          - "Из H = v₀²·sin²(α)/(2g): v₀ = √(2gH) / sin(α)"
+          - "v₀ = √(2·9.8·{H}) / sin({alpha}°) = {result:.2f} м/с"
       - id: t_from_v0alpha
         target: t
         label: "Время полета t"

@@ -568,13 +568,13 @@
                     </div>
 
                     {% for key, (label, unit) in task.quantities.items() %}
-                        <div class="input-group">
+                        <div class="input-group" data-quantity-key="{{ key }}">
                             <label class="input-label">
                                 <span class="input-label-text">{{ label }}</span>
                                 <span class="input-label-unit">{{ unit }}</span>
                             </label>
                             <input type="number" step="any" name="{{ key }}"
-                                   class="input-field" placeholder="Оставьте пустым, если это искомая величина">
+                                   class="input-field" placeholder="Введите число">
                         </div>
                     {% endfor %}
 
@@ -660,6 +660,35 @@ document.addEventListener('click', function(e) {
         document.querySelector('.dropdown-selected')?.classList.remove('open');
         document.getElementById('dropdown-options')?.classList.remove('open');
     }
+});
+
+// Скрываем поле для искомой величины при выборе
+document.addEventListener('DOMContentLoaded', function() {
+    const targetInput = document.getElementById('target-input');
+    if (!targetInput) return;
+    
+    // Функция для скрытия/показа полей
+    function updateQuantityFields() {
+        const target = targetInput.value;
+        if (!target) return;
+        
+        // Скрываем поле с искомой величиной
+        const field = document.querySelector(`[data-quantity-key="${target}"]`);
+        if (field) {
+            field.style.display = 'none';
+        }
+    }
+    
+    // Слушаем изменения target
+    targetInput.addEventListener('change', updateQuantityFields);
+    
+    // Также слушаем клик по option (на случай если dropdown не закрыт)
+    const options = document.querySelectorAll('.dropdown-option');
+    options.forEach(opt => {
+        opt.addEventListener('click', function() {
+            setTimeout(updateQuantityFields, 50);
+        });
+    });
 });
 </script>
 

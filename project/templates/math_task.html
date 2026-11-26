@@ -447,8 +447,17 @@
                     <label class="input-label">
                         <span class="input-label-text">{{ info.label }}</span>
                     </label>
+                    {% if info.get('input_type') == 'select' or info.get('options') %}
+                    <select name="{{ key }}" class="input-field" style="cursor: pointer;">
+                        {% for opt in info.get('options', ['>']) %}
+                        <option value="{{ opt }}" {% if opt == info.get('default', opt) %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
                     <input type="number" step="any" name="{{ key }}"
-                           class="input-field" placeholder="{{ info.placeholder | default('Введите число') }}" required>
+                           class="input-field" placeholder="{{ info.placeholder | default('Введите число') }}"
+                           {% if info.get('default') %}value="{{ info.default }}"{% endif %}>
+                    {% endif %}
                 </div>
                 {% endfor %}
 

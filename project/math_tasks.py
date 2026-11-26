@@ -308,6 +308,57 @@ MATH_TASKS = {
         },
         'solve': lambda data: solve_probability_distribution(data),
     },
+    
+    # ===== НЕРАВЕНСТВА =====
+    'linear_inequality': {
+        'id': 'linear_inequality',
+        'name': 'Линейное неравенство',
+        'icon': '📏',
+        'category': 'Неравенства',
+        'difficulty': '8',
+        'condition': 'Решите линейное неравенство вида ax + b > 0',
+        'formulas': ['ax + b > 0 → x > -b/a', 'При умножении на отрицательное — знак меняется'],
+        'inputs': {
+            'a': {'label': 'a (коэффициент при x)', 'placeholder': 'Например: 2'},
+            'b': {'label': 'b (свободный член)', 'placeholder': 'Например: -6'},
+            'op': {'label': 'Знак неравенства', 'placeholder': '>', 'input_type': 'select', 'options': ['>', '<', '≥', '≤']},
+            'right': {'label': 'Правая часть', 'placeholder': '0', 'default': '0'},
+        },
+        'solve': lambda data: solve_linear_inequality_task(data),
+    },
+    
+    'quadratic_inequality': {
+        'id': 'quadratic_inequality',
+        'name': 'Квадратное неравенство',
+        'icon': '📈',
+        'category': 'Неравенства',
+        'difficulty': '9',
+        'condition': 'Решите квадратное неравенство вида ax² + bx + c > 0',
+        'formulas': ['D = b² - 4ac', 'x₁,₂ = (-b ± √D) / 2a', 'Метод интервалов'],
+        'inputs': {
+            'a': {'label': 'a (коэффициент при x²)', 'placeholder': 'Например: 1'},
+            'b': {'label': 'b (коэффициент при x)', 'placeholder': 'Например: -5'},
+            'c': {'label': 'c (свободный член)', 'placeholder': 'Например: 6'},
+            'op': {'label': 'Знак неравенства', 'placeholder': '>', 'input_type': 'select', 'options': ['>', '<', '≥', '≤']},
+        },
+        'solve': lambda data: solve_quadratic_inequality_task(data),
+    },
+    
+    'rational_inequality': {
+        'id': 'rational_inequality',
+        'name': 'Рациональное неравенство',
+        'icon': '🔢',
+        'category': 'Неравенства',
+        'difficulty': '10',
+        'condition': 'Решите рациональное неравенство вида (x-a)/(x-b) > 0',
+        'formulas': ['Метод интервалов', 'Находим нули числителя и знаменателя'],
+        'inputs': {
+            'numerator_root': {'label': 'Корень числителя (a)', 'placeholder': 'Например: 2'},
+            'denominator_root': {'label': 'Корень знаменателя (b)', 'placeholder': 'Например: -1'},
+            'op': {'label': 'Знак неравенства', 'placeholder': '>', 'input_type': 'select', 'options': ['>', '<', '≥', '≤']},
+        },
+        'solve': lambda data: solve_rational_inequality_task(data),
+    },
 }
 
 
@@ -370,7 +421,10 @@ def solve_quadratic(data):
             exact_expr1 = f"({neg_b_str}+√{D_str})/{int(2*a)}"
             exact_expr2 = f"({neg_b_str}-√{D_str})/{int(2*a)}"
         
+        sqrt_D_str = str(int(sqrt_D)) if sqrt_D == int(sqrt_D) else f"{sqrt_D:.4f}".rstrip('0')
+        
         steps.append(f"D > 0: два корня")
+        steps.append(f"√D = √{D_str} ≈ {sqrt_D_str}")
         steps.append(f"x₁ = (-b + √D) / 2a = {exact_expr1} ≈ {x1:.2f}")
         steps.append(f"x₂ = (-b - √D) / 2a = {exact_expr2} ≈ {x2:.2f}")
         
@@ -1237,3 +1291,223 @@ def solve_probability_distribution(data):
         'M': f'{expected:.2f}',
         'D': f'{n * p * (1-p):.4f}',
     }, steps, "Формула Бернулли: P(k,n) = C(n,k) · pᵏ · (1-p)ⁿ⁻ᵏ"
+
+
+# ===== ФУНКЦИИ ДЛЯ НЕРАВЕНСТВ =====
+
+def solve_linear_inequality_task(data):
+    """Решение линейного неравенства: ax + b op right"""
+    a = float(data.get('a', '1'))
+    b = float(data.get('b', '0'))
+    op = data.get('op', '>')
+    right = float(data.get('right', '0'))
+    
+    steps = [
+        f"Дано: {a}x + ({b}) {op} {right}",
+    ]
+    
+    # Переносим b вправо
+    rhs = right - b
+    steps.append(f"Переносим b: {a}x {op} {rhs}")
+    
+    # Делим на a
+    flip_sign = a < 0
+    if flip_sign:
+        steps.append(f"a = {a} < 0, меняем знак неравенства")
+        if op == '>':
+            op = '<'
+        elif op == '<':
+            op = '>'
+        elif op == '≥':
+            op = '≤'
+        elif op == '≤':
+            op = '≥'
+    
+    x_val = rhs / a
+    steps.append(f"Делим на {a}: x {op} {x_val:.2f}".rstrip('.0').rstrip('.'))
+    
+    # Форматируем ответ
+    x_str = str(int(x_val)) if x_val == int(x_val) else f"{x_val:.4f}".rstrip('0')
+    
+    if op == '>':
+        interval = f"x ∈ ({x_str}, +∞)"
+    elif op == '<':
+        interval = f"x ∈ (-∞, {x_str})"
+    elif op == '≥':
+        interval = f"x ∈ [{x_str}, +∞)"
+    else:
+        interval = f"x ∈ (-∞, {x_str}]"
+    
+    steps.append(f"Ответ: {interval}")
+    
+    return {
+        'interval': interval,
+        'x_value': f"{x_val:.4f}".rstrip('0'),
+    }, steps, "Линейное неравенство: делим на коэффициент при x, при отрицательном a — меняем знак"
+
+
+def solve_quadratic_inequality_task(data):
+    """Решение квадратного неравенства: ax² + bx + c op 0"""
+    a = float(data.get('a', '1'))
+    b = float(data.get('b', '0'))
+    c = float(data.get('c', '0'))
+    op = data.get('op', '>')
+    
+    steps = [
+        f"Дано: {a}x² + ({b})x + ({c}) {op} 0",
+    ]
+    
+    # Дискриминант
+    D = b**2 - 4*a*c
+    steps.append(f"Дискриминант: D = b² - 4ac = {b}² - 4·{a}·{c} = {D}")
+    
+    roots = []
+    if D > 0:
+        import math
+        sqrt_D = math.sqrt(D)
+        x1 = (-b - sqrt_D) / (2*a)
+        x2 = (-b + sqrt_D) / (2*a)
+        roots = [min(x1, x2), max(x1, x2)]
+        steps.append(f"D > 0: два корня")
+        steps.append(f"x₁ = {roots[0]:.4f}".rstrip('0'))
+        steps.append(f"x₂ = {roots[1]:.4f}".rstrip('0'))
+    elif D == 0:
+        x = -b / (2*a)
+        roots = [x]
+        steps.append(f"D = 0: один корень x = {x:.4f}".rstrip('0'))
+    else:
+        steps.append(f"D < 0: корней нет")
+    
+    # Метод интервалов
+    if D > 0:
+        # Два корня делят числовую прямую на 3 интервала
+        # Определяем знак в каждом
+        sign_a = a > 0
+        
+        if op in ['>', '≥']:
+            # a > 0: парабола ветвями вверх, > 0 вне корней
+            if sign_a:
+                if op == '>':
+                    interval = f"x ∈ (-∞, {roots[0]:.4f}".rstrip('0') + f") ∪ ({roots[1]:.4f}".rstrip('0') + ", +∞)"
+                else:
+                    interval = f"x ∈ (-∞, {roots[0]:.4f}".rstrip('0') + f"] ∪ [{roots[1]:.4f}".rstrip('0') + ", +∞)"
+            else:
+                if op == '>':
+                    interval = f"x ∈ ({roots[0]:.4f}".rstrip('0') + f", {roots[1]:.4f}".rstrip('0') + ")"
+                else:
+                    interval = f"x ∈ [{roots[0]:.4f}".rstrip('0') + f", {roots[1]:.4f}".rstrip('0') + "]"
+        else:
+            # < или ≤
+            if sign_a:
+                if op == '<':
+                    interval = f"x ∈ ({roots[0]:.4f}".rstrip('0') + f", {roots[1]:.4f}".rstrip('0') + ")"
+                else:
+                    interval = f"x ∈ [{roots[0]:.4f}".rstrip('0') + f", {roots[1]:.4f}".rstrip('0') + "]"
+            else:
+                if op == '<':
+                    interval = f"x ∈ (-∞, {roots[0]:.4f}".rstrip('0') + f") ∪ ({roots[1]:.4f}".rstrip('0') + ", +∞)"
+                else:
+                    interval = f"x ∈ (-∞, {roots[0]:.4f}".rstrip('0') + f"] ∪ [{roots[1]:.4f}".rstrip('0') + ", +∞)"
+    elif D == 0:
+        x = roots[0]
+        if op in ['>', '≥']:
+            if a > 0:
+                if op == '>':
+                    interval = f"x ∈ (-∞, {x:.4f}".rstrip('0') + f") ∪ ({x:.4f}".rstrip('0') + ", +∞)"
+                else:
+                    interval = f"x ∈ (-∞, {x:.4f}".rstrip('0') + f"] ∪ [{x:.4f}".rstrip('0') + ", +∞)"
+            else:
+                if op == '>':
+                    interval = "нет решений"
+                else:
+                    interval = f"x = {x:.4f}".rstrip('0')
+        else:
+            if a > 0:
+                if op == '<':
+                    interval = "нет решений"
+                else:
+                    interval = "нет решений"
+            else:
+                if op == '<':
+                    interval = f"x ∈ (-∞, {x:.4f}".rstrip('0') + f") ∪ ({x:.4f}".rstrip('0') + ", +∞)"
+                else:
+                    interval = f"x ∈ (-∞, {x:.4f}".rstrip('0') + f"] ∪ [{x:.4f}".rstrip('0') + ", +∞)"
+    else:
+        # D < 0
+        if a > 0:
+            if op in ['>', '≥']:
+                interval = "x ∈ (-∞, +∞)"
+            else:
+                interval = "нет решений"
+        else:
+            if op in ['>', '≥']:
+                interval = "нет решений"
+            else:
+                interval = "x ∈ (-∞, +∞)"
+    
+    steps.append(f"Ответ: {interval}")
+    
+    explanation = f"Квадратное неравенство: D = {D}, метод интервалов"
+    if D > 0:
+        explanation += ", парабола пересекает ось x в двух точках"
+    elif D == 0:
+        explanation += ", парабола касается оси x"
+    else:
+        explanation += ", парабола не пересекает ось x"
+    
+    return {
+        'interval': interval,
+        'D': f"{D:.4f}".rstrip('0'),
+    }, steps, explanation
+
+
+def solve_rational_inequality_task(data):
+    """Решение рационального неравенства: (x - a)/(x - b) op 0"""
+    num_root = float(data.get('numerator_root', '0'))
+    den_root = float(data.get('denominator_root', '0'))
+    op = data.get('op', '>')
+    
+    steps = [
+        f"Дано: (x - {num_root}) / (x - {den_root}) {op} 0",
+    ]
+    
+    # Нули числителя и знаменателя
+    steps.append(f"Нуль числителя: x = {num_root}")
+    steps.append(f"Нуль знаменателя: x = {den_root} (исключение)")
+    
+    # Метод интервалов
+    points = sorted([num_root, den_root])
+    
+    if op in ['>', '≥']:
+        # > 0: знаки одинаковы
+        if num_root < den_root:
+            if op == '>':
+                interval = f"x ∈ (-∞, {num_root}) ∪ ({den_root}, +∞)"
+            else:
+                interval = f"x ∈ (-∞, {num_root}] ∪ ({den_root}, +∞)"
+        else:
+            if op == '>':
+                interval = f"x ∈ (-∞, {den_root}) ∪ ({num_root}, +∞)"
+            else:
+                interval = f"x ∈ (-∞, {den_root}) ∪ [{num_root}, +∞)"
+    else:
+        # < 0: знаки разные
+        if num_root < den_root:
+            if op == '<':
+                interval = f"x ∈ ({num_root}, {den_root})"
+            else:
+                interval = f"x ∈ [{num_root}, {den_root})"
+        else:
+            if op == '<':
+                interval = f"x ∈ ({den_root}, {num_root})"
+            else:
+                interval = f"x ∈ ({den_root}, {num_root}]"
+    
+    steps.append(f"Метод интервалов: {interval}")
+    steps.append(f"Ответ: {interval}")
+    
+    return {
+        'interval': interval,
+        'numerator_root': str(num_root),
+        'denominator_root': str(den_root),
+    }, steps, "Рациональное неравенство: метод интервалов, знаменатель ≠ 0"
